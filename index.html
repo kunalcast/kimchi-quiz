@@ -10,7 +10,7 @@
 <style>
   :root {
     --bg: #0E0F13; --panel: #15171E; --panel2: #1B1E27; --line: #262A35;
-    --red: #E03131; --red-deep: #C92A2A; --green: #51CF66; --gold: #FFD43B;
+    --red: #FF521D; --red-deep: #E04A12; --green: #51CF66; --gold: #FFD43B;
     --cream: #F5F0E6; --text: #EDEEF2; --muted: #9BA0AE;
     --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
   }
@@ -22,7 +22,7 @@
   #stage { width: 1920px; height: 1080px; position: absolute; top: 50%; left: 50%;
     transform-origin: center center; background: var(--bg); overflow: hidden; }
   .bg-glow { position: absolute; width: 1400px; height: 900px; top: -450px; left: 260px;
-    background: radial-gradient(closest-side, rgba(224,49,49,.16), transparent 70%); pointer-events: none; }
+    background: radial-gradient(closest-side, rgba(255,82,29,.16), transparent 70%); pointer-events: none; }
   .bg-glow.g2 { top: auto; bottom: -500px; left: -300px; background: radial-gradient(closest-side, rgba(81,207,102,.07), transparent 70%); }
   .bg-emoji { position: absolute; opacity: .055; pointer-events: none; user-select: none; }
   @keyframes drift { 0% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-26px) rotate(8deg); } 100% { transform: translateY(0) rotate(0deg); } }
@@ -31,10 +31,8 @@
 
   /* ── header ── */
   header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
-  .brand { display: flex; align-items: baseline; gap: 16px; }
-  .brand .jar { font-size: 44px; align-self: center; }
-  .brand .word { font-size: 42px; font-weight: 900; letter-spacing: -.03em; color: var(--cream); }
-  .brand .word b { color: var(--red); }
+  .brand { display: flex; align-items: center; gap: 16px; }
+  .brand .logo { height: 64px; display: block; }
   .brand .x { color: var(--muted); font-size: 26px; font-weight: 600; }
   .brand .event { font-family: var(--mono); font-size: 21px; color: var(--green);
     border: 1.5px solid rgba(81,207,102,.4); background: rgba(81,207,102,.08); border-radius: 999px; padding: 7px 18px; }
@@ -65,8 +63,8 @@
   .step p { font-size: 22px; color: var(--muted); }
   .step p b { color: var(--cream); }
   .step.s1 .n { border-color: rgba(224,49,49,.6); color: var(--red); }
-  .drawcard { margin-top: auto; background: linear-gradient(135deg, rgba(224,49,49,.18), rgba(224,49,49,.05));
-    border: 2px dashed rgba(224,49,49,.6); border-radius: 22px; padding: 24px 30px; text-align: center; }
+  .drawcard { margin-top: auto; background: linear-gradient(135deg, rgba(255,82,29,.18), rgba(255,82,29,.05));
+    border: 2px dashed rgba(255,82,29,.6); border-radius: 22px; padding: 24px 30px; text-align: center; }
   .drawcard .gift { font-size: 40px; }
   .drawcard h2 { color: var(--cream); font-size: 25px; margin-top: 6px; font-weight: 800; letter-spacing: -.01em; }
   .drawcard .cd { font-family: var(--mono); font-size: 52px; font-weight: 700; color: var(--gold); margin-top: 8px; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
@@ -123,8 +121,7 @@
 
     <header>
       <div class="brand">
-        <span class="jar">🫙</span>
-        <span class="word">kim<b>chi</b></span>
+        <img class="logo" src="assets/kimchi-logo.svg" alt="kimchi">
         <span class="x">×</span>
         <span class="event" id="eventChip">CYpher 2026</span>
       </div>
