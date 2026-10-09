@@ -163,7 +163,7 @@
         </div>
         <div class="drawcard">
           <h2>👕 TOP <span id="winN">10</span> GET THE TEE</h2>
-          <div class="cd" id="cutLine">OPEN!</div>
+          <div class="cd" id="drawCd">--:--:--</div>
           <p id="drawSub">🎁 10 t-shirts to give away — stay on the board to win</p>
         </div>
       </div>
@@ -226,6 +226,26 @@ const WIN_N = CONFIG.TEES_COUNT || 10; // how many leaderboard spots win a tee
 $('#winN').textContent = WIN_N;
 if (CONFIG.TEES_COUNT) $('#teeBadge').textContent = '🎁 ' + CONFIG.TEES_COUNT + ' t-shirts!';
 
+/* ── handout countdown (time pressure next to the pts cut-off) ── */
+function nextHandout() {
+  const now = new Date();
+  const slots = (CONFIG.DRAW_TIMES || []).map((t) => {
+    const [h, m] = t.split(':').map(Number);
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+  }).sort((a, b) => a - b);
+  let target = slots.find((s) => s > now);
+  if (!target && slots.length) target = new Date(slots[0].getTime() + 86400000);
+  return target;
+}
+setInterval(() => {
+  const t = nextHandout();
+  if (!t) { $('#drawCd').textContent = ''; return; }
+  const ms = t - new Date();
+  if (ms <= 0) { $('#drawCd').textContent = '🎉 NOW'; return; }
+  const h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, s = Math.floor(ms / 1000) % 60;
+  $('#drawCd').textContent = [h, m, s].map((x) => String(x).padStart(2, '0')).join(':');
+}, 1000);
+
 /* ── leaderboard rendering (keyed rows, animated reorder) ── */
 const ROW_H = 74, rowEls = new Map(); // github(lower) → element
 function renderBoard(lb) {
@@ -262,10 +282,8 @@ function renderBoard(lb) {
   /* live cut-off: what you must beat to take #WIN_N's tee */
   const topN = lb.top || [];
   if (topN.length >= WIN_N) {
-    $('#cutLine').textContent = '>' + Number(topN[WIN_N - 1].score).toLocaleString();
-    $('#drawSub').innerHTML = 'pts beats current #' + WIN_N + ' — that\u2019s a t-shirt!';
+    $('#drawSub').innerHTML = '>' + Number(topN[WIN_N - 1].score).toLocaleString() + ' pts beats current #' + WIN_N + ' — that\u2019s a t-shirt!';
   } else {
-    $('#cutLine').textContent = 'OPEN!';
     $('#drawSub').innerHTML = '🎁 ' + WIN_N + ' t-shirts to give away — every player is in the tee zone right now';
   }
 }

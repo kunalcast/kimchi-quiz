@@ -9,7 +9,7 @@ Phone (scan QR) → play.html      star repo → quiz → score POSTed
                         ↓
          Google Sheet via Apps Script (free shared backend)
                         ↓
-TV (cast from Mac) → index.html  live top-10 · live ⭐ count · QR · live cut-off (“beat X pts”)
+TV (cast from Mac) → index.html  live top-10 · live ⭐ count · QR · handout countdown · live cut-off
 Booth Mac         → admin.html   pull top 10 · verify ⭐ · track claims
 ```
 
@@ -18,7 +18,7 @@ Booth Mac         → admin.html   pull top 10 · verify ⭐ · track claims
 | `play.html` | Mobile quiz (entry gate → 10 Qs, 15s each, speed + streak bonus) — **deployed** |
 | `index.html` | TV display — open fullscreen, cast from the Mac — **deployed** |
 | `admin.html` | Booth tools — top-10 winners, star verification, winners CSV — **LOCAL-ONLY, never deployed** |
-| `config.js` | **The one file you edit** (endpoint URL, tee count, PIN) |
+| `config.js` | **The one file you edit** (endpoint URL, tee count, handout times, PIN) |
 | `apps-script/Code.gs` | The backend — paste into the Google Sheet |
 | `tools/mock-server.py` | Local mock backend for testing |
 
@@ -75,14 +75,16 @@ Edit [`config.js`](config.js) → replace `PASTE_APPS_SCRIPT_EXEC_URL_HERE` with
 ### Handing out winners (admin.html — LOCAL-ONLY)
 1. On the booth Mac, double-click **`admin.html`** in this project folder (opens as `file://…`, PIN in `config.js`).
    It is intentionally **not** on the website — nobody outside the booth can reach it.
-2. At handout time: **👕 Pull the top 10** — the current live top N becomes the winners list
+2. Tee handout times live in `config.js → DRAW_TIMES` (`['15:00','17:00','19:00']`) — the TV counts
+   down to the next one. Edit on github.com → the TV self-updates within a minute.
+3. At handout time: **👕 Pull the top 10** — the current live top N becomes the winners list
    (re-pulling re-syncs ranks from the board and keeps already-verified/claimed marks per handle)
-3. Each winner card → **Verify ⭐** (checks their GitHub against the repo via the backend)
+4. Each winner card → **Verify ⭐** (checks their GitHub against the repo via the backend)
    - ✅ verified → hand them a tee → click **Claimed ✓**
    - ⚠ rate-limited → **Profile ↗** opens their stars tab — eyeball it
    - ✗ no star → "star it right now, then re-check" (they just showed up, they can do it in 10 s)
-4. **⬇ Export winners CSV** at the end of the day for your records
-5. **No-shows:** the **⏳ Standby list** button (opens `standby.html`, same PIN) shows ranks 11-20
+5. **⬇ Export winners CSV** at the end of the day for your records
+6. **No-shows:** the **⏳ Standby list** button (opens `standby.html`, same PIN) shows ranks 11-20
    — call the next person down, verify their ⭐, hand them the tee. Each runner-up row has
    Verify ⭐ / Profile ↗ / Absent ✖ (absent marks persist until cleared) and their email if they left one.
 

@@ -2,7 +2,8 @@
 // The ONLY file you need to edit after setup:
 //   1. ENDPOINT — paste your Apps Script web app URL (ends with /exec)
 //   2. TEES_COUNT — how many leaderboard spots win a tee (TV cut-off + phones)
-//   3. ADMIN_PIN — soft PIN for the booth admin page
+//   3. DRAW_TIMES — tee handout times; the TV counts down to the next one
+//   4. ADMIN_PIN — soft PIN for the booth admin page
 const CONFIG = {
   REPO_OWNER: 'getkimchi',
   REPO_NAME: 'kimchi',
@@ -15,6 +16,9 @@ const CONFIG = {
 
   // How many t-shirts you're giving away (top N on the leaderboard win)
   TEES_COUNT: 10,
+
+  // Tee handout times (24h clock, booth-local). TV counts down to the next one.
+  DRAW_TIMES: ['15:00', '17:00', '19:00'],
 
   // Booth admin PIN (soft gate for admin.html — change me)
   ADMIN_PIN: '565656',
