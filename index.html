@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>KIMCHI × CYpher 2026 — Live Leaderboard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫙</text></svg>">
+<script src="config.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/qrcode.min.js"></script>
+<style>
+  :root {
+    --bg: #0E0F13; --panel: #15171E; --panel2: #1B1E27; --line: #262A35;
+    --red: #E03131; --red-deep: #C92A2A; --green: #51CF66; --gold: #FFD43B;
+    --cream: #F5F0E6; --text: #EDEEF2; --muted: #9BA0AE;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: #000; overflow: hidden; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif; }
+
+  /* fixed 1920×1080 stage, scaled to fit any cast resolution */
+  #stage { width: 1920px; height: 1080px; position: absolute; top: 50%; left: 50%;
+    transform-origin: center center; background: var(--bg); overflow: hidden; }
+  .bg-glow { position: absolute; width: 1400px; height: 900px; top: -450px; left: 260px;
+    background: radial-gradient(closest-side, rgba(224,49,49,.16), transparent 70%); pointer-events: none; }
+  .bg-glow.g2 { top: auto; bottom: -500px; left: -300px; background: radial-gradient(closest-side, rgba(81,207,102,.07), transparent 70%); }
+  .bg-emoji { position: absolute; opacity: .055; pointer-events: none; user-select: none; }
+  @keyframes drift { 0% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-26px) rotate(8deg); } 100% { transform: translateY(0) rotate(0deg); } }
+
+  .wrap { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; padding: 34px 52px 0; }
+
+  /* ── header ── */
+  header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+  .brand { display: flex; align-items: baseline; gap: 16px; }
+  .brand .jar { font-size: 44px; align-self: center; }
+  .brand .word { font-size: 42px; font-weight: 900; letter-spacing: -.03em; color: var(--cream); }
+  .brand .word b { color: var(--red); }
+  .brand .x { color: var(--muted); font-size: 26px; font-weight: 600; }
+  .brand .event { font-family: var(--mono); font-size: 21px; color: var(--green);
+    border: 1.5px solid rgba(81,207,102,.4); background: rgba(81,207,102,.08); border-radius: 999px; padding: 7px 18px; }
+  .starbox { display: flex; align-items: center; gap: 22px; }
+  .repopath { font-family: var(--mono); font-size: 19px; color: var(--muted); }
+  .repopath b { color: var(--cream); font-weight: 600; }
+  .starcount { display: flex; align-items: center; gap: 12px; background: var(--panel); border: 1.5px solid var(--line);
+    border-radius: 16px; padding: 12px 22px; }
+  .starcount .star { font-size: 30px; }
+  .starcount .num { font-size: 40px; font-weight: 900; color: var(--gold); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .starcount .num.bump { animation: bump .6s ease; }
+  @keyframes bump { 30% { transform: scale(1.22); color: #fff; } }
+  .livedot { width: 11px; height: 11px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px var(--green); animation: pulse 2s infinite; }
+  .livedot.bad { background: var(--gold); box-shadow: 0 0 12px var(--gold); animation: none; }
+  @keyframes pulse { 50% { opacity: .45; } }
+
+  /* ── main grid ── */
+  main { flex: 1; display: flex; gap: 40px; padding-top: 30px; min-height: 0; }
+  .left { flex: 0 0 620px; display: flex; flex-direction: column; gap: 22px; }
+  .qr-card { background: #fff; border-radius: 26px; padding: 30px 34px 24px; text-align: center; }
+  .qr-card svg { display: block; margin: 0 auto; }
+  .qr-card .scan { color: #111; font-weight: 900; font-size: 26px; margin-top: 14px; letter-spacing: -.01em; }
+  .qr-card .scan b { color: var(--red-deep); }
+  .steps { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 26px 30px; display: flex; flex-direction: column; gap: 18px; }
+  .step { display: flex; align-items: center; gap: 18px; }
+  .step .n { flex: 0 0 44px; height: 44px; border-radius: 50%; background: var(--panel2); border: 1.5px solid var(--line);
+    display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; color: var(--cream); }
+  .step p { font-size: 22px; color: var(--muted); }
+  .step p b { color: var(--cream); }
+  .step.s1 .n { border-color: rgba(224,49,49,.6); color: var(--red); }
+  .drawcard { margin-top: auto; background: linear-gradient(135deg, rgba(224,49,49,.18), rgba(224,49,49,.05));
+    border: 2px dashed rgba(224,49,49,.6); border-radius: 22px; padding: 24px 30px; text-align: center; }
+  .drawcard .gift { font-size: 40px; }
+  .drawcard h2 { color: var(--cream); font-size: 25px; margin-top: 6px; font-weight: 800; letter-spacing: -.01em; }
+  .drawcard .cd { font-family: var(--mono); font-size: 52px; font-weight: 700; color: var(--gold); margin-top: 8px; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+  .drawcard p { color: var(--muted); font-size: 19px; margin-top: 8px; }
+
+  /* ── leaderboard ── */
+  .right { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .lb-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 18px; }
+  .lb-head h1 { font-size: 40px; font-weight: 900; letter-spacing: -.02em; color: var(--cream); }
+  .lb-head h1 span { color: var(--red); }
+  .lb-head .meta { font-family: var(--mono); font-size: 20px; color: var(--muted); }
+  .lb-head .meta b { color: var(--green); }
+  .lb-rows { position: relative; height: 740px; }
+  .row { position: absolute; left: 0; right: 0; height: 64px; display: flex; align-items: center; gap: 20px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 15px; padding: 0 24px;
+    transition: top .7s cubic-bezier(.22,1,.36,1), opacity .5s, transform .5s; }
+  .row.m1 { background: linear-gradient(90deg, rgba(255,212,59,.14), var(--panel) 55%); border-color: rgba(255,212,59,.55); transform: scale(1.02); }
+  .row.m2 { background: linear-gradient(90deg, rgba(201,201,209,.10), var(--panel) 55%); border-color: rgba(201,201,209,.4); }
+  .row.m3 { background: linear-gradient(90deg, rgba(205,127,50,.12), var(--panel) 55%); border-color: rgba(205,127,50,.45); }
+  .row .rank { flex: 0 0 52px; font-weight: 900; font-size: 26px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .row.m1 .rank { font-size: 30px; }
+  .row .who { flex: 1; min-width: 0; }
+  .row .name { font-size: 22px; font-weight: 700; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -.01em; }
+  .row .gh { font-family: var(--mono); font-size: 15px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .pts { font-size: 26px; font-weight: 900; color: var(--green); font-variant-numeric: tabular-nums; }
+  .row.m1 .pts { color: var(--gold); }
+  .row .pts small { font-size: 13px; color: var(--muted); font-weight: 600; margin-left: 4px; }
+  .row.entering { opacity: 0; transform: translateY(26px); }
+  .empty-lb { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--muted); }
+  .empty-lb .icon { font-size: 60px; }
+  .empty-lb p { font-size: 26px; }
+  .empty-lb p b { color: var(--cream); }
+
+  /* ── ticker ── */
+  footer { height: 74px; margin: 0 -52px; border-top: 1px solid var(--line); background: rgba(21,23,30,.65); overflow: hidden; display: flex; align-items: center; }
+  .ticker { display: flex; gap: 0; white-space: nowrap; animation: scroll 38s linear infinite; }
+  .ticker span { font-size: 24px; color: var(--muted); padding-right: 90px; }
+  .ticker span b { color: var(--cream); }
+  .ticker span .r { color: var(--green); }
+  @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  .offbadge { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); background: rgba(255,212,59,.12);
+    border: 1px solid rgba(255,212,59,.5); color: var(--gold); font-family: var(--mono); font-size: 17px;
+    border-radius: 999px; padding: 7px 20px; display: none; z-index: 50; }
+  .offbadge.show { display: block; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="bg-glow"></div><div class="bg-glow g2"></div>
+  <div id="emojiLayer"></div>
+  <div class="offbadge" id="offbadge">⚠ reconnecting — cached view</div>
+  <div class="wrap">
+
+    <header>
+      <div class="brand">
+        <span class="jar">🫙</span>
+        <span class="word">kim<b>chi</b></span>
+        <span class="x">×</span>
+        <span class="event" id="eventChip">CYpher 2026</span>
+      </div>
+      <div class="starbox">
+        <span class="repopath">github.com/<b>getkimchi/kimchi</b></span>
+        <div class="starcount"><span class="livedot" id="liveDot"></span><span class="star">⭐</span><span class="num" id="starNum">—</span></div>
+      </div>
+    </header>
+
+    <main>
+      <div class="left">
+        <div class="qr-card">
+          <div id="qrBox"></div>
+          <div class="scan">Scan to play &amp; win a <b>Kimchi tee</b> 🎁</div>
+        </div>
+        <div class="steps">
+          <div class="step s1"><div class="n">1</div><p><b>Star</b> github.com/getkimchi/kimchi</p></div>
+          <div class="step"><div class="n">2</div><p>Beat the <b>Kimchi Quiz</b> — 10 Qs, 15s each</p></div>
+          <div class="step"><div class="n">3</div><p>Land on this <b>leaderboard</b> &amp; enter the <b>raffle</b> 🎟️</p></div>
+        </div>
+        <div class="drawcard">
+          <div class="gift">🎁</div>
+          <h2 id="drawTitle">T-SHIRT RAFFLE</h2>
+          <div class="cd" id="drawCd">--:--:--</div>
+          <p id="drawSub">Every player is in the draw — winners drawn at the booth</p>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="lb-head">
+          <h1>LIVE <span>LEADERBOARD</span></h1>
+          <div class="meta" id="lbMeta">warming up…</div>
+        </div>
+        <div class="lb-rows" id="lbRows">
+          <div class="empty-lb" id="emptyLb">
+            <div class="icon">🥬</div>
+            <p>Be the <b>first player</b> — scan the code!</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer><div class="ticker" id="ticker"></div></footer>
+  </div>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+
+/* ── stage scaling: fit 1920×1080 into any window ── */
+function fit() {
+  const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+  $('#stage').style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+}
+addEventListener('resize', fit); fit();
+
+/* ── floating background ingredients ── */
+(function () {
+  const layer = $('#emojiLayer');
+  const items = [['🌶️', 130, 9, 250, 18], ['🥬', 110, 14, 1020, 80], ['🌶️', 90, 10, 1700, 760], ['🥬', 150, 12, 430, 940], ['🫙', 120, 10, 1560, 300]];
+  items.forEach(([e, size, dur, x, y]) => {
+    const d = document.createElement('div');
+    d.className = 'bg-emoji'; d.textContent = e;
+    d.style.cssText = 'font-size:' + size + 'px;left:' + x + 'px;top:' + y + 'px;animation:drift ' + (dur + Math.random() * 8) + 's ease-in-out infinite;';
+    layer.appendChild(d);
+  });
+})();
+
+/* ── QR code ── */
+try {
+  const qr = qrcode(0, 'M');
+  qr.addData(quizUrl());
+  qr.make();
+  $('#qrBox').innerHTML = qr.createSvgTag(14, 20);
+} catch (e) { $('#qrBox').textContent = 'QR failed — check config'; }
+
+/* ── header + config text ── */
+$('#eventChip').textContent = CONFIG.EVENT_NAME;
+document.title = 'Kimchi × ' + CONFIG.EVENT_NAME + ' — Live';
+
+/* ── raffle countdown ── */
+function nextDraw() {
+  const now = new Date();
+  const slots = (CONFIG.DRAW_TIMES || []).map((t) => {
+    const [h, m] = t.split(':').map(Number);
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+  }).sort((a, b) => a - b);
+  let target = slots.find((s) => s > now);
+  if (!target && slots.length) target = new Date(slots[0].getTime() + 86400000);
+  return target;
+}
+setInterval(() => {
+  const t = nextDraw();
+  if (!t) { $('#drawCd').textContent = 'AT THE BOOTH'; return; }
+  const ms = t - new Date();
+  if (ms <= 0) { $('#drawTitle').textContent = '🎉 DRAW HAPPENING NOW'; $('#drawCd').textContent = 'AT THE BOOTH'; return; }
+  $('#drawTitle').textContent = 'T-SHIRT RAFFLE';
+  const h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, s = Math.floor(ms / 1000) % 60;
+  $('#drawCd').textContent = [h, m, s].map((x) => String(x).padStart(2, '0')).join(':');
+}, 1000);
+
+/* ── leaderboard rendering (keyed rows, animated reorder) ── */
+const ROW_H = 74, rowEls = new Map(); // github(lower) → element
+function renderBoard(lb) {
+  const top = (lb.top || []).slice(0, 10);
+  const holder = $('#lbRows');
+  const seen = new Set();
+  top.forEach((r, i) => {
+    const key = String(r.github).toLowerCase();
+    seen.add(key);
+    let el = rowEls.get(key);
+    const fresh = !el;
+    if (fresh) {
+      el = document.createElement('div');
+      el.className = 'row entering';
+      el.innerHTML = '<div class="rank"></div><div class="who"><div class="name"></div><div class="gh"></div></div><div class="pts"></div>';
+      rowEls.set(key, el);
+      holder.appendChild(el);
+      requestAnimationFrame(() => requestAnimationFrame(() => el.classList.remove('entering')));
+    }
+    el.classList.remove('m1', 'm2', 'm3');
+    if (i === 0) el.classList.add('m1'); else if (i === 1) el.classList.add('m2'); else if (i === 2) el.classList.add('m3');
+    el.style.top = i * ROW_H + 'px';
+    el.querySelector('.rank').textContent = i < 3 ? ['🥇', '🥈', '🥉'][i] : '#' + (i + 1);
+    el.querySelector('.name').textContent = r.name;
+    el.querySelector('.gh').textContent = '@' + r.github;
+    el.querySelector('.pts').innerHTML = r.score.toLocaleString() + '<small>pts</small>';
+  });
+  rowEls.forEach((el, key) => {
+    if (!seen.has(key)) { el.style.opacity = '0'; el.style.transform = 'translateY(26px)'; setTimeout(() => { el.remove(); rowEls.delete(key); }, 600); }
+  });
+  $('#emptyLb').style.display = (lb.players || 0) === 0 ? 'flex' : 'none';
+  $('#lbMeta').innerHTML = '<b>' + (lb.players || 0) + '</b> in the raffle · ' + (lb.plays || 0) + ' plays';
+  const tick = [];
+  (lb.recent || []).forEach((r) => tick.push('🌶️ <b>' + r.name + '</b> just scored <span class="r">' + r.score.toLocaleString() + '</span>'));
+  const msg = '⭐ Star <b>github.com/getkimchi/kimchi</b> &nbsp;·&nbsp; 🎁 Every quiz player is in the t-shirt raffle &nbsp;·&nbsp; 👀 Quiz answers hide on <b>kimchi.dev</b>';
+  tick.push(msg);
+  const html = tick.map((t) => '<span>' + t + '</span>').join('');
+  $('#ticker').innerHTML = html + html; // duplicate for seamless loop
+}
+
+/* ── polls ── */
+let lastStars = null;
+async function pollBoard() {
+  try {
+    const lb = await apiGet('leaderboard');
+    renderBoard(lb);
+    setOnline(true);
+  } catch (e) { setOnline(false); }
+}
+async function pollStars() {
+  try {
+    const d = await apiGet('stars');
+    if (typeof d.stars === 'number') {
+      const el = $('#starNum');
+      if (lastStars !== null && d.stars > lastStars) { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
+      el.textContent = d.stars.toLocaleString();
+      lastStars = d.stars;
+    }
+  } catch (e) { /* keep last known count */ }
+}
+function setOnline(ok) {
+  $('#liveDot').classList.toggle('bad', !ok);
+  $('#offbadge').classList.toggle('show', !ok);
+}
+
+pollBoard(); pollStars();
+setInterval(pollBoard, 10000);
+setInterval(pollStars, 60000);
+</script>
+</body>
+</html>

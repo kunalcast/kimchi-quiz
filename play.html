@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Kimchi Quiz — CYpher 2026</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌶️</text></svg>">
+<script src="config.js"></script>
+<script src="assets/app.js"></script>
+<style>
+  :root {
+    --bg: #0E0F13; --panel: #15171E; --panel2: #1B1E27; --line: #262A35;
+    --red: #E03131; --red-deep: #C92A2A; --green: #51CF66; --gold: #FFD43B;
+    --cream: #F5F0E6; --text: #EDEEF2; --muted: #9BA0AE;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    overflow-x: hidden;
+    background-image: radial-gradient(80vw 40vh at 50% -10%, rgba(224,49,49,.14), transparent 60%);
+  }
+  #app { max-width: 30rem; margin: 0 auto; padding: 1.25rem 1.1rem 3rem; min-height: 100dvh; display: flex; flex-direction: column; }
+  .screen { display: none; flex-direction: column; flex: 1; }
+  .screen.active { display: flex; }
+  .brand { display: flex; align-items: center; justify-content: center; gap: .5rem; margin: .75rem 0 1.5rem; }
+  .brand .jar { font-size: 1.9rem; }
+  .brand .word { font-weight: 800; font-size: 1.35rem; letter-spacing: -.02em; color: var(--cream); }
+  .brand .word b { color: var(--red); }
+  .event-chip {
+    align-self: center; font-family: var(--mono); font-size: .72rem; color: var(--green);
+    border: 1px solid rgba(81,207,102,.35); background: rgba(81,207,102,.08);
+    padding: .28rem .8rem; border-radius: 999px; margin-bottom: 1.4rem; letter-spacing: .06em;
+  }
+  h1 { text-align: center; font-size: clamp(1.7rem, 8vw, 2.3rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.15; }
+  h1 .red { color: var(--red); }
+  .sub { text-align: center; color: var(--muted); margin: .7rem 0 1.6rem; font-size: .95rem; line-height: 1.5; }
+  .sub strong { color: var(--cream); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 1.1rem; padding: 1.15rem; }
+  .btn {
+    display: block; width: 100%; border: 0; cursor: pointer; text-decoration: none;
+    background: var(--red); color: #fff; font-weight: 800; font-size: 1.05rem;
+    padding: 1.05rem 1rem; border-radius: .95rem; text-align: center; font-family: inherit;
+    transition: transform .08s ease, filter .15s ease;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn:hover { filter: brightness(1.08); }
+  .btn.ghost { background: transparent; border: 1.5px solid var(--line); color: var(--text); font-weight: 600; }
+  .btn.green { background: #2F9E44; }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .star-step { display: flex; flex-direction: column; gap: .85rem; }
+  .star-btn { position: relative; overflow: hidden; }
+  .star-btn .num { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,.25); font-size: .8rem; font-weight: 800; width: 1.7rem; height: 1.7rem;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .fine { color: var(--muted); font-size: .8rem; text-align: center; line-height: 1.55; margin-top: 1.1rem; }
+  .fine a { color: var(--green); text-decoration: none; }
+  .hint { margin-top: 1rem; text-align: center; font-size: .85rem; color: var(--gold); opacity: .9; }
+  .steps-row { display: flex; gap: .5rem; justify-content: center; margin-bottom: 1.4rem; }
+  .steps-row span { font-size: .78rem; color: var(--muted); background: var(--panel); border: 1px solid var(--line); padding: .3rem .65rem; border-radius: 999px; }
+  .steps-row b { color: var(--cream); }
+
+  /* form */
+  label { display: block; font-size: .8rem; font-weight: 700; color: var(--muted); margin: .2rem 0 .45rem; text-transform: uppercase; letter-spacing: .08em; }
+  input {
+    width: 100%; background: var(--bg); border: 1.5px solid var(--line); color: var(--text);
+    font-size: 1.05rem; padding: .95rem 1rem; border-radius: .85rem; font-family: inherit; outline: none;
+  }
+  input:focus { border-color: var(--red); }
+  input.mono { font-family: var(--mono); }
+  .field { margin-bottom: 1.05rem; }
+  .field .err { color: var(--red); font-size: .78rem; margin-top: .35rem; min-height: 1em; }
+  .back { background: none; border: 0; color: var(--muted); font-size: .85rem; cursor: pointer; text-decoration: underline; padding: .5rem; align-self: center; font-family: inherit; }
+
+  /* quiz */
+  .quiz-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: .6rem; }
+  .quiz-top .qnum { font-family: var(--mono); font-size: .85rem; color: var(--muted); }
+  .quiz-top .qnum b { color: var(--cream); font-size: 1rem; }
+  .streak { color: var(--gold); font-weight: 800; font-size: .95rem; min-width: 3.2rem; text-align: right; transition: transform .15s; }
+  .streak.pop { transform: scale(1.3); }
+  .timer-track { height: .45rem; background: var(--panel2); border-radius: 99px; overflow: hidden; margin-bottom: 1.2rem; }
+  .timer-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--green), var(--gold)); border-radius: 99px; }
+  .timer-fill.danger { background: var(--red); }
+  .q-card { background: var(--panel); border: 1px solid var(--line); border-radius: 1.1rem; padding: 1.3rem 1.15rem; margin-bottom: 1rem; }
+  .q-text { font-size: 1.15rem; font-weight: 700; line-height: 1.4; letter-spacing: -.01em; }
+  .opts { display: flex; flex-direction: column; gap: .7rem; }
+  .opt {
+    display: flex; align-items: center; gap: .8rem; text-align: left; width: 100%;
+    background: var(--panel); border: 1.5px solid var(--line); color: var(--text);
+    font-size: 1rem; font-weight: 600; padding: .95rem 1rem; border-radius: .95rem; cursor: pointer;
+    font-family: inherit; transition: border-color .12s, background .12s, transform .08s;
+  }
+  .opt:not(:disabled):active { transform: scale(.985); }
+  .opt .key { flex: 0 0 auto; font-family: var(--mono); font-size: .75rem; color: var(--muted);
+    border: 1px solid var(--line); border-radius: .45rem; padding: .2rem .45rem; }
+  .opt.correct { border-color: var(--green); background: rgba(81,207,102,.12); }
+  .opt.correct .key { color: var(--green); border-color: rgba(81,207,102,.5); }
+  .opt.wrong { border-color: var(--red); background: rgba(224,49,49,.12); }
+  .opt.wrong .key { color: var(--red); border-color: rgba(224,49,49,.5); }
+  .opt:disabled { cursor: default; opacity: .85; }
+  .opt.dim { opacity: .35; }
+  .fact {
+    background: rgba(255,212,59,.07); border: 1px solid rgba(255,212,59,.25); color: var(--gold);
+    border-radius: .85rem; padding: .8rem 1rem; font-size: .85rem; line-height: 1.5; margin-top: .95rem;
+    display: none; animation: fadein .3s ease;
+  }
+  .fact.show { display: block; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+  .points-pop { position: fixed; top: 18%; left: 50%; transform: translateX(-50%); font-weight: 900;
+    font-size: 2rem; color: var(--green); text-shadow: 0 2px 18px rgba(0,0,0,.6); z-index: 10;
+    animation: pop .9s ease forwards; pointer-events: none; }
+  @keyframes pop { 0% { opacity: 0; transform: translateX(-50%) scale(.6); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) translateY(-42px) scale(1.15); } }
+
+  /* result */
+  .result-top { text-align: center; padding: .5rem 0 .3rem; }
+  .score-big { font-size: 4rem; font-weight: 900; letter-spacing: -.04em; color: var(--cream); line-height: 1; }
+  .score-big small { font-size: 1.1rem; color: var(--muted); font-weight: 600; letter-spacing: .1em; }
+  .verdict { font-size: 1.05rem; margin-top: .6rem; color: var(--muted); }
+  .verdict b { color: var(--cream); }
+  .raffle {
+    margin: 1.3rem 0; padding: 1.1rem 1rem; text-align: center;
+    background: linear-gradient(135deg, rgba(224,49,49,.16), rgba(224,49,49,.05));
+    border: 1.5px dashed rgba(224,49,49,.55); border-radius: 1.1rem;
+  }
+  .raffle .ticket { font-size: 2rem; }
+  .raffle h2 { font-size: 1.05rem; margin-top: .35rem; color: var(--cream); }
+  .raffle p { color: var(--muted); font-size: .85rem; margin-top: .3rem; line-height: 1.5; }
+  .rank-line { font-family: var(--mono); font-size: .8rem; color: var(--green); margin-top: .5rem; min-height: 1.1em; }
+  .sync-note { font-size: .78rem; color: var(--gold); text-align: center; margin-top: .8rem; min-height: 1em; }
+  .share-row { display: flex; gap: .7rem; margin-top: 1.05rem; }
+  .confetti { position: fixed; inset: 0; pointer-events: none; z-index: 5; overflow: hidden; }
+  .confetti i { position: absolute; top: -8%; font-style: normal; animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(115vh) rotate(720deg); } }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══════ SPLASH ══════ -->
+  <section id="splash" class="screen active">
+    <div class="brand"><span class="jar">🫙</span><span class="word">kim<b>chi</b></span><span style="font-size:1.4rem">🌶️</span></div>
+    <div class="event-chip">CYpher 2026 · BOOTH GAME</div>
+    <h1>Star it.<br><span class="red">Quiz it.</span><br>Win a tee.</h1>
+    <p class="sub">Play the <strong>Kimchi Quiz</strong> — 10 questions, 15 seconds each.<br>Every player lands in the <strong>t-shirt raffle</strong> 🎁</p>
+
+    <div class="star-step">
+      <a class="btn star-btn" id="starRepo" href="https://github.com/getkimchi/kimchi" target="_blank" rel="noopener">
+        <span class="num">1</span>&nbsp;&nbsp;&nbsp;&nbsp;⭐ Star getkimchi/kimchi
+      </a>
+      <button class="btn ghost" id="toForm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp; — I starred it, let's play →</button>
+    </div>
+
+    <p class="fine">Raffle winners must show they ⭐ starred the repo to claim their tee —<br>it takes 4 seconds: <a href="https://github.com/getkimchi/kimchi" target="_blank" rel="noopener">github.com/getkimchi/kimchi</a></p>
+    <p class="hint">👀 Psst… answers hide on <a style="color:inherit" href="https://kimchi.dev" target="_blank" rel="noopener">kimchi.dev</a> and the repo README</p>
+  </section>
+
+  <!-- ══════ FORM ══════ -->
+  <section id="form" class="screen">
+    <div class="brand"><span class="jar">🫙</span><span class="word">kim<b>chi</b> quiz</span></div>
+    <h1>Who's playing?</h1>
+    <p class="sub">Your GitHub handle goes on the leaderboard &amp; your raffle ticket.</p>
+    <div class="card" style="padding:1.3rem 1.15rem">
+      <div class="field">
+        <label for="inName">Display name</label>
+        <input id="inName" maxlength="40" placeholder="Ada Lovelace" autocomplete="off">
+        <div class="err" id="errName"></div>
+      </div>
+      <div class="field">
+        <label for="inGithub">GitHub username</label>
+        <input id="inGithub" class="mono" maxlength="39" placeholder="octocat" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <div class="err" id="errGithub"></div>
+      </div>
+      <button class="btn" id="startQuiz">Start the quiz →</button>
+    </div>
+    <button class="back" id="backToSplash">← back</button>
+  </section>
+
+  <!-- ══════ QUIZ ══════ -->
+  <section id="quiz" class="screen">
+    <div class="quiz-top">
+      <div class="qnum">Q <b id="qNum">1</b> / 10 &nbsp;·&nbsp; <span id="scoreLive">0</span> pts</div>
+      <div class="streak" id="streak"></div>
+    </div>
+    <div class="timer-track"><div class="timer-fill" id="timerFill"></div></div>
+    <div class="q-card"><div class="q-text" id="qText"></div><div class="fact" id="qFact"></div></div>
+    <div class="opts" id="opts"></div>
+  </section>
+
+  <!-- ══════ RESULT ══════ -->
+  <section id="result" class="screen">
+    <div class="brand"><span class="jar">🫙</span><span class="word">kim<b>chi</b> quiz</span></div>
+    <div class="result-top">
+      <div class="score-big"><span id="finalScore">0</span><br><small>POINTS</small></div>
+      <div class="verdict" id="verdict"></div>
+    </div>
+    <div class="raffle">
+      <div class="ticket">🎟️</div>
+      <h2 id="raffleName">You're in the raffle!</h2>
+      <p>Winners are drawn at the booth — watch the TV.<br>Claim your tee by showing you <b>⭐ starred</b> the repo.</p>
+      <div class="rank-line" id="rankLine"></div>
+    </div>
+    <div class="sync-note" id="syncNote"></div>
+    <div class="share-row">
+      <button class="btn ghost" id="shareBtn">Share score</button>
+      <button class="btn" id="againBtn">Play again</button>
+    </div>
+  </section>
+
+</div>
+<div class="confetti" id="confetti"></div>
+
+<script>
+const QUESTIONS = [
+  { q: 'What is Kimchi?', o: ['A Korean pop band', 'A terminal coding agent', 'A cloud database', 'A salad bar chain'], a: 1, fact: 'Kimchi is a coding agent CLI powered by kimchi.dev — named after Korea\u2019s legendary fermented dish.' },
+  { q: 'Which command installs Kimchi on macOS with Homebrew?', o: ['brew install kimchi', 'brew install getkimchi/tap/kimchi', 'brew tap kimchi agent', 'sudo apt install kimchi'], a: 1, fact: 'Or the one-liner: curl -fsSL github.com/getkimchi/kimchi/releases/latest/download/install.sh | bash' },
+  { q: 'After installing, what one-time command sets up your API key?', o: ['kimchi login', 'kimchi init', 'kimchi setup', 'kimchi auth'], a: 2, fact: 'kimchi setup — then just run kimchi to launch the agent.' },
+  { q: 'What does Ctrl+P do inside Kimchi\u2019s interactive CLI?', o: ['Pastes code', 'Cycles through models', 'Prints the transcript', 'Opens preferences'], a: 1, fact: 'Ctrl+P cycles models — the last stop in the cycle is multi-model mode.' },
+  { q: 'Kimchi is powered by\u2026', o: ['One very large model', 'Multi-model orchestration', 'A room of interns', 'Quantum annealing'], a: 1, fact: 'Each task type — plan, build, review, explore — is routed to the right model for the job.' },
+  { q: 'What does Kimchi enforce BEFORE a request hits a model?', o: ['Hard budget caps', 'Karma points', 'Code style rules', 'Lunch breaks'], a: 0, fact: 'One enforcement layer: spending, data, deployment and routing — before any request leaves.' },
+  { q: 'Can Kimchi run inside your own perimeter?', o: ['No, cloud only', 'Only on Tuesdays', 'Yes — Kubernetes on AWS, GCP, Azure or on-prem', 'Only in Seoul'], a: 2, fact: 'Deploy serverless or inside your VPC — your code never leaves the perimeter.' },
+  { q: 'Does Kimchi let your prompts and code train the models?', o: ['Yes, by default', 'Only for enterprise', 'No — excluded from training', 'Just the funny bits'], a: 2, fact: 'Private by architecture: prompts, code and outputs stay out of model training.' },
+  { q: 'Which of these is a real Kimchi product for handing sessions to the cloud?', o: ['Kimchi Express', 'Teleport', 'Kimchi Van', 'Beam Me Up'], a: 1, fact: 'Teleport hands agent sessions off to the cloud. Also in the fridge: Studio, Inference, Code Review.' },
+  { q: 'What\u2019s the main vegetable in classic kimchi (the dish)?', o: ['Iceberg lettuce', 'Napa cabbage', 'Kale', 'Zucchini'], a: 1, fact: 'Napa cabbage + gochugaru + time = kimchi.' },
+  { q: 'What gives kimchi its signature red color?', o: ['Tomato paste', 'Gochugaru chili flakes', 'Beetroot', 'Food coloring'], a: 1, fact: 'Gochugaru — Korean chili flakes. Mildly spicy, deeply addictive.' },
+  { q: 'Traditional kimchi ferments in an earthenware jar called a\u2026', o: ['Onggi', 'Tagine', 'Dutch oven', 'Mason jar'], a: 0, fact: 'Onggi jars breathe while fermenting — centuries before CI/CD pipelines.' },
+  { q: 'Which of these does NOT belong in kimchi?', o: ['Garlic', 'Ginger', 'Scallions', 'Chocolate'], a: 3, fact: 'Garlic, ginger, scallions — yes. Chocolate — please, no.' },
+  { q: 'Kimchi jjigae is a beloved Korean\u2026', o: ['Stew', 'Dance', 'Board game', 'Karaoke style'], a: 0, fact: 'Kimchi jjigae: bubbling hot stew built on aged kimchi. Winter essential.' },
+  { q: 'On GitHub, what does starring a repo do?', o: ['Forks the code', 'Saves it to your stars and tells the maintainers you care', 'Gives you commit access', 'Downloads the code'], a: 1, fact: '⭐ = bookmark + love. It helps other devs discover the project.' },
+  { q: 'What\u2019s the keyboard shortcut to star the repo you\u2019re viewing on github.com?', o: ['Ctrl+S', 'Alt+S', 'S', 'Shift+*'], a: 2, fact: 'Just press S on any repo page. Try it on github.com/getkimchi/kimchi 👀' },
+  { q: 'What is a \u201cfork\u201d on GitHub?', o: ['Cutlery', 'Your own copy of a repo you can change freely', 'A broken build', 'A pull request'], a: 1, fact: 'Fork → tweak → open a pull request upstream. That\u2019s open source.' }
+];
+
+const $ = (s) => document.querySelector(s);
+const QUESTION_MS = 15000;
+let G = null; // game state
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
+  $('#' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function shuffle(a) { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; }
+
+/* ── splash → form ── */
+$('#toForm').addEventListener('click', () => {
+  const name = localStorage.getItem('kimchi_name') || '';
+  const gh = localStorage.getItem('kimchi_github') || '';
+  $('#inName').value = name; $('#inGithub').value = gh;
+  show('form');
+});
+$('#backToSplash').addEventListener('click', () => show('splash'));
+
+/* ── form validation ── */
+$('#startQuiz').addEventListener('click', () => {
+  const name = $('#inName').value.trim();
+  const gh = $('#inGithub').value.trim();
+  let ok = true;
+  $('#errName').textContent = ''; $('#errGithub').textContent = '';
+  if (name.length < 2) { $('#errName').textContent = 'What should we call you? (2+ chars)'; ok = false; }
+  if (!/^[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}$/.test(gh)) {
+    $('#errGithub').textContent = 'GitHub usernames: letters, numbers, single hyphens'; ok = false;
+  }
+  if (!ok) return;
+  localStorage.setItem('kimchi_name', name);
+  localStorage.setItem('kimchi_github', gh);
+  startQuiz(name, gh);
+});
+
+/* ── quiz engine ── */
+function startQuiz(name, gh) {
+  G = {
+    name, gh, qs: shuffle(QUESTIONS).slice(0, 10),
+    idx: 0, score: 0, correct: 0, streak: 0, maxStreak: 0,
+    started: Date.now(), locked: false, tStart: 0,
+    timer: null, timeLeft: QUESTION_MS
+  };
+  show('quiz');
+  renderQ();
+}
+
+function renderQ() {
+  const q = G.qs[G.idx];
+  G.locked = false; G.tStart = Date.now(); G.timeLeft = QUESTION_MS;
+  $('#qNum').textContent = G.idx + 1;
+  $('#scoreLive').textContent = G.score;
+  const st = $('#streak');
+  st.textContent = G.streak >= 2 ? '\uD83D\uDD25 ' + G.streak : '';
+  st.classList.remove('pop'); void st.offsetWidth; st.classList.add('pop');
+  $('#qText').textContent = q.q;
+  $('#qFact').className = 'fact';
+  const wrap = $('#opts'); wrap.innerHTML = '';
+  q.o.forEach((opt, i) => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.innerHTML = '<span class="key">' + 'ABCD'[i] + '</span><span>' + esc(opt) + '</span>';
+    b.addEventListener('click', () => answer(i));
+    wrap.appendChild(b);
+  });
+  const fill = $('#timerFill');
+  fill.className = 'timer-fill'; fill.style.width = '100%';
+  clearInterval(G.timer);
+  G.timer = setInterval(() => {
+    G.timeLeft = Math.max(0, QUESTION_MS - (Date.now() - G.tStart));
+    fill.style.width = (G.timeLeft / QUESTION_MS * 100) + '%';
+    if (G.timeLeft < 5000) fill.classList.add('danger');
+    if (G.timeLeft === 0) { clearInterval(G.timer); answer(-1); }
+  }, 100);
+}
+
+function answer(i) {
+  if (G.locked) return;
+  G.locked = true;
+  clearInterval(G.timer);
+  const q = G.qs[G.idx];
+  const btns = $('#opts').querySelectorAll('.opt');
+  btns.forEach((b) => (b.disabled = true));
+  const right = i === q.a;
+  if (right) {
+    G.streak++; G.maxStreak = Math.max(G.maxStreak, G.streak); G.correct++;
+    const speed = Math.round(50 * (G.timeLeft / QUESTION_MS));
+    const streakBonus = Math.min(G.streak, 5) * 20;
+    const pts = 100 + speed + streakBonus;
+    G.score += pts;
+    btns[q.a].classList.add('correct');
+    const p = document.createElement('div');
+    p.className = 'points-pop'; p.textContent = '+' + pts;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 950);
+  } else {
+    G.streak = 0;
+    if (i >= 0) btns[i].classList.add('wrong');
+    btns[q.a].classList.add('correct');
+    btns.forEach((b, j) => { if (j !== q.a && j !== i) b.classList.add('dim'); });
+  }
+  const fact = $('#qFact');
+  fact.textContent = (right ? '✔ ' : (i < 0 ? '⏰ Time! ' : '✘ ')) + q.fact;
+  fact.classList.add('show');
+  $('#scoreLive').textContent = G.score;
+  setTimeout(() => {
+    G.idx++;
+    if (G.idx < G.qs.length) renderQ();
+    else finish();
+  }, 1900);
+}
+
+/* ── finish & submit ── */
+async function finish() {
+  const dur = Math.round((Date.now() - G.started) / 1000);
+  $('#finalScore').textContent = G.score;
+  const v = G.correct >= 9 ? 'Fermentation genius 🧠' : G.correct >= 7 ? 'Properly seasoned 🌶️' : G.correct >= 5 ? 'Still fermenting… 🥬' : 'That kimchi was too spicy 😅';
+  $('#verdict').innerHTML = '<b>' + G.correct + '/10 correct</b> · ' + v + (G.maxStreak >= 3 ? ' · best streak ' + G.maxStreak + ' 🔥' : '');
+  $('#raffleName').textContent = G.name + ', you\u2019re in the raffle!';
+  $('#rankLine').textContent = ''; $('#syncNote').textContent = '';
+  show('result');
+  if (G.score >= 1800) confetti();
+  localStorage.setItem('kimchi_last', JSON.stringify({ name: G.name, gh: G.gh, score: G.score }));
+
+  const sent = await submitPlaySafe({ Name: G.name, GitHub: G.gh, Score: G.score, Correct: G.correct, DurationSec: dur });
+  if (!sent) $('#syncNote').textContent = '⚡ Spotty wifi — your score is queued and will sync automatically.';
+  try {
+    const lb = await apiGet('leaderboard');
+    const me = (lb.top || []).find((r) => r.github.toLowerCase() === G.gh.toLowerCase());
+    $('#rankLine').textContent = me ? '📺 You are #' + me.rank + ' on the live leaderboard' : (lb.players ? 'Playing against ' + lb.players + ' players at CYpher' : '');
+  } catch (e) { /* leaderboard unreachable — fine */ }
+}
+
+function confetti() {
+  const c = $('#confetti');
+  const bits = ['🌶️', '🥬', '⭐', '🔥', '🫙', '🥢'];
+  for (let i = 0; i < 26; i++) {
+    const el = document.createElement('i');
+    el.textContent = bits[Math.floor(Math.random() * bits.length)];
+    el.style.left = Math.random() * 100 + '%';
+    el.style.fontSize = (0.9 + Math.random() * 1.4) + 'rem';
+    el.style.animationDuration = (2 + Math.random() * 2.2) + 's';
+    el.style.animationDelay = (Math.random() * 0.7) + 's';
+    c.appendChild(el);
+  }
+  setTimeout(() => (c.innerHTML = ''), 5200);
+}
+
+/* ── result actions ── */
+$('#againBtn').addEventListener('click', () => startQuiz(G.name, G.gh));
+$('#shareBtn').addEventListener('click', async () => {
+  const text = 'I scored ' + G.score + ' on the Kimchi Quiz at CYpher 2026 🌶️⭐ github.com/getkimchi/kimchi';
+  const url = 'https://github.com/getkimchi/kimchi';
+  if (navigator.share) { try { await navigator.share({ title: 'Kimchi Quiz', text, url }); } catch (e) {} }
+  else { try { await navigator.clipboard.writeText(text); $('#syncNote').textContent = 'Copied to clipboard!'; } catch (e) {} }
+});
+
+/* retry anything queued from a flaky connection */
+flushPending().then((n) => { if (n > 0) console.log('synced', n, 'queued plays'); });
+</script>
+</body>
+</html>

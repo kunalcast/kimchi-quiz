@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Booth Admin — Kimchi × CYpher 2026</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎟️</text></svg>">
+<script src="config.js"></script>
+<script src="assets/app.js"></script>
+<style>
+  :root {
+    --bg: #0E0F13; --panel: #15171E; --panel2: #1B1E27; --line: #262A35;
+    --red: #E03131; --green: #51CF66; --gold: #FFD43B; --cream: #F5F0E6; --text: #EDEEF2; --muted: #9BA0AE;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+    background-image: radial-gradient(70vw 30vh at 50% -10%, rgba(224,49,49,.12), transparent 60%); }
+  .wrap { max-width: 56rem; margin: 0 auto; padding: 1.5rem 1.2rem 4rem; }
+
+  /* pin gate */
+  #gate { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; }
+  #gate h1 { font-size: 1.5rem; letter-spacing: -.02em; }
+  #gate h1 b { color: var(--red); }
+  #gate input { font-family: var(--mono); text-align: center; font-size: 1.4rem; letter-spacing: .3em; width: 11rem; }
+  #gate .note { color: var(--muted); font-size: .8rem; }
+
+  .hidden { display: none !important; }
+  h1 { font-size: 1.6rem; letter-spacing: -.02em; margin-bottom: .3rem; }
+  h1 b { color: var(--red); }
+  .sub { color: var(--muted); font-size: .9rem; margin-bottom: 1.4rem; }
+  .sub b { color: var(--cream); }
+
+  input { background: var(--panel); border: 1.5px solid var(--line); color: var(--text);
+    font-size: 1rem; padding: .7rem .9rem; border-radius: .7rem; outline: none; font-family: inherit; }
+  input:focus { border-color: var(--red); }
+  .btn { border: 0; cursor: pointer; background: var(--red); color: #fff; font-weight: 800; font-size: .95rem;
+    padding: .75rem 1.3rem; border-radius: .7rem; font-family: inherit; transition: filter .15s, transform .08s; }
+  .btn:hover { filter: brightness(1.1); } .btn:active { transform: scale(.98); }
+  .btn.ghost { background: transparent; border: 1.5px solid var(--line); color: var(--text); font-weight: 600; }
+  .btn.green { background: #2F9E44; }
+
+  .bar { display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; background: var(--panel);
+    border: 1px solid var(--line); border-radius: .9rem; padding: .9rem 1rem; margin-bottom: 1.3rem; }
+  .bar input { width: 5.5rem; }
+  .stat { font-family: var(--mono); font-size: .8rem; color: var(--muted); margin-left: auto; }
+  .stat b { color: var(--green); }
+
+  /* winners */
+  .winners { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: .9rem; }
+  .win { background: var(--panel); border: 1px solid var(--line); border-radius: 1rem; padding: 1rem 1.1rem;
+    animation: rise .5s ease backwards; position: relative; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+  .win .ord { position: absolute; top: .7rem; right: .9rem; font-family: var(--mono); font-size: .75rem; color: var(--muted); }
+  .win .name { font-size: 1.15rem; font-weight: 800; color: var(--cream); }
+  .win .gh { font-family: var(--mono); font-size: .8rem; color: var(--muted); margin: .15rem 0 .7rem; }
+  .win .actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .mini { font-size: .75rem; padding: .45rem .7rem; border-radius: .55rem; border: 1.5px solid var(--line);
+    background: transparent; color: var(--muted); cursor: pointer; font-family: inherit; font-weight: 700; }
+  .mini:hover { border-color: var(--muted); }
+  .mini.ok { color: var(--green); border-color: rgba(81,207,102,.5); }
+  .mini.no { color: var(--red); border-color: rgba(224,49,49,.5); }
+  .mini.claimed { color: var(--gold); border-color: rgba(255,212,59,.55); background: rgba(255,212,59,.08); }
+  .win.claimed-out { opacity: .55; }
+  .win .status { margin-top: .55rem; font-size: .78rem; min-height: 1.1em; color: var(--muted); }
+  .win .status.y { color: var(--green); } .win .status.n { color: var(--red); } .win .status.w { color: var(--gold); }
+
+  .toolbar { display: flex; gap: .7rem; margin-top: 1.3rem; flex-wrap: wrap; }
+  .toast { position: fixed; bottom: 1.2rem; left: 50%; transform: translateX(-50%); background: var(--panel2);
+    border: 1px solid var(--line); border-radius: .8rem; padding: .7rem 1.2rem; font-size: .85rem; z-index: 30;
+    animation: rise .25s ease; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>🫙 kim<b>chi</b> — booth admin</h1>
+  <p class="note">This page draws raffle winners &amp; verifies ⭐</p>
+  <input id="pin" type="password" inputmode="numeric" placeholder="PIN" autofocus>
+  <button class="btn" id="pinGo">Enter</button>
+</div>
+
+<div class="wrap hidden" id="main">
+  <h1>🎟️ Raffle — <b>KIMCHI × CYpher 2026</b></h1>
+  <p class="sub">Winners are drawn from all quiz players (one entry per GitHub user).<br>
+    Hand a tee only after the winner shows they <b>⭐ starred github.com/getkimchi/kimchi</b>.</p>
+
+  <div class="bar">
+    <input id="drawCount" type="number" min="1" max="30" value="5">
+    <button class="btn" id="drawBtn">🎁 Draw winners</button>
+    <button class="btn ghost" id="reloadBtn">↻ Refresh entries</button>
+    <span class="stat" id="poolStat">—</span>
+  </div>
+
+  <div class="winners" id="winners"></div>
+
+  <div class="toolbar">
+    <button class="btn ghost" id="csvBtn">⬇ Export winners CSV</button>
+    <button class="btn ghost" id="clearBtn" style="color:var(--red)">Reset winners list</button>
+  </div>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+
+/* ── pin gate (soft — this page only manages a t-shirt raffle) ── */
+$('#pinGo').addEventListener('click', tryPin);
+$('#pin').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryPin(); });
+function tryPin() {
+  if ($('#pin').value === String(CONFIG.ADMIN_PIN)) {
+    localStorage.setItem('kimchi_admin', '1');
+    $('#gate').classList.add('hidden');
+    $('#main').classList.remove('hidden');
+    init();
+  } else { $('#pin').value = ''; $('#pin').placeholder = 'try again'; }
+}
+if (localStorage.getItem('kimchi_admin') === '1') { $('#gate').classList.add('hidden'); $('#main').classList.remove('hidden'); init(); }
+
+/* ── state ── */
+let pool = [];                                    // [{name, github}]
+const WKEY = 'kimchi_winners';
+const loadWinners = () => JSON.parse(localStorage.getItem(WKEY) || '[]');
+const saveWinners = (w) => localStorage.setItem(WKEY, JSON.stringify(w));
+
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2600);
+}
+
+async function init() { renderWinners(); await loadPool(); }
+
+async function loadPool() {
+  $('#poolStat').textContent = 'loading…';
+  try {
+    const d = await apiGet('raffle');
+    pool = d.entries || [];
+    const winners = loadWinners();
+    const wonSet = new Set(winners.map((w) => String(w.github).toLowerCase()));
+    const avail = pool.filter((p) => !wonSet.has(String(p.github).toLowerCase()));
+    $('#poolStat').innerHTML = '<b>' + pool.length + '</b> entries · ' + avail.length + ' still winnable';
+  } catch (e) {
+    $('#poolStat').textContent = '⚠ could not reach backend — retry';
+  }
+}
+
+/* ── draw ── */
+$('#drawBtn').addEventListener('click', async () => {
+  const n = Math.max(1, Math.min(30, parseInt($('#drawCount').value, 10) || 5));
+  const winners = loadWinners();
+  const wonSet = new Set(winners.map((w) => String(w.github).toLowerCase()));
+  const avail = pool.filter((p) => !wonSet.has(String(p.github).toLowerCase()));
+  if (!avail.length) { toast('No winnable entries left — refresh or reset the list'); return; }
+  const take = Math.min(n, avail.length);
+  for (let i = avail.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [avail[i], avail[j]] = [avail[j], avail[i]]; }
+  const picked = avail.slice(0, take).map((p, i) => ({ github: p.github, name: p.name, drawnAt: new Date().toISOString(), starred: null, claimed: false }));
+  saveWinners(winners.concat(picked));
+  renderWinners(picked);
+  await loadPool();
+  toast('🎁 Drew ' + take + (take === 1 ? ' winner' : ' winners') + ' — verify their ⭐!');
+});
+
+$('#reloadBtn').addEventListener('click', loadPool);
+
+/* ── winner cards ── */
+function renderWinners(animateFrom) {
+  const winners = loadWinners();
+  const holder = $('#winners');
+  holder.innerHTML = '';
+  if (!winners.length) {
+    holder.innerHTML = '<p style="color:var(--muted);grid-column:1/-1">No winners drawn yet — hit the red button when it\u2019s raffle time 🎁</p>';
+    return;
+  }
+  const startIdx = animateFrom ? winners.length - animateFrom.length : -1;
+  winners.forEach((w, i) => {
+    const card = document.createElement('div');
+    card.className = 'win' + (w.claimed ? ' claimed-out' : '');
+    if (animateFrom && i >= startIdx) card.style.animationDelay = (i - startIdx) * 0.28 + 's';
+    const gh = esc(w.github), nm = esc(w.name);
+    card.innerHTML =
+      '<div class="ord">#' + (i + 1) + ' · ' + new Date(w.drawnAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '</div>' +
+      '<div class="name">' + nm + '</div>' +
+      '<div class="gh">@' + gh + '</div>' +
+      '<div class="actions">' +
+        '<button class="mini" data-v="' + gh + '">Verify ⭐</button>' +
+        '<button class="mini" data-p="' + gh + '">Profile ↗</button>' +
+        '<button class="mini" data-c="' + gh + '">' + (w.claimed ? 'Unclaim' : 'Claimed ✓') + '</button>' +
+      '</div>' +
+      '<div class="status" id="st-' + gh.toLowerCase() + '">' +
+        (w.starred === true ? '✓ starred the repo' : w.starred === false ? '✗ no star found — make them star it now' : w.claimed ? 'tee handed out' : '') +
+      '</div>';
+    holder.appendChild(card);
+  });
+  holder.querySelectorAll('[data-v]').forEach((b) => b.addEventListener('click', () => verifyStar(b.dataset.v, b)));
+  holder.querySelectorAll('[data-p]').forEach((b) => b.addEventListener('click', () => window.open('https://github.com/' + b.dataset.p + '?tab=stars', '_blank')));
+  holder.querySelectorAll('[data-c]').forEach((b) => b.addEventListener('click', () => toggleClaim(b.dataset.c)));
+}
+
+async function verifyStar(gh, btn) {
+  const status = $('#st-' + gh.toLowerCase());
+  btn.textContent = 'Checking…'; btn.disabled = true;
+  try {
+    const d = await apiGet('starred', { user: gh });
+    const winners = loadWinners();
+    const w = winners.find((x) => x.github === gh);
+    if (d.result === 'success') {
+      if (w) { w.starred = !!d.starred; saveWinners(winners); }
+      btn.textContent = d.starred ? 'Verified ✓' : 'No star ✗';
+      btn.className = 'mini ' + (d.starred ? 'ok' : 'no');
+      status.className = 'status ' + (d.starred ? 'y' : 'n');
+      status.textContent = d.starred ? '✓ starred the repo — hand them a tee!' : '✗ no star found — have them star the repo & re-check';
+    } else {
+      btn.textContent = 'Manual ↗'; btn.className = 'mini';
+      status.className = 'status w';
+      status.textContent = d.result === 'rate_limited' ? '⚠ GitHub rate limit — check their profile manually' : '⚠ could not check — open their stars tab';
+      window.open('https://github.com/' + gh + '?tab=stars', '_blank');
+    }
+  } catch (e) {
+    btn.textContent = 'Retry ⭐'; btn.disabled = false;
+    status.className = 'status w'; status.textContent = '⚠ backend unreachable — retry';
+  }
+}
+
+function toggleClaim(gh) {
+  const winners = loadWinners();
+  const w = winners.find((x) => x.github === gh);
+  if (!w) return;
+  w.claimed = !w.claimed;
+  saveWinners(winners);
+  renderWinners();
+}
+
+/* ── export / reset ── */
+$('#csvBtn').addEventListener('click', () => {
+  const winners = loadWinners();
+  if (!winners.length) { toast('Nothing to export yet'); return; }
+  const csv = 'github,name,drawn_at,starred,claimed\n' + winners.map((w) =>
+    [w.github, '"' + String(w.name).replace(/"/g, '""') + '"', w.drawnAt, w.starred === null ? '' : w.starred, w.claimed].join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = 'kimchi-cypher-winners.csv';
+  a.click();
+});
+
+$('#clearBtn').addEventListener('click', () => {
+  if (confirm('Reset the winners list? (The Google Sheet keeps every play — this only clears local winner tracking.)')) {
+    localStorage.removeItem(WKEY);
+    renderWinners(); loadPool();
+  }
+});
+</script>
+</body>
+</html>
