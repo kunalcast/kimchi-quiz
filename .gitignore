@@ -1,3 +1,5 @@
 tools/mock-db.json
 .DS_Store
 .kimchi/
+# admin page is LOCAL-ONLY (runs from this folder on the booth Mac, never deployed)
+admin.html

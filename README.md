@@ -15,12 +15,16 @@ Booth Mac         → admin.html   draw winners · verify ⭐ · track claims
 
 | File | What it is |
 |---|---|
-| `play.html` | Mobile quiz (entry gate → 10 Qs, 15s each, speed + streak bonus) |
-| `index.html` | TV display — open fullscreen, cast from the Mac |
-| `admin.html` | Booth tools — raffle draw, star verification, winners CSV |
+| `play.html` | Mobile quiz (entry gate → 10 Qs, 15s each, speed + streak bonus) — **deployed** |
+| `index.html` | TV display — open fullscreen, cast from the Mac — **deployed** |
+| `admin.html` | Booth tools — raffle draw, star verification, winners CSV — **LOCAL-ONLY, never deployed** |
 | `config.js` | **The one file you edit** (endpoint URL, draw times, PIN) |
 | `apps-script/Code.gs` | The backend — paste into the Google Sheet |
 | `tools/mock-server.py` | Local mock backend for testing |
+
+> 🔒 `admin.html` is gitignored on purpose: it only exists in this folder on the booth
+> Mac and is never published to GitHub Pages. Double-click it to open (`file://`).
+> Its PIN (`config.js → ADMIN_PIN`) guards against shoulder-surfing at the booth.
 
 ---
 
@@ -68,8 +72,9 @@ Edit [`config.js`](config.js) → replace `PASTE_APPS_SCRIPT_EXEC_URL_HERE` with
    a cable is more reliable than conference wifi)
 4. Leave it running. It polls every 10 s and heals itself if wifi drops (shows "reconnecting").
 
-### Drawing winners (admin.html)
-1. On the booth Mac, open **`/admin.html`** (not linked anywhere; PIN is in `config.js`)
+### Drawing winners (admin.html — LOCAL-ONLY)
+1. On the booth Mac, double-click **`admin.html`** in this project folder (opens as `file://…`, PIN in `config.js`).
+   It is intentionally **not** on the website — nobody outside the booth can reach it.
 2. When it's raffle time: set the count (e.g. 5) → **🎁 Draw winners**
 3. Each winner card → **Verify ⭐** (checks their GitHub against the repo via the backend)
    - ✅ verified → hand them a tee → click **Claimed ✓**
