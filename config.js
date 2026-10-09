@@ -17,7 +17,7 @@ const CONFIG = {
   DRAW_TIMES: ['15:00', '17:00', '19:00'],
 
   // Booth admin PIN (soft gate for admin.html — change me)
-  ADMIN_PIN: '2026',
+  ADMIN_PIN: '565656',
 
   // Leave empty to auto-derive the QR target from this site's origin.
   QUIZ_URL: ''
