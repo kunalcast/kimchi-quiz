@@ -38,6 +38,11 @@
   .sub { text-align: center; color: var(--muted); margin: .7rem 0 1.6rem; font-size: .95rem; line-height: 1.5; }
   .sub strong { color: var(--cream); }
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 1.1rem; padding: 1.15rem; }
+  .tee-strip { display: flex; align-items: center; gap: .8rem; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 1rem; padding: .7rem .9rem; margin: 0 0 1.1rem; text-align: left; }
+  .tee-strip img { width: 92px; border-radius: .6rem; display: block; flex: 0 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,.25); }
+  .tee-strip p { font-size: .86rem; color: var(--muted); line-height: 1.35; margin: 0; }
+  .tee-strip p b { color: var(--cream); }
   .btn {
     display: block; width: 100%; border: 0; cursor: pointer; text-decoration: none;
     background: var(--red); color: #fff; font-weight: 800; font-size: 1.05rem;
@@ -146,6 +151,11 @@
     <h1>Star it.<br><span class="red">Quiz it.</span><br>Win a tee.</h1>
     <p class="sub">One play per account — make it count.</p>
 
+    <div class="tee-strip">
+      <img src="assets/tee-mockup-thumb.jpg" alt="Kimchi t-shirt">
+      <p><b>🎁 Win this tee</b> — every player is in the raffle.<br>20+ up for grabs at the booth today 👕</p>
+    </div>
+
     <div class="star-step">
       <a class="btn star-btn" id="starRepo" href="https://github.com/getkimchi/kimchi" target="_blank" rel="noopener">
         <span class="num">1</span>&nbsp;&nbsp;&nbsp;&nbsp;⭐ Star getkimchi/kimchi
@@ -209,6 +219,10 @@
       <h2 id="raffleName">You're in the raffle!</h2>
       <p>Winners are drawn at the booth — watch the TV.<br>Claim your tee by showing you <b>⭐ starred</b> the repo.</p>
       <div class="rank-line" id="rankLine"></div>
+    </div>
+    <div class="tee-strip">
+      <img src="assets/tee-mockup-thumb.jpg" alt="Kimchi t-shirt">
+      <p>👕 This tee could be yours — <b>winners drawn at the booth</b> 🎁<br>Watch the TV &amp; listen for your handle.</p>
     </div>
     <div class="sync-note" id="syncNote"></div>
     <div class="share-row">

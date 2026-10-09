@@ -100,7 +100,7 @@ your schedule (24h clock, booth-local time).
 | Score didn't sync from a phone | The play is queued on that phone; it syncs when the page is next opened on wifi. |
 | Verify ⭐ rate-limited | Use **Profile ↗** and eyeball the stars tab. |
 | Changed Apps Script code | **Deploy → Manage deployments → ✏️ → New version → Deploy** (edits don't auto-update). Same URL. |
-| Star count on TV frozen | Backend caches it 2 min; also tolerates offline. Give it a minute. |
+| Star count on TV frozen | Backend caches it 60 s; also tolerates offline. Give it a minute. |
 
 ## Notes & guarantees
 
@@ -108,5 +108,8 @@ your schedule (24h clock, booth-local time).
   handle (later POSTs are harmless no-ops), and the form warns players to double-check their handle.
 - **Privacy:** name + GitHub username + score are collected, plus an optional email
   (raffle/product updates), all in your own Google Sheet.
+- **Tee artwork:** the prize mockup lives at `assets/tee-mockup.jpg` (TV card) and
+  `assets/tee-mockup-thumb.jpg` (phone strips) — swap in a photo of your real t-shirt
+  using the same filenames and every page picks it up.
 - The Google Sheet is the source of truth — admin page winner state lives in that Mac's browser
   (`Reset winners list` only clears local tracking).

@@ -51,24 +51,25 @@
 
   /* ── main grid ── */
   main { flex: 1; display: flex; gap: 40px; padding-top: 30px; min-height: 0; }
-  .left { flex: 0 0 620px; display: flex; flex-direction: column; gap: 22px; }
-  .qr-card { background: #fff; border-radius: 26px; padding: 30px 34px 24px; text-align: center; }
-  .qr-card svg { display: block; margin: 0 auto; }
-  .qr-card .scan { color: #111; font-weight: 900; font-size: 26px; margin-top: 14px; letter-spacing: -.01em; }
+  .left { flex: 0 0 620px; display: flex; flex-direction: column; gap: 20px; }
+  .qr-card { background: #fff; border-radius: 26px; padding: 24px 28px 20px; }
+  .qr-split { display: flex; align-items: center; justify-content: center; gap: 26px; }
+  .qr-card svg { display: block; }
+  .tee-shot { width: 240px; border-radius: 14px; display: block; flex: 0 0 auto; box-shadow: 0 8px 22px rgba(0,0,0,.10); }
+  .qr-card .scan { color: #111; font-weight: 900; font-size: 25px; margin-top: 12px; text-align: center; letter-spacing: -.01em; }
   .qr-card .scan b { color: var(--red-deep); }
-  .steps { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 26px 30px; display: flex; flex-direction: column; gap: 18px; }
-  .step { display: flex; align-items: center; gap: 18px; }
-  .step .n { flex: 0 0 44px; height: 44px; border-radius: 50%; background: var(--panel2); border: 1.5px solid var(--line);
-    display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; color: var(--cream); }
-  .step p { font-size: 22px; color: var(--muted); }
+  .steps { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 20px 28px; display: flex; flex-direction: column; gap: 14px; }
+  .step { display: flex; align-items: center; gap: 16px; }
+  .step .n { flex: 0 0 40px; height: 40px; border-radius: 50%; background: var(--panel2); border: 1.5px solid var(--line);
+    display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 19px; color: var(--cream); }
+  .step p { font-size: 20px; color: var(--muted); }
   .step p b { color: var(--cream); }
   .step.s1 .n { border-color: rgba(224,49,49,.6); color: var(--red); }
   .drawcard { margin-top: auto; background: linear-gradient(135deg, rgba(255,82,29,.18), rgba(255,82,29,.05));
-    border: 2px dashed rgba(255,82,29,.6); border-radius: 22px; padding: 24px 30px; text-align: center; }
-  .drawcard .gift { font-size: 40px; }
-  .drawcard h2 { color: var(--cream); font-size: 25px; margin-top: 6px; font-weight: 800; letter-spacing: -.01em; }
-  .drawcard .cd { font-family: var(--mono); font-size: 52px; font-weight: 700; color: var(--gold); margin-top: 8px; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
-  .drawcard p { color: var(--muted); font-size: 19px; margin-top: 8px; }
+    border: 2px dashed rgba(255,82,29,.6); border-radius: 22px; padding: 18px 30px 20px; text-align: center; }
+  .drawcard h2 { color: var(--cream); font-size: 23px; font-weight: 800; letter-spacing: -.01em; }
+  .drawcard .cd { font-family: var(--mono); font-size: 46px; font-weight: 700; color: var(--gold); margin-top: 6px; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+  .drawcard p { color: var(--muted); font-size: 18px; margin-top: 6px; }
 
   /* ── leaderboard ── */
   .right { flex: 1; display: flex; flex-direction: column; min-width: 0; }
@@ -138,8 +139,11 @@
     <main>
       <div class="left">
         <div class="qr-card">
-          <div id="qrBox"></div>
-          <div class="scan">Scan to play &amp; win a <b>Kimchi tee</b> 🎁</div>
+          <div class="qr-split">
+            <div id="qrBox"></div>
+            <img class="tee-shot" src="assets/tee-mockup.jpg" alt="The Kimchi tee you can win">
+          </div>
+          <div class="scan">Scan → play → win this <b>Kimchi tee</b> 🎁</div>
         </div>
         <div class="steps">
           <div class="step s1"><div class="n">1</div><p><b>Star</b> github.com/getkimchi/kimchi</p></div>
@@ -147,8 +151,7 @@
           <div class="step"><div class="n">3</div><p>Land on this <b>leaderboard</b> &amp; enter the <b>raffle</b> 🎟️</p></div>
         </div>
         <div class="drawcard">
-          <div class="gift">🎁</div>
-          <h2 id="drawTitle">T-SHIRT RAFFLE</h2>
+          <h2 id="drawTitle">🎁 T-SHIRT RAFFLE</h2>
           <div class="cd" id="drawCd">--:--:--</div>
           <p id="drawSub">Every player is in the draw — winners drawn at the booth</p>
         </div>
@@ -161,8 +164,8 @@
         </div>
         <div class="lb-rows" id="lbRows">
           <div class="empty-lb" id="emptyLb">
-            <div class="icon">🥬</div>
-            <p>Be the <b>first player</b> — scan the code!</p>
+            <div class="icon">👕</div>
+            <p>Win <b>this tee</b> — be the first to play! 🎁</p>
           </div>
         </div>
       </div>
@@ -202,7 +205,7 @@ try {
   const qr = qrcode(0, 'M');
   qr.addData(quizUrl());
   qr.make();
-  $('#qrBox').innerHTML = qr.createSvgTag(14, 20);
+  $('#qrBox').innerHTML = qr.createSvgTag(9, 16);
 } catch (e) { $('#qrBox').textContent = 'QR failed — check config'; }
 
 /* ── header + config text ── */
@@ -225,7 +228,7 @@ setInterval(() => {
   if (!t) { $('#drawCd').textContent = 'AT THE BOOTH'; return; }
   const ms = t - new Date();
   if (ms <= 0) { $('#drawTitle').textContent = '🎉 DRAW HAPPENING NOW'; $('#drawCd').textContent = 'AT THE BOOTH'; return; }
-  $('#drawTitle').textContent = 'T-SHIRT RAFFLE';
+  $('#drawTitle').textContent = '🎁 T-SHIRT RAFFLE';
   const h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, s = Math.floor(ms / 1000) % 60;
   $('#drawCd').textContent = [h, m, s].map((x) => String(x).padStart(2, '0')).join(':');
 }, 1000);
@@ -269,7 +272,7 @@ function renderBoard(lb) {
    labels) so the marquee animation never restarts on idle polls. */
 let lastLb = null;
 const starEvents = [];
-let coreSig = '', labelSig = '', lastRebuildAt = 0;
+let coreSig = '', labelSig = '', lastRebuildAt = 0, tickerBuilt = false;
 
 function timeAgoShort(t) {
   const m = Math.floor((Date.now() - t) / 60000);
@@ -296,12 +299,13 @@ function renderTicker() {
     html: '⭐ someone just starred <b>getkimchi/kimchi</b> · ' + timeAgoShort(e.t)
   }));
   items.sort((a, b) => b.t - a.t);
-  const msg = '⭐ Star <b>github.com/getkimchi/kimchi</b> &nbsp;·&nbsp; 🎁 Every quiz player is in the t-shirt raffle &nbsp;·&nbsp; 👀 Quiz answers hide on <b>kimchi.dev</b>';
+  const msg = '👕 <b>Win this exact tee</b> — ⭐ star github.com/getkimchi/kimchi, beat the quiz, you\'re in the draw 🎁 &nbsp;·&nbsp; 👀 Quiz answers hide on <b>kimchi.dev</b>';
   const spans = items.map((i) => '<span>' + i.html + '</span>').join('') + '<span>' + msg + '</span>';
   const core = items.map((i) => i.html.replace(/ · (just now|\d+m ago)/, '')).join('|');
   const labels = items.map((i) => (i.t ? timeAgoShort(i.t) : '')).join(',');
   const now = Date.now();
-  if (core !== coreSig || (labels !== labelSig && now - lastRebuildAt > 60000)) {
+  if (!tickerBuilt || core !== coreSig || (labels !== labelSig && now - lastRebuildAt > 60000)) {
+    tickerBuilt = true;
     coreSig = core; labelSig = labels; lastRebuildAt = now;
     $('#ticker').innerHTML = spans + spans; // duplicated for seamless loop
     window.__tickerRebuilds = (window.__tickerRebuilds || 0) + 1;
