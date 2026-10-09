@@ -11,7 +11,7 @@ const CONFIG = {
   EVENT_NAME: 'CYpher 2026',
 
   // ⬇ Paste your Apps Script web app URL here (from Deploy → Web app)
-  ENDPOINT: 'https://script.google.com/macros/s/AKfycbxe2daqzPfXdbtupLHUHul6wWWevor2cO2LePNDsrpu1mg46Ck3UmcwV-_FLHywT8H7/exec',
+  ENDPOINT: 'https://script.google.com/macros/s/AKfycbzMmJJ1XxUbnNOR2sVt_O4ydODukhS-sMSV9fDCIh5wYQG84emyFkndUJo9ZFDnGI_e/exec',
 
   // Raffle draw times (24h clock, booth-local time). TV counts down to the next one.
   DRAW_TIMES: ['15:00', '17:00', '19:00'],
