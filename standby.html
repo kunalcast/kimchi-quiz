@@ -70,24 +70,25 @@
 </div>
 
 <div class="wrap hidden" id="main">
-  <h1>⏳ Standby — <b>next in line for a tee</b></h1>
-  <p class="sub">Top <b id="winN">10</b> win tees. If a winner isn't at the booth, call the next person down.
-    Verify ⭐ before handing over. Refreshes every 10 s.</p>
+  <h1>⏳ Standby — <b>behind the podium</b></h1>
+  <p class="sub">The game: <b>top 3 → win a tee</b>, while the 10 in stock last.<br>
+    Absent or disputed winner? Call the next person down — Verify ⭐ before handing over. Refreshes every 10 s.</p>
   <div class="metabar">
     <span id="meta">loading…</span>
     <button class="mini" id="resetAbsent">clear absent marks</button>
   </div>
 
-  <div class="sect-title">🏆 Tee zone — they claim first</div>
+  <div class="sect-title">🏆 Podium — these players take tees</div>
   <div id="zone"></div>
 
-  <div class="sect-title">⏳ Next in line — hand tees here if winners are absent</div>
+  <div class="sect-title">⏳ Next in line — call down for absentees &amp; disputes</div>
   <div id="next"></div>
 </div>
 
 <script>
 const $ = (s) => document.querySelector(s);
 const WIN_N = CONFIG.TEES_COUNT || 10;
+const WIN_TOP = CONFIG.WIN_TOP || 3;
 const AKEY = 'kimchi_standby_absent';
 const loadAbsent = () => new Set(JSON.parse(localStorage.getItem(AKEY) || '[]'));
 const saveAbsent = (s) => localStorage.setItem(AKEY, JSON.stringify([...s]));
@@ -107,7 +108,6 @@ function tryPin() {
 function enter() {
   $('#gate').classList.add('hidden');
   $('#main').classList.remove('hidden');
-  $('#winN').textContent = WIN_N;
   loadBoard();
 }
 
@@ -117,7 +117,8 @@ async function loadBoard() {
     const [lb, raf] = await Promise.all([apiGet('leaderboard'), apiGet('raffle')]);
     const emailMap = {}; (raf.entries || []).forEach((e) => { emailMap[String(e.github).toLowerCase()] = e.email || ''; });
     rows = (lb.top || []).map((t) => ({ ...t, email: emailMap[String(t.github).toLowerCase()] || '' }));
-    $('#meta').innerHTML = 'live · <b>' + (lb.players || 0) + '</b> players · top ' + rows.length + ' shown · top ' + WIN_N + ' get tees';
+    $('#meta').innerHTML = 'live · <b>' + (lb.players || 0) + '</b> players · top score ' +
+      (rows[0] ? Number(rows[0].score).toLocaleString() + ' (👑 ' + esc(rows[0].name) + ')' : '—');
     render();
   } catch (e) {
     $('#meta').textContent = '⚠ backend unreachable — retrying every 10 s';
@@ -169,12 +170,11 @@ function rowEl(r, isNext) {
 }
 
 function render() {
-  $('#winN').textContent = WIN_N;
   const zone = $('#zone'), next = $('#next');
   zone.innerHTML = ''; next.innerHTML = '';
-  rows.slice(0, WIN_N).forEach((r) => zone.appendChild(rowEl(r, false)));
-  const rest = rows.slice(WIN_N);
-  if (!rest.length) next.innerHTML = '<div class="srow"><span class="gh">No backups yet — waiting for players past the top ' + WIN_N + '.</span></div>';
+  rows.slice(0, WIN_TOP).forEach((r) => zone.appendChild(rowEl(r, false)));
+  const rest = rows.slice(WIN_TOP);
+  if (!rest.length) next.innerHTML = '<div class="srow"><span class="gh">No backups yet — waiting for players past the podium.</span></div>';
   rest.forEach((r) => next.appendChild(rowEl(r, true)));
 }
 

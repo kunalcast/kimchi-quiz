@@ -153,7 +153,7 @@
 
     <div class="tee-strip">
       <img src="assets/tee-mockup-thumb.jpg" alt="Kimchi t-shirt">
-      <p><b>🎁 Win this tee</b> — land in the <b>top 10</b> and it’s yours.<br><b id="teeGive">10 t-shirts</b> to give away at the booth today 👕</p>
+      <p><b>🎁 Win this tee</b> — make it to the <b>top 3</b>!<br><b id="teeGive">10 t-shirts</b> in stock — while they last 👕</p>
     </div>
 
     <div class="star-step">
@@ -215,14 +215,14 @@
       <div class="verdict" id="verdict"></div>
     </div>
     <div class="raffle">
-      <div class="ticket">🏆</div>
+      <div class="ticket">👑</div>
       <h2 id="raffleName">You're on the board!</h2>
-      <p><b>Top 10 get the Kimchi tee</b> — watch the TV &amp; defend your rank.<br>Claim yours by showing you <b>⭐ starred</b> the repo.</p>
+      <p><b>Top 3 win</b> while the <b>10</b> last.<br>Claim at the booth by showing you <b>⭐ starred</b> the repo.</p>
       <div class="rank-line" id="rankLine"></div>
     </div>
     <div class="tee-strip">
       <img src="assets/tee-mockup-thumb.jpg" alt="Kimchi t-shirt">
-      <p>👕 This tee could be yours — <b>finish in the top 10</b> 🎁<br>Claims verified at the booth: show your ⭐.</p>
+      <p>👕 This tee could be yours — <b>finish in the top 3</b> 🎁<br>Claims verified at the booth: show your ⭐.</p>
     </div>
     <div class="sync-note" id="syncNote"></div>
     <div class="share-row">
@@ -394,9 +394,11 @@ async function finish() {
   try {
     const lb = await apiGet('leaderboard');
     const me = (lb.top || []).find((r) => r.github.toLowerCase() === G.gh.toLowerCase());
-    const winN = CONFIG.TEES_COUNT || 10;
-    if (me && me.rank <= winN) $('#rankLine').textContent = '👕 You\u2019re #' + me.rank + ' — IN THE TEE ZONE! Hold your spot!';
-    else if (me) $('#rankLine').textContent = '📺 You\u2019re #' + me.rank + ' — top ' + winN + ' get the tee… so close!';
+    const winTop = CONFIG.WIN_TOP || 3;
+    const target = (lb.top || [])[winTop - 1];
+    if (me && me.rank <= winTop) $('#rankLine').textContent = '🏆 You\u2019re #' + me.rank + ' — ON THE PODIUM! Claim your tee while stock lasts!';
+    else if (me && target) $('#rankLine').textContent = '📺 You\u2019re #' + me.rank + ' — score >' + Number(target.score).toLocaleString() + ' pts to bust into the top ' + winTop + '!';
+    else if (me) $('#rankLine').textContent = '📺 You\u2019re #' + me.rank + ' — podium = top ' + winTop + ', go seize it!';
     else $('#rankLine').textContent = lb.players ? 'Chasing ' + lb.players + ' players at CYpher' : '';
   } catch (e) { /* leaderboard unreachable — fine */ }
 }

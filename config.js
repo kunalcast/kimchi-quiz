@@ -1,9 +1,10 @@
 // ── Kimchi × CYpher 2026 booth config ────────────────────────────────
 // The ONLY file you need to edit after setup:
 //   1. ENDPOINT — paste your Apps Script web app URL (ends with /exec)
-//   2. TEES_COUNT — how many leaderboard spots win a tee (TV cut-off + phones)
-//   3. DRAW_TIMES — tee handout times; the TV counts down to the next one
-//   4. ADMIN_PIN — soft PIN for the booth admin page
+//   2. WIN_TOP — how many top ranks win a tee (the podium size)
+//   3. TEES_COUNT — tees in stock
+//   4. DRAW_TIMES — tee handout times; the TV counts down to the next one
+//   5. ADMIN_PIN — soft PIN for the booth admin page
 const CONFIG = {
   REPO_OWNER: 'getkimchi',
   REPO_NAME: 'kimchi',
@@ -14,7 +15,10 @@ const CONFIG = {
   // ⬇ Paste your Apps Script web app URL here (from Deploy → Web app)
   ENDPOINT: 'https://script.google.com/macros/s/AKfycbzMmJJ1XxUbnNOR2sVt_O4ydODukhS-sMSV9fDCIh5wYQG84emyFkndUJo9ZFDnGI_e/exec',
 
-  // How many t-shirts you're giving away (top N on the leaderboard win)
+  // How many leaderboard spots win a tee (the podium)
+  WIN_TOP: 3,
+
+  // How many tees are in stock — podium players win one while stock lasts
   TEES_COUNT: 10,
 
   // Tee handout times (24h clock, booth-local). TV counts down to the next one.

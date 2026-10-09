@@ -100,7 +100,6 @@
   .row .pts small { font-size: 13px; color: var(--muted); font-weight: 600; margin-left: 4px; }
   .row .tee-tag { font-size: 24px; margin-left: 12px; flex: 0 0 auto; }
   .row.intee { border-left: 5px solid var(--green); }
-  .row:not(.intee) .tee-tag { opacity: .15; }
   .row.entering { opacity: 0; transform: translateY(26px); }
   .empty-lb { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--muted); }
   .empty-lb .icon { font-size: 60px; }
@@ -159,12 +158,12 @@
         <div class="steps">
           <div class="step s1"><div class="n">1</div><p><b>Star</b> github.com/getkimchi/kimchi</p></div>
           <div class="step"><div class="n">2</div><p>Beat the <b>Kimchi Quiz</b> — 10 Qs, 15s each</p></div>
-          <div class="step"><div class="n">3</div><p>Climb into the <b>top 10</b> &amp; the tee is yours 👕</p></div>
+          <div class="step"><div class="n">3</div><p>Climb into the <b>top 3</b> &amp; the tee is yours 👕 (while stock lasts)</p></div>
         </div>
         <div class="drawcard">
-          <h2>👕 TOP <span id="winN">10</span> GET THE TEE</h2>
+          <h2>🏆 TOP <span id="winTop">3</span> = THE TEE</h2>
           <div class="cd" id="drawCd">--:--:--</div>
-          <p id="drawSub">🎁 10 t-shirts to give away — stay on the board to win</p>
+          <p id="drawSub">🎁 10 tees in stock — while they last</p>
         </div>
       </div>
 
@@ -175,8 +174,8 @@
         </div>
         <div class="lb-rows" id="lbRows">
           <div class="empty-lb" id="emptyLb">
-            <div class="icon">👕</div>
-            <p>👕 <b>Top 10</b> get this tee — be the first to play! 🎁</p>
+            <div class="icon">🏆</div>
+            <p><b>Top 3</b> win this tee — be the first to play! 🎁</p>
           </div>
         </div>
       </div>
@@ -222,8 +221,9 @@ try {
 /* ── header + config text ── */
 $('#eventChip').textContent = CONFIG.EVENT_NAME;
 document.title = 'Kimchi × ' + CONFIG.EVENT_NAME + ' — Live';
-const WIN_N = CONFIG.TEES_COUNT || 10; // how many leaderboard spots win a tee
-$('#winN').textContent = WIN_N;
+const WIN_N = CONFIG.TEES_COUNT || 10; // tees in stock
+const WIN_TOP = CONFIG.WIN_TOP || 3;     // podium size — how many ranks win
+$('#winTop').textContent = WIN_TOP;
 if (CONFIG.TEES_COUNT) $('#teeBadge').textContent = '🎁 ' + CONFIG.TEES_COUNT + ' t-shirts!';
 
 /* ── handout countdown (time pressure next to the pts cut-off) ── */
@@ -266,7 +266,8 @@ function renderBoard(lb) {
       requestAnimationFrame(() => requestAnimationFrame(() => el.classList.remove('entering')));
     }
     el.classList.remove('m1', 'm2', 'm3');
-    el.classList.toggle('intee', i < WIN_N);
+    el.classList.toggle('intee', i < WIN_TOP);
+    el.querySelector('.tee-tag').textContent = i < WIN_TOP ? '👕' : '';
     if (i === 0) el.classList.add('m1'); else if (i === 1) el.classList.add('m2'); else if (i === 2) el.classList.add('m3');
     el.style.top = i * ROW_H + 'px';
     el.querySelector('.rank').textContent = i < 3 ? ['🥇', '🥈', '🥉'][i] : '#' + (i + 1);
@@ -278,13 +279,15 @@ function renderBoard(lb) {
     if (!seen.has(key)) { el.style.opacity = '0'; el.style.transform = 'translateY(26px)'; setTimeout(() => { el.remove(); rowEls.delete(key); }, 600); }
   });
   $('#emptyLb').style.display = (lb.players || 0) === 0 ? 'flex' : 'none';
-  $('#lbMeta').innerHTML = '👕 top <b>' + WIN_N + '</b> get the tee · ' + (lb.players || 0) + ' players · ' + (lb.plays || 0) + ' plays';
-  /* live cut-off: what you must beat to take #WIN_N's tee */
+  $('#lbMeta').innerHTML = '🏆 top <b>' + WIN_TOP + '</b> win the tee · ' + (lb.players || 0) + ' players · 🎁 ' + WIN_N + ' in stock';
+  /* score to beat = rank #WIN_TOP — climb onto the podium while stock lasts */
   const topN = lb.top || [];
-  if (topN.length >= WIN_N) {
-    $('#drawSub').innerHTML = '>' + Number(topN[WIN_N - 1].score).toLocaleString() + ' pts beats current #' + WIN_N + ' — that\u2019s a t-shirt!';
+  if (!topN.length) {
+    $('#drawSub').innerHTML = 'No podium yet — any play wins a tee while stock lasts · 🎁 ' + WIN_N + ' in stock!';
+  } else if (topN.length < WIN_TOP) {
+    $('#drawSub').innerHTML = 'Everyone is on the podium right now — 🎁 ' + WIN_N + ' tees in stock!';
   } else {
-    $('#drawSub').innerHTML = '🎁 ' + WIN_N + ' t-shirts to give away — every player is in the tee zone right now';
+    $('#drawSub').innerHTML = '<b>&gt;' + Number(topN[WIN_TOP - 1].score).toLocaleString() + '</b> pts gets you on the podium — that\u2019s a tee! 🎁 ' + WIN_N + ' in stock';
   }
 }
 
@@ -320,7 +323,7 @@ function renderTicker() {
     html: '⭐ someone just starred <b>getkimchi/kimchi</b> · ' + timeAgoShort(e.t)
   }));
   items.sort((a, b) => b.t - a.t);
-  const msg = '👕 <b>Win this exact tee</b> — ⭐ star github.com/getkimchi/kimchi, beat the quiz, hold a <b>top ' + WIN_N + '</b> spot 🎁 &nbsp;·&nbsp; 👀 Quiz answers hide on <b>kimchi.dev</b>';
+  const msg = '🏆 <b>Top ' + WIN_TOP + ' win this tee</b> — 🎁 ' + WIN_N + ' in stock, only while they last &nbsp;·&nbsp; ⭐ github.com/getkimchi/kimchi &nbsp;·&nbsp; 👀 Quiz answers hide on <b>kimchi.dev</b>';
   const spans = items.map((i) => '<span>' + i.html + '</span>').join('') + '<span>' + msg + '</span>';
   const core = items.map((i) => i.html.replace(/ · (just now|\d+m ago)/, '')).join('|');
   const labels = items.map((i) => (i.t ? timeAgoShort(i.t) : '')).join(',');
