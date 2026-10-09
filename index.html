@@ -360,6 +360,29 @@ function setOnline(ok) {
 pollBoard(); pollStars();
 setInterval(pollBoard, 10000);
 setInterval(pollStars, 60000);
+
+/* ── self-update: if a new deploy lands on Pages, reload (checked every 60s).
+   Watches this page + config.js so config-only pushes also refresh the TV.
+   No reloads happen while nothing changed — no flicker at the booth. ── */
+let pageSig = null;
+function sigOf(t) {
+  let h = t.length;
+  for (let i = 0; i < t.length; i += 53) h = ((h * 33) ^ t.charCodeAt(i)) & 0x7fffffff;
+  return h;
+}
+async function checkForUpdate() {
+  try {
+    const [page, cfg] = await Promise.all([
+      fetch(location.href, { cache: 'no-store' }).then((r) => r.text()),
+      fetch('config.js', { cache: 'no-store' }).then((r) => r.text())
+    ]);
+    const sig = sigOf(page) + ':' + sigOf(cfg);
+    if (pageSig === null) { pageSig = sig; return; }
+    if (pageSig !== sig) location.reload();
+  } catch (e) { /* offline — keep the cached view */ }
+}
+setInterval(checkForUpdate, 60000);
+setTimeout(checkForUpdate, 15000); // quick first check after boot
 </script>
 </body>
 </html>

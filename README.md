@@ -104,6 +104,8 @@ your schedule (24h clock, booth-local time).
 
 ## Notes & guarantees
 
+- **The TV self-updates:** within ~1 minute of any push it reloads itself — page and
+  config changes both picked up. Never refresh it by hand mid-event.
 - **Raffle integrity:** one play per GitHub username — the backend accepts only the first play from a
   handle (later POSTs are harmless no-ops), and the form warns players to double-check their handle.
 - **Privacy:** name + GitHub username + score are collected, plus an optional email
