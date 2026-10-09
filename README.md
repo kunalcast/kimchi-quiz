@@ -2,23 +2,23 @@
 
 Turn booth foot traffic into GitHub stars for [`getkimchi/kimchi`](https://github.com/getkimchi/kimchi):
 attendees scan a QR code → star the repo → play a 10-question quiz → the TV shows a live
-leaderboard → periodic raffle draws pick who gets the 10 t-shirts.
+leaderboard → the top 10 players each get one of the 10 t-shirts.
 
 ```
 Phone (scan QR) → play.html      star repo → quiz → score POSTed
                         ↓
          Google Sheet via Apps Script (free shared backend)
                         ↓
-TV (cast from Mac) → index.html  live top-10 · live ⭐ count · QR · raffle countdown
-Booth Mac         → admin.html   draw winners · verify ⭐ · track claims
+TV (cast from Mac) → index.html  live top-10 · live ⭐ count · QR · live cut-off (“beat X pts”)
+Booth Mac         → admin.html   pull top 10 · verify ⭐ · track claims
 ```
 
 | File | What it is |
 |---|---|
 | `play.html` | Mobile quiz (entry gate → 10 Qs, 15s each, speed + streak bonus) — **deployed** |
 | `index.html` | TV display — open fullscreen, cast from the Mac — **deployed** |
-| `admin.html` | Booth tools — raffle draw, star verification, winners CSV — **LOCAL-ONLY, never deployed** |
-| `config.js` | **The one file you edit** (endpoint URL, tee count, draw times, PIN) |
+| `admin.html` | Booth tools — top-10 winners, star verification, winners CSV — **LOCAL-ONLY, never deployed** |
+| `config.js` | **The one file you edit** (endpoint URL, tee count, PIN) |
 | `apps-script/Code.gs` | The backend — paste into the Google Sheet |
 | `tools/mock-server.py` | Local mock backend for testing |
 
@@ -72,10 +72,11 @@ Edit [`config.js`](config.js) → replace `PASTE_APPS_SCRIPT_EXEC_URL_HERE` with
    a cable is more reliable than conference wifi)
 4. Leave it running. It polls every 10 s and heals itself if wifi drops (shows "reconnecting").
 
-### Drawing winners (admin.html — LOCAL-ONLY)
+### Handing out winners (admin.html — LOCAL-ONLY)
 1. On the booth Mac, double-click **`admin.html`** in this project folder (opens as `file://…`, PIN in `config.js`).
    It is intentionally **not** on the website — nobody outside the booth can reach it.
-2. When it's raffle time: set the count (e.g. 5) → **🎁 Draw winners**
+2. At handout time: **👕 Pull the top 10** — the current live top N becomes the winners list
+   (re-pulling re-syncs ranks from the board and keeps already-verified/claimed marks per handle)
 3. Each winner card → **Verify ⭐** (checks their GitHub against the repo via the backend)
    - ✅ verified → hand them a tee → click **Claimed ✓**
    - ⚠ rate-limited → **Profile ↗** opens their stars tab — eyeball it
@@ -83,11 +84,7 @@ Edit [`config.js`](config.js) → replace `PASTE_APPS_SCRIPT_EXEC_URL_HERE` with
 4. **⬇ Export winners CSV** at the end of the day for your records
 
 ### Claim rule (say it out loud at the booth)
-> "Winners must show they ⭐ starred `getkimchi/kimchi` to claim a tee."
-
-### Raffle draw times
-`config.js → DRAW_TIMES` — the TV counts down to the next one automatically. Change to match
-your schedule (24h clock, booth-local time).
+> "The top 10 on the TV each win a Kimchi tee — show your ⭐ starred repo to claim it."
 
 ---
 
@@ -106,10 +103,10 @@ your schedule (24h clock, booth-local time).
 
 - **The TV self-updates:** within ~1 minute of any push it reloads itself — page and
   config changes both picked up. Never refresh it by hand mid-event.
-- **Raffle integrity:** one play per GitHub username — the backend accepts only the first play from a
+- **Fair play:** one play per GitHub username — the backend accepts only the first play from a
   handle (later POSTs are harmless no-ops), and the form warns players to double-check their handle.
 - **Privacy:** name + GitHub username + score are collected, plus an optional email
-  (raffle/product updates), all in your own Google Sheet.
+  (updates), all in your own Google Sheet.
 - **Tee artwork:** the prize mockup lives at `assets/tee-mockup.jpg` (TV card) and
   `assets/tee-mockup-thumb.jpg` (phone strips) — swap in a photo of your real t-shirt
   using the same filenames and every page picks it up.

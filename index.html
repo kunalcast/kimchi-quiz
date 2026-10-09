@@ -98,6 +98,9 @@
   .row .pts { font-size: 26px; font-weight: 900; color: var(--green); font-variant-numeric: tabular-nums; }
   .row.m1 .pts { color: var(--gold); }
   .row .pts small { font-size: 13px; color: var(--muted); font-weight: 600; margin-left: 4px; }
+  .row .tee-tag { font-size: 24px; margin-left: 12px; flex: 0 0 auto; }
+  .row.intee { border-left: 5px solid var(--green); }
+  .row:not(.intee) .tee-tag { opacity: .15; }
   .row.entering { opacity: 0; transform: translateY(26px); }
   .empty-lb { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--muted); }
   .empty-lb .icon { font-size: 60px; }
@@ -156,12 +159,12 @@
         <div class="steps">
           <div class="step s1"><div class="n">1</div><p><b>Star</b> github.com/getkimchi/kimchi</p></div>
           <div class="step"><div class="n">2</div><p>Beat the <b>Kimchi Quiz</b> — 10 Qs, 15s each</p></div>
-          <div class="step"><div class="n">3</div><p>Land on this <b>leaderboard</b> &amp; enter the <b>raffle</b> 🎟️</p></div>
+          <div class="step"><div class="n">3</div><p>Climb into the <b>top 10</b> &amp; the tee is yours 👕</p></div>
         </div>
         <div class="drawcard">
-          <h2 id="drawTitle">🎁 T-SHIRT RAFFLE</h2>
-          <div class="cd" id="drawCd">--:--:--</div>
-          <p id="drawSub">Every player is in the draw — winners drawn at the booth</p>
+          <h2>👕 TOP <span id="winN">10</span> GET THE TEE</h2>
+          <div class="cd" id="cutLine">OPEN!</div>
+          <p id="drawSub">🎁 10 t-shirts to give away — stay on the board to win</p>
         </div>
       </div>
 
@@ -173,7 +176,7 @@
         <div class="lb-rows" id="lbRows">
           <div class="empty-lb" id="emptyLb">
             <div class="icon">👕</div>
-            <p>Win <b>this tee</b> — be the first to play! 🎁</p>
+            <p>👕 <b>Top 10</b> get this tee — be the first to play! 🎁</p>
           </div>
         </div>
       </div>
@@ -219,31 +222,9 @@ try {
 /* ── header + config text ── */
 $('#eventChip').textContent = CONFIG.EVENT_NAME;
 document.title = 'Kimchi × ' + CONFIG.EVENT_NAME + ' — Live';
-if (CONFIG.TEES_COUNT) {
-  $('#teeBadge').textContent = '🎁 ' + CONFIG.TEES_COUNT + ' t-shirts!';
-  $('#drawSub').textContent = '🎁 ' + CONFIG.TEES_COUNT + ' t-shirts to give away — winners drawn at the booth';
-}
-
-/* ── raffle countdown ── */
-function nextDraw() {
-  const now = new Date();
-  const slots = (CONFIG.DRAW_TIMES || []).map((t) => {
-    const [h, m] = t.split(':').map(Number);
-    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
-  }).sort((a, b) => a - b);
-  let target = slots.find((s) => s > now);
-  if (!target && slots.length) target = new Date(slots[0].getTime() + 86400000);
-  return target;
-}
-setInterval(() => {
-  const t = nextDraw();
-  if (!t) { $('#drawCd').textContent = 'AT THE BOOTH'; return; }
-  const ms = t - new Date();
-  if (ms <= 0) { $('#drawTitle').textContent = '🎉 DRAW HAPPENING NOW'; $('#drawCd').textContent = 'AT THE BOOTH'; return; }
-  $('#drawTitle').textContent = '🎁 T-SHIRT RAFFLE';
-  const h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, s = Math.floor(ms / 1000) % 60;
-  $('#drawCd').textContent = [h, m, s].map((x) => String(x).padStart(2, '0')).join(':');
-}, 1000);
+const WIN_N = CONFIG.TEES_COUNT || 10; // how many leaderboard spots win a tee
+$('#winN').textContent = WIN_N;
+if (CONFIG.TEES_COUNT) $('#teeBadge').textContent = '🎁 ' + CONFIG.TEES_COUNT + ' t-shirts!';
 
 /* ── leaderboard rendering (keyed rows, animated reorder) ── */
 const ROW_H = 74, rowEls = new Map(); // github(lower) → element
@@ -259,12 +240,13 @@ function renderBoard(lb) {
     if (fresh) {
       el = document.createElement('div');
       el.className = 'row entering';
-      el.innerHTML = '<div class="rank"></div><div class="who"><div class="name"></div><div class="gh"></div></div><div class="pts"></div>';
+      el.innerHTML = '<div class="rank"></div><div class="who"><div class="name"></div><div class="gh"></div></div><div class="pts"></div><span class="tee-tag">👕</span>';
       rowEls.set(key, el);
       holder.appendChild(el);
       requestAnimationFrame(() => requestAnimationFrame(() => el.classList.remove('entering')));
     }
     el.classList.remove('m1', 'm2', 'm3');
+    el.classList.toggle('intee', i < WIN_N);
     if (i === 0) el.classList.add('m1'); else if (i === 1) el.classList.add('m2'); else if (i === 2) el.classList.add('m3');
     el.style.top = i * ROW_H + 'px';
     el.querySelector('.rank').textContent = i < 3 ? ['🥇', '🥈', '🥉'][i] : '#' + (i + 1);
@@ -276,7 +258,16 @@ function renderBoard(lb) {
     if (!seen.has(key)) { el.style.opacity = '0'; el.style.transform = 'translateY(26px)'; setTimeout(() => { el.remove(); rowEls.delete(key); }, 600); }
   });
   $('#emptyLb').style.display = (lb.players || 0) === 0 ? 'flex' : 'none';
-  $('#lbMeta').innerHTML = '<b>' + (lb.players || 0) + '</b> in the raffle · ' + (lb.plays || 0) + ' plays';
+  $('#lbMeta').innerHTML = '👕 top <b>' + WIN_N + '</b> get the tee · ' + (lb.players || 0) + ' players · ' + (lb.plays || 0) + ' plays';
+  /* live cut-off: what you must beat to take #WIN_N's tee */
+  const topN = lb.top || [];
+  if (topN.length >= WIN_N) {
+    $('#cutLine').textContent = '>' + Number(topN[WIN_N - 1].score).toLocaleString();
+    $('#drawSub').innerHTML = 'pts beats current #' + WIN_N + ' — that\u2019s a t-shirt!';
+  } else {
+    $('#cutLine').textContent = 'OPEN!';
+    $('#drawSub').innerHTML = '🎁 ' + WIN_N + ' t-shirts to give away — every player is in the tee zone right now';
+  }
 }
 
 /* ── live-event ticker (LATEST banner) ──
@@ -311,7 +302,7 @@ function renderTicker() {
     html: '⭐ someone just starred <b>getkimchi/kimchi</b> · ' + timeAgoShort(e.t)
   }));
   items.sort((a, b) => b.t - a.t);
-  const msg = '👕 <b>Win this exact tee</b> — ⭐ star github.com/getkimchi/kimchi, beat the quiz, you\'re in the draw 🎁 &nbsp;·&nbsp; 👀 Quiz answers hide on <b>kimchi.dev</b>';
+  const msg = '👕 <b>Win this exact tee</b> — ⭐ star github.com/getkimchi/kimchi, beat the quiz, hold a <b>top ' + WIN_N + '</b> spot 🎁 &nbsp;·&nbsp; 👀 Quiz answers hide on <b>kimchi.dev</b>';
   const spans = items.map((i) => '<span>' + i.html + '</span>').join('') + '<span>' + msg + '</span>';
   const core = items.map((i) => i.html.replace(/ · (just now|\d+m ago)/, '')).join('|');
   const labels = items.map((i) => (i.t ? timeAgoShort(i.t) : '')).join(',');

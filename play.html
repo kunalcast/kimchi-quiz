@@ -153,7 +153,7 @@
 
     <div class="tee-strip">
       <img src="assets/tee-mockup-thumb.jpg" alt="Kimchi t-shirt">
-      <p><b>🎁 Win this tee</b> — every player is in the raffle.<br><b id="teeGive">10 t-shirts</b> to give away at the booth today 👕</p>
+      <p><b>🎁 Win this tee</b> — land in the <b>top 10</b> and it’s yours.<br><b id="teeGive">10 t-shirts</b> to give away at the booth today 👕</p>
     </div>
 
     <div class="star-step">
@@ -171,7 +171,7 @@
   <section id="form" class="screen">
     <div class="brand"><img src="assets/kimchi-badge.svg" class="logo badge" alt="kimchi"></div>
     <h1>Who's playing?</h1>
-    <p class="sub">Your GitHub handle is your leaderboard name <b>and</b> your raffle ticket.</p>
+    <p class="sub">Your GitHub handle is your leaderboard name <b>and</b> your tee claim.</p>
     <div class="card" style="padding:1.3rem 1.15rem">
       <div class="field">
         <label for="inName">Display name</label>
@@ -189,7 +189,7 @@
         <label for="inEmail">Email <span style="text-transform:none;color:var(--muted)">(optional)</span></label>
         <input id="inEmail" type="email" maxlength="80" placeholder="you@example.com" autocomplete="off">
         <div class="err" id="errEmail"></div>
-        <div class="gh-note" style="color:var(--muted)">Want raffle updates &amp; a nudge when kimchi ships something cool? Drop your email — no spam, promise.</div>
+        <div class="gh-note" style="color:var(--muted)">Want a nudge when kimchi ships something cool? Drop your email — no spam, promise.</div>
       </div>
       <button class="btn" id="startQuiz">Start the quiz →</button>
     </div>
@@ -215,14 +215,14 @@
       <div class="verdict" id="verdict"></div>
     </div>
     <div class="raffle">
-      <div class="ticket">🎟️</div>
-      <h2 id="raffleName">You're in the raffle!</h2>
-      <p>Winners are drawn at the booth — watch the TV.<br>Claim your tee by showing you <b>⭐ starred</b> the repo.</p>
+      <div class="ticket">🏆</div>
+      <h2 id="raffleName">You're on the board!</h2>
+      <p><b>Top 10 get the Kimchi tee</b> — watch the TV &amp; defend your rank.<br>Claim yours by showing you <b>⭐ starred</b> the repo.</p>
       <div class="rank-line" id="rankLine"></div>
     </div>
     <div class="tee-strip">
       <img src="assets/tee-mockup-thumb.jpg" alt="Kimchi t-shirt">
-      <p>👕 This tee could be yours — <b>winners drawn at the booth</b> 🎁<br>Watch the TV &amp; listen for your handle.</p>
+      <p>👕 This tee could be yours — <b>finish in the top 10</b> 🎁<br>Claims verified at the booth: show your ⭐.</p>
     </div>
     <div class="sync-note" id="syncNote"></div>
     <div class="share-row">
@@ -382,7 +382,7 @@ async function finish() {
   $('#finalScore').textContent = G.score;
   const v = G.correct >= 9 ? 'Fermentation genius 🧠' : G.correct >= 7 ? 'Properly seasoned 🌶️' : G.correct >= 5 ? 'Still fermenting… 🥬' : 'That kimchi was too spicy 😅';
   $('#verdict').innerHTML = '<b>' + G.correct + '/10 correct</b> · ' + v + (G.maxStreak >= 3 ? ' · best streak ' + G.maxStreak + ' 🔥' : '');
-  $('#raffleName').textContent = G.name + ', you\u2019re in the raffle!';
+  $('#raffleName').textContent = G.name + ', you\u2019re on the board!';
   $('#rankLine').textContent = ''; $('#syncNote').textContent = '';
   show('result');
   if (G.score >= 1800) confetti();
@@ -390,11 +390,14 @@ async function finish() {
 
   const sent = await submitPlaySafe({ Name: G.name, GitHub: G.gh, Email: G.email || '', Score: G.score, Correct: G.correct, DurationSec: dur });
   if (!sent) $('#syncNote').textContent = '⚡ Spotty wifi — your score is queued and will sync automatically.';
-  else if (sent.duplicate) $('#syncNote').textContent = '🎟️ This account already played — your first entry is the one in the raffle.';
+  else if (sent.duplicate) $('#syncNote').textContent = '🎟️ This account already played — your first score is the one that counts.';
   try {
     const lb = await apiGet('leaderboard');
     const me = (lb.top || []).find((r) => r.github.toLowerCase() === G.gh.toLowerCase());
-    $('#rankLine').textContent = me ? '📺 You are #' + me.rank + ' on the live leaderboard' : (lb.players ? 'Playing against ' + lb.players + ' players at CYpher' : '');
+    const winN = CONFIG.TEES_COUNT || 10;
+    if (me && me.rank <= winN) $('#rankLine').textContent = '👕 You\u2019re #' + me.rank + ' — IN THE TEE ZONE! Hold your spot!';
+    else if (me) $('#rankLine').textContent = '📺 You\u2019re #' + me.rank + ' — top ' + winN + ' get the tee… so close!';
+    else $('#rankLine').textContent = lb.players ? 'Chasing ' + lb.players + ' players at CYpher' : '';
   } catch (e) { /* leaderboard unreachable — fine */ }
 }
 
