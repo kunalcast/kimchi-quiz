@@ -82,6 +82,9 @@ Edit [`config.js`](config.js) → replace `PASTE_APPS_SCRIPT_EXEC_URL_HERE` with
    - ⚠ rate-limited → **Profile ↗** opens their stars tab — eyeball it
    - ✗ no star → "star it right now, then re-check" (they just showed up, they can do it in 10 s)
 4. **⬇ Export winners CSV** at the end of the day for your records
+5. **No-shows:** the **⏳ Standby list** button (opens `standby.html`, same PIN) shows ranks 11-20
+   — call the next person down, verify their ⭐, hand them the tee. Each runner-up row has
+   Verify ⭐ / Profile ↗ / Absent ✖ (absent marks persist until cleared) and their email if they left one.
 
 ### Claim rule (say it out loud at the booth)
 > "The top 10 on the TV each win a Kimchi tee — show your ⭐ starred repo to claim it."

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Standby — Kimchi × CYpher 2026</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👕</text></svg>">
+<script src="config.js"></script>
+<script src="assets/app.js"></script>
+<style>
+  :root {
+    --bg: #0E0F13; --panel: #15171E; --panel2: #1B1E27; --line: #262A35;
+    --red: #FF521D; --green: #51CF66; --gold: #FFD43B; --cream: #F5F0E6; --text: #EDEEF2; --muted: #9BA0AE;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif; }
+  .wrap { max-width: 38rem; margin: 0 auto; padding: 1.1rem .9rem 4rem; }
+  #gate { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; }
+  #gate h1 { font-size: 1.4rem; letter-spacing: -.02em; }
+  #gate h1 .logo { height: 28px; vertical-align: -5px; margin-right: .35rem; }
+  #gate .note { color: var(--muted); font-size: .8rem; }
+  #gate input { font-family: var(--mono); text-align: center; font-size: 1.35rem; letter-spacing: .3em; width: 10rem; }
+  input { background: var(--panel); border: 1.5px solid var(--line); color: var(--text); font-size: 1rem;
+    padding: .7rem .9rem; border-radius: .7rem; outline: none; }
+  input:focus { border-color: var(--red); }
+  .btn { border: 0; cursor: pointer; background: var(--red); color: #fff; font-weight: 800; font-size: .95rem;
+    padding: .75rem 1.3rem; border-radius: .7rem; }
+  .hidden { display: none !important; }
+
+  h1 { font-size: 1.3rem; letter-spacing: -.02em; }
+  h1 b { color: var(--red); }
+  .sub { color: var(--muted); font-size: .84rem; line-height: 1.45; margin: .35rem 0 .8rem; }
+  .sub b { color: var(--cream); }
+  .metabar { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
+  #meta { font-family: var(--mono); font-size: .75rem; color: var(--muted); }
+  #meta b { color: var(--green); }
+
+  .sect-title { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; font-weight: 700;
+    color: var(--muted); text-transform: uppercase; margin: 1rem 0 .45rem; }
+
+  .srow { background: var(--panel); border: 1px solid var(--line); border-radius: .8rem; padding: .65rem .8rem; margin-bottom: .5rem; }
+  .srow.next { border-left: 4px solid var(--gold); }
+  .srow .head { display: flex; align-items: baseline; gap: .55rem; }
+  .srow .rank { font-family: var(--mono); font-weight: 800; font-size: .95rem; color: var(--muted); flex: 0 0 2.6rem; }
+  .srow.next .rank { color: var(--gold); }
+  .srow .name { font-weight: 800; font-size: 1.05rem; color: var(--cream); flex: 1; min-width: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .srow .pts { font-family: var(--mono); font-weight: 700; color: var(--green); font-size: .95rem; }
+  .srow .gh { font-family: var(--mono); font-size: .75rem; color: var(--muted); margin: .15rem 0 .5rem; }
+  .srow .acts { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
+  .mini { font-size: .72rem; padding: .4rem .65rem; border-radius: .5rem; border: 1.5px solid var(--line);
+    background: transparent; color: var(--muted); cursor: pointer; font-weight: 700; font-family: inherit; }
+  .mini.ok { color: var(--green); border-color: rgba(81,207,102,.5); }
+  .mini.no { color: var(--red); border-color: rgba(255,82,29,.5); }
+  .mini.absent { color: var(--gold); border-color: rgba(255,212,59,.5); }
+  .st { font-size: .74rem; color: var(--muted); }
+  .st.y { color: var(--green); } .st.n { color: var(--red); } .st.w { color: var(--gold); }
+  .srow.dimmed { opacity: .45; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1><img src="assets/kimchi-mark.svg" style="height:28px" alt="kimchi"> standby list</h1>
+  <p class="note">Who's next in line for a tee — booth eyes only</p>
+  <input id="pin" type="password" inputmode="numeric" placeholder="PIN" autofocus>
+  <button class="btn" id="pinGo">Enter</button>
+</div>
+
+<div class="wrap hidden" id="main">
+  <h1>⏳ Standby — <b>next in line for a tee</b></h1>
+  <p class="sub">Top <b id="winN">10</b> win tees. If a winner isn't at the booth, call the next person down.
+    Verify ⭐ before handing over. Refreshes every 10 s.</p>
+  <div class="metabar">
+    <span id="meta">loading…</span>
+    <button class="mini" id="resetAbsent">clear absent marks</button>
+  </div>
+
+  <div class="sect-title">🏆 Tee zone — they claim first</div>
+  <div id="zone"></div>
+
+  <div class="sect-title">⏳ Next in line — hand tees here if winners are absent</div>
+  <div id="next"></div>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const WIN_N = CONFIG.TEES_COUNT || 10;
+const AKEY = 'kimchi_standby_absent';
+const loadAbsent = () => new Set(JSON.parse(localStorage.getItem(AKEY) || '[]'));
+const saveAbsent = (s) => localStorage.setItem(AKEY, JSON.stringify([...s]));
+let absent = loadAbsent();
+const verifyMap = {}; // gh(lower) → true | false — session-only (verify calls hit GitHub; do not spam)
+let rows = [];
+
+/* ── pin gate (same PIN as the admin page) ── */
+$('#pinGo').addEventListener('click', tryPin);
+$('#pin').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryPin(); });
+function tryPin() {
+  if ($('#pin').value === String(CONFIG.ADMIN_PIN)) {
+    localStorage.setItem('kimchi_admin', '1');
+    enter();
+  } else { $('#pin').value = ''; $('#pin').placeholder = 'try again'; }
+}
+function enter() {
+  $('#gate').classList.add('hidden');
+  $('#main').classList.remove('hidden');
+  $('#winN').textContent = WIN_N;
+  loadBoard();
+}
+
+/* ── data ── */
+async function loadBoard() {
+  try {
+    const [lb, raf] = await Promise.all([apiGet('leaderboard'), apiGet('raffle')]);
+    const emailMap = {}; (raf.entries || []).forEach((e) => { emailMap[String(e.github).toLowerCase()] = e.email || ''; });
+    rows = (lb.top || []).map((t) => ({ ...t, email: emailMap[String(t.github).toLowerCase()] || '' }));
+    $('#meta').innerHTML = 'live · <b>' + (lb.players || 0) + '</b> players · top ' + rows.length + ' shown · top ' + WIN_N + ' get tees';
+    render();
+  } catch (e) {
+    $('#meta').textContent = '⚠ backend unreachable — retrying every 10 s';
+  }
+}
+
+/* ── render ── */
+function rowEl(r, isNext) {
+  const el = document.createElement('div');
+  el.className = 'srow' + (isNext ? ' next' : '') + (absent.has(r.github.toLowerCase()) ? ' dimmed' : '');
+  const v = verifyMap[r.github.toLowerCase()];
+  el.innerHTML =
+    '<div class="head"><span class="rank">#' + r.rank + '</span>' +
+      '<span class="name">' + esc(r.name) + '</span>' +
+      '<span class="pts">' + Number(r.score).toLocaleString() + '</span></div>' +
+    '<div class="gh">@' + esc(r.github) + (r.email ? ' · ' + esc(r.email) : '') + '</div>' +
+    '<div class="acts">' +
+      '<button class="mini" data-a="v">Verify ⭐</button>' +
+      '<button class="mini" data-a="p">Profile ↗</button>' +
+      '<button class="mini absent" data-a="x">' + (absent.has(r.github.toLowerCase()) ? 'Back in!' : 'Absent ✖') + '</button>' +
+      '<span class="st" id="st"></span></div>';
+  const st = el.querySelector('#st');
+  if (v === true) { st.className = 'st y'; st.textContent = '✓ starred — tee ok'; }
+  if (v === false) { st.className = 'st n'; st.textContent = '✗ no star found'; }
+  el.querySelector('[data-a="v"]').addEventListener('click', async (ev) => {
+    const btn = ev.target; btn.textContent = 'Checking…'; btn.disabled = true;
+    try {
+      const d = await apiGet('starred', { user: r.github });
+      if (d.result === 'success') {
+        verifyMap[r.github.toLowerCase()] = !!d.starred;
+        btn.textContent = d.starred ? 'Verified ✓' : 'No star ✗';
+        btn.className = 'mini ' + (d.starred ? 'ok' : 'no');
+        st.className = 'st ' + (d.starred ? 'y' : 'n');
+        st.textContent = d.starred ? '✓ starred — tee ok' : '✗ no star — have them star & re-check';
+      } else {
+        btn.textContent = 'Retry ⭐'; btn.disabled = false;
+        st.className = 'st w'; st.textContent = d.result === 'rate_limited' ? '⚠ rate-limited — use Profile ↗' : '⚠ check manually';
+      }
+    } catch (e2) { btn.textContent = 'Retry ⭐'; btn.disabled = false; st.className = 'st w'; st.textContent = '⚠ backend unreachable'; }
+  });
+  el.querySelector('[data-a="p"]').addEventListener('click', () => window.open('https://github.com/' + r.github + '?tab=stars', '_blank'));
+  el.querySelector('[data-a="x"]').addEventListener('click', () => {
+    const k = r.github.toLowerCase();
+    absent.has(k) ? absent.delete(k) : absent.add(k);
+    saveAbsent(absent);
+    render();
+  });
+  return el;
+}
+
+function render() {
+  $('#winN').textContent = WIN_N;
+  const zone = $('#zone'), next = $('#next');
+  zone.innerHTML = ''; next.innerHTML = '';
+  rows.slice(0, WIN_N).forEach((r) => zone.appendChild(rowEl(r, false)));
+  const rest = rows.slice(WIN_N);
+  if (!rest.length) next.innerHTML = '<div class="srow"><span class="gh">No backups yet — waiting for players past the top ' + WIN_N + '.</span></div>';
+  rest.forEach((r) => next.appendChild(rowEl(r, true)));
+}
+
+$('#resetAbsent').addEventListener('click', () => { absent = new Set(); saveAbsent(absent); render(); });
+
+setInterval(loadBoard, 10000);
+
+if (localStorage.getItem('kimchi_admin') === '1') enter();
+</script>
+</body>
+</html>
