@@ -34,11 +34,11 @@ Booth Mac         → admin.html   draw winners · verify ⭐ · track claims
 
 1. Go to [sheets.new](https://sheets.new) → name it **Kimchi Cypher Quiz**
 2. Rename the first tab to **`Plays`** (double-click the tab → rename)
-3. In row 1 of `Plays`, enter these exact headers (case matters):
+3. In row 1 of `Plays`, enter these headers (case matters — `Email` in column G is optional):
 
-   | A | B | C | D | E | F |
-   |---|---|---|---|---|---|
-   | Timestamp | Name | GitHub | Score | Correct | DurationSec |
+   | A | B | C | D | E | F | G |
+   |---|---|---|---|---|---|---|
+   | Timestamp | Name | GitHub | Score | Correct | DurationSec | Email |
 
 4. **Extensions → Apps Script** → delete everything in `Code.gs` → paste the contents of [`apps-script/Code.gs`](apps-script/Code.gs)
 5. (Optional but recommended) In the editor toolbar: **Run → initialSetup** → authorize
@@ -106,6 +106,7 @@ your schedule (24h clock, booth-local time).
 
 - **Raffle integrity:** one play per GitHub username — the backend accepts only the first play from a
   handle (later POSTs are harmless no-ops), and the form warns players to double-check their handle.
-- **Privacy:** only name + GitHub username + score are collected, in your own Google Sheet.
+- **Privacy:** name + GitHub username + score are collected, plus an optional email
+  (raffle/product updates), all in your own Google Sheet.
 - The Google Sheet is the source of truth — admin page winner state lives in that Mac's browser
   (`Reset winners list` only clears local tracking).

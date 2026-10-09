@@ -175,6 +175,12 @@
         <div class="gh-note">⚠️ <b>Double-check it before you start</b> — this is a one-shot play per account,
         and winners claim their tee by showing <b>this username</b> ⭐ starred the repo. Typo = no tee.</div>
       </div>
+      <div class="field">
+        <label for="inEmail">Email <span style="text-transform:none;color:var(--muted)">(optional)</span></label>
+        <input id="inEmail" type="email" maxlength="80" placeholder="you@example.com" autocomplete="off">
+        <div class="err" id="errEmail"></div>
+        <div class="gh-note" style="color:var(--muted)">Want raffle updates &amp; a nudge when kimchi ships something cool? Drop your email — no spam, promise.</div>
+      </div>
       <button class="btn" id="startQuiz">Start the quiz →</button>
     </div>
     <button class="back" id="backToSplash">← back</button>
@@ -248,9 +254,9 @@ function shuffle(a) { const r = a.slice(); for (let i = r.length - 1; i > 0; i--
 
 /* ── splash → form ── */
 $('#toForm').addEventListener('click', () => {
-  const name = localStorage.getItem('kimchi_name') || '';
-  const gh = localStorage.getItem('kimchi_github') || '';
-  $('#inName').value = name; $('#inGithub').value = gh;
+  $('#inName').value = localStorage.getItem('kimchi_name') || '';
+  $('#inGithub').value = localStorage.getItem('kimchi_github') || '';
+  $('#inEmail').value = localStorage.getItem('kimchi_email') || '';
   show('form');
 });
 $('#backToSplash').addEventListener('click', () => show('splash'));
@@ -259,22 +265,27 @@ $('#backToSplash').addEventListener('click', () => show('splash'));
 $('#startQuiz').addEventListener('click', () => {
   const name = $('#inName').value.trim();
   const gh = $('#inGithub').value.trim();
+  const email = $('#inEmail').value.trim();
   let ok = true;
-  $('#errName').textContent = ''; $('#errGithub').textContent = '';
+  $('#errName').textContent = ''; $('#errGithub').textContent = ''; $('#errEmail').textContent = '';
   if (name.length < 2) { $('#errName').textContent = 'What should we call you? (2+ chars)'; ok = false; }
   if (!/^[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}$/.test(gh)) {
     $('#errGithub').textContent = 'GitHub usernames: letters, numbers, single hyphens'; ok = false;
   }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    $('#errEmail').textContent = 'That email doesn\u2019t look right — or just leave it blank'; ok = false;
+  }
   if (!ok) return;
   localStorage.setItem('kimchi_name', name);
   localStorage.setItem('kimchi_github', gh);
-  startQuiz(name, gh);
+  localStorage.setItem('kimchi_email', email);
+  startQuiz(name, gh, email);
 });
 
 /* ── quiz engine ── */
-function startQuiz(name, gh) {
+function startQuiz(name, gh, email) {
   G = {
-    name, gh, qs: shuffle(QUESTIONS).slice(0, 10),
+    name, gh, email, qs: shuffle(QUESTIONS).slice(0, 10),
     idx: 0, score: 0, correct: 0, streak: 0, maxStreak: 0,
     started: Date.now(), locked: false, tStart: 0,
     timer: null, timeLeft: QUESTION_MS
@@ -360,7 +371,7 @@ async function finish() {
   if (G.score >= 1800) confetti();
   localStorage.setItem('kimchi_last', JSON.stringify({ name: G.name, gh: G.gh, score: G.score }));
 
-  const sent = await submitPlaySafe({ Name: G.name, GitHub: G.gh, Score: G.score, Correct: G.correct, DurationSec: dur });
+  const sent = await submitPlaySafe({ Name: G.name, GitHub: G.gh, Email: G.email || '', Score: G.score, Correct: G.correct, DurationSec: dur });
   if (!sent) $('#syncNote').textContent = '⚡ Spotty wifi — your score is queued and will sync automatically.';
   else if (sent.duplicate) $('#syncNote').textContent = '🎟️ This account already played — your first entry is the one in the raffle.';
   try {

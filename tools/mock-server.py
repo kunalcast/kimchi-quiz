@@ -39,7 +39,7 @@ def leaderboard(rows):
         key = gh.lower()
         if key not in best:
             best[key] = r
-            entries.append({'name': r.get('Name', ''), 'github': gh})
+            entries.append({'name': r.get('Name', ''), 'github': gh, 'email': r.get('Email', '')})
         elif r.get('Score', 0) > best[key].get('Score', 0):
             best[key] = r
         recent.append(r)
@@ -50,8 +50,9 @@ def leaderboard(rows):
         'plays': len(rows),
         'top': [{'rank': i + 1, 'name': t.get('Name', ''), 'github': t.get('GitHub', ''),
                  'score': t.get('Score', 0), 'correct': t.get('Correct', 0)} for i, t in enumerate(top)],
-        'recent': [{'name': r.get('Name', ''), 'github': r.get('GitHub', ''), 'score': r.get('Score', 0)}
+        'recent': [{'name': r.get('Name', ''), 'github': r.get('GitHub', ''), 'score': r.get('Score', 0), 'when': r.get('Timestamp', '')}
                    for r in recent[-6:][::-1]],
+        'entries': entries,
     }
 
 
@@ -105,9 +106,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(starred((q.get('user') or [''])[0]))
             if mode == 'raffle':
                 lb = leaderboard(rows)
-                return self._json({'result': 'success', 'players': lb['players'],
-                                    'entries': [{'name': e['name'], 'github': e['github']}
-                                                for e in lb['top']]})
+                return self._json({'result': 'success', 'players': lb['players'], 'entries': lb['entries']})
             return self._json(leaderboard(rows))
 
         # static files
@@ -139,11 +138,14 @@ class Handler(BaseHTTPRequestHandler):
 
         name = str(flat.get('Name', ''))[:40].strip()
         github = str(flat.get('GitHub', ''))[:39].strip()
+        email = str(flat.get('Email', ''))[:80].strip()
         if not name or not re.fullmatch(r'[A-Za-z0-9-]{1,39}', github):
             return self._json({'result': 'error', 'error': 'invalid name or GitHub username'})
+        if email and not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', email):
+            return self._json({'result': 'error', 'error': 'invalid email'})
         row = {
-            'Timestamp': __import__('time').strftime('%Y-%m-%d %H:%M:%S'),
-            'Name': name, 'GitHub': github,
+            'Timestamp': __import__('datetime').datetime.now().isoformat(timespec='seconds'),
+            'Name': name, 'GitHub': github, 'Email': email,
             'Score': max(0, min(2500, as_int('Score'))),
             'Correct': max(0, min(10, as_int('Correct'))),
             'DurationSec': max(0, min(3600, as_int('DurationSec'))),

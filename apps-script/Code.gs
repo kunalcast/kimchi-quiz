@@ -46,8 +46,12 @@ function doPost(e) {
     }
     const name = String(p['Name'] || '').substring(0, 40).trim();
     const github = String(p['GitHub'] || '').substring(0, 39).trim();
+    const email = String(p['Email'] || '').substring(0, 80).trim();
     if (!name || !/^[A-Za-z0-9-]{1,39}$/.test(github)) {
       return json_({ result: 'error', error: 'invalid name or GitHub username' });
+    }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return json_({ result: 'error', error: 'invalid email' });
     }
     const score = Math.max(0, Math.min(MAX_SCORE, parseInt(p['Score'], 10) || 0));
     const correct = Math.max(0, Math.min(MAX_CORRECT, parseInt(p['Correct'], 10) || 0));
@@ -72,6 +76,7 @@ function doPost(e) {
       if (h === 'Timestamp') return new Date();
       if (h === 'Name') return name;
       if (h === 'GitHub') return github;
+      if (h === 'Email') return email;
       if (h === 'Score') return score;
       if (h === 'Correct') return correct;
       if (h === 'DurationSec') return dur;
@@ -94,25 +99,35 @@ function doGet(e) {
 
     const sheet = getDoc_().getSheetByName(SHEET_NAME);
     const last = sheet.getLastRow();
-    const rows = last > 1 ? sheet.getRange(2, 1, last - 1, 6).getValues() : [];
+    const lastCol = Math.max(sheet.getLastColumn(), 1);
+    const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0]
+      .map(function (h) { return String(h).trim(); });
+    const at = function (name, fallback) {
+      const i = headers.indexOf(name);
+      return i === -1 ? fallback : i;
+    };
+    const C = { when: at('Timestamp', 0), name: at('Name', 1), gh: at('GitHub', 2),
+      score: at('Score', 3), correct: at('Correct', 4), email: at('Email', -1) };
+    const rows = last > 1 ? sheet.getRange(2, 1, last - 1, lastCol).getValues() : [];
 
     const best = {};    // github(lower) → best play
     const entries = []; // unique players (raffle pool)
     const recent = [];
     rows.forEach(function (r) {
-      const github = String(r[2] || '').trim();
+      const github = String(r[C.gh] || '').trim();
       if (!github) return;
       const rec = {
-        name: String(r[1]),
+        name: String(r[C.name]),
         github: github,
-        score: Number(r[3]) || 0,
-        correct: Number(r[4]) || 0,
-        when: r[0]
+        score: Number(r[C.score]) || 0,
+        correct: Number(r[C.correct]) || 0,
+        when: r[C.when],
+        email: C.email >= 0 ? String(r[C.email] || '') : ''
       };
       const key = github.toLowerCase();
       if (!best[key]) {
         best[key] = rec;
-        entries.push({ name: rec.name, github: github });
+        entries.push({ name: rec.name, github: github, email: rec.email });
       } else if (rec.score > best[key].score) {
         best[key] = rec;
       }
@@ -134,7 +149,7 @@ function doGet(e) {
       plays: rows.length,
       top: top,
       recent: recent.slice(-6).reverse().map(function (x) {
-        return { name: x.name, github: x.github, score: x.score };
+        return { name: x.name, github: x.github, score: x.score, when: x.when };
       })
     });
   } catch (err) {
@@ -152,7 +167,7 @@ function stars_() {
     headers: { 'Accept': 'application/vnd.github+json', 'User-Agent': 'kimchi-booth' }
   });
   const data = JSON.parse(resp.getContentText());
-  cache.put('stars', String(data.stargazers_count), 120);
+  cache.put('stars', String(data.stargazers_count), 60);
   return { result: 'success', stars: data.stargazers_count };
 }
 

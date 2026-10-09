@@ -99,7 +99,11 @@
   .empty-lb p b { color: var(--cream); }
 
   /* ── ticker ── */
-  footer { height: 74px; margin: 0 -52px; border-top: 1px solid var(--line); background: rgba(21,23,30,.65); overflow: hidden; display: flex; align-items: center; }
+  footer { height: 74px; margin: 0 -52px; border-top: 1px solid var(--line); background: rgba(21,23,30,.65); display: flex; align-items: stretch; overflow: hidden; }
+  .latest-chip { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 0 26px;
+    background: var(--red); color: #fff; font-weight: 800; font-size: 19px; letter-spacing: .08em; font-family: var(--mono); }
+  .latest-chip .dot { width: 10px; height: 10px; border-radius: 50%; background: #fff; animation: pulse 2s infinite; }
+  .ticker-track { flex: 1; overflow: hidden; display: flex; align-items: center; }
   .ticker { display: flex; gap: 0; white-space: nowrap; animation: scroll 38s linear infinite; }
   .ticker span { font-size: 24px; color: var(--muted); padding-right: 90px; }
   .ticker span b { color: var(--cream); }
@@ -164,7 +168,10 @@
       </div>
     </main>
 
-    <footer><div class="ticker" id="ticker"></div></footer>
+    <footer>
+      <div class="latest-chip"><span class="dot"></span>LATEST</div>
+      <div class="ticker-track"><div class="ticker" id="ticker"></div></div>
+    </footer>
   </div>
 </div>
 
@@ -255,12 +262,50 @@ function renderBoard(lb) {
   });
   $('#emptyLb').style.display = (lb.players || 0) === 0 ? 'flex' : 'none';
   $('#lbMeta').innerHTML = '<b>' + (lb.players || 0) + '</b> in the raffle · ' + (lb.plays || 0) + ' plays';
-  const tick = [];
-  (lb.recent || []).forEach((r) => tick.push('🌶️ <b>' + r.name + '</b> just scored <span class="r">' + r.score.toLocaleString() + '</span>'));
+}
+
+/* ── live-event ticker (LATEST banner) ──
+   Rebuilt ONLY when the event set actually changes (new play, new star, aging
+   labels) so the marquee animation never restarts on idle polls. */
+let lastLb = null;
+const starEvents = [];
+let coreSig = '', labelSig = '', lastRebuildAt = 0;
+
+function timeAgoShort(t) {
+  const m = Math.floor((Date.now() - t) / 60000);
+  if (m < 5) return 'just now';
+  if (m < 60) return (Math.floor(m / 5) * 5) + 'm ago';
+  return Math.floor(m / 60) + 'h ago';
+}
+
+function renderTicker() {
+  if (!lastLb) return;
+  const items = [];
+  (lastLb.recent || []).slice(0, 5).forEach((r) => {
+    const t = r.when ? Date.parse(r.when) : NaN;
+    const fresh = !isNaN(t) && Date.now() - t < 10 * 60000;
+    items.push({
+      t: isNaN(t) ? 0 : t,
+      html: '🌶️ <b>' + esc(r.name) + '</b> ' + (fresh ? 'just scored' : 'scored') +
+        ' <span class="r">' + Number(r.score).toLocaleString() + '</span>' +
+        (isNaN(t) ? '' : ' · ' + timeAgoShort(t))
+    });
+  });
+  starEvents.forEach((e) => items.push({
+    t: e.t,
+    html: '⭐ someone just starred <b>getkimchi/kimchi</b> · ' + timeAgoShort(e.t)
+  }));
+  items.sort((a, b) => b.t - a.t);
   const msg = '⭐ Star <b>github.com/getkimchi/kimchi</b> &nbsp;·&nbsp; 🎁 Every quiz player is in the t-shirt raffle &nbsp;·&nbsp; 👀 Quiz answers hide on <b>kimchi.dev</b>';
-  tick.push(msg);
-  const html = tick.map((t) => '<span>' + t + '</span>').join('');
-  $('#ticker').innerHTML = html + html; // duplicate for seamless loop
+  const spans = items.map((i) => '<span>' + i.html + '</span>').join('') + '<span>' + msg + '</span>';
+  const core = items.map((i) => i.html.replace(/ · (just now|\d+m ago)/, '')).join('|');
+  const labels = items.map((i) => (i.t ? timeAgoShort(i.t) : '')).join(',');
+  const now = Date.now();
+  if (core !== coreSig || (labels !== labelSig && now - lastRebuildAt > 60000)) {
+    coreSig = core; labelSig = labels; lastRebuildAt = now;
+    $('#ticker').innerHTML = spans + spans; // duplicated for seamless loop
+    window.__tickerRebuilds = (window.__tickerRebuilds || 0) + 1;
+  }
 }
 
 /* ── polls ── */
@@ -268,7 +313,9 @@ let lastStars = null;
 async function pollBoard() {
   try {
     const lb = await apiGet('leaderboard');
+    lastLb = lb;
     renderBoard(lb);
+    renderTicker();
     setOnline(true);
   } catch (e) { setOnline(false); }
 }
@@ -277,7 +324,13 @@ async function pollStars() {
     const d = await apiGet('stars');
     if (typeof d.stars === 'number') {
       const el = $('#starNum');
-      if (lastStars !== null && d.stars > lastStars) { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
+      if (lastStars !== null && d.stars > lastStars) {
+        el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+        starEvents.push({ t: Date.now() });
+        if (starEvents.length > 6) starEvents.shift();
+        coreSig = ''; // force ticker refresh with the new star event
+        renderTicker();
+      }
       el.textContent = d.stars.toLocaleString();
       lastStars = d.stars;
     }
