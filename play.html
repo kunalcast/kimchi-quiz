@@ -153,7 +153,7 @@
 
     <div class="tee-strip">
       <img src="assets/tee-mockup-thumb.jpg" alt="Kimchi t-shirt">
-      <p><b>🎁 Win this tee</b> — every player is in the raffle.<br>20+ up for grabs at the booth today 👕</p>
+      <p><b>🎁 Win this tee</b> — every player is in the raffle.<br><b id="teeGive">10 t-shirts</b> to give away at the booth today 👕</p>
     </div>
 
     <div class="star-step">
@@ -257,6 +257,9 @@ const QUESTIONS = [
 const $ = (s) => document.querySelector(s);
 const QUESTION_MS = 15000;
 let G = null; // game state
+
+/* prize count from config.js — single source of truth for the giveaway number */
+if (CONFIG.TEES_COUNT) $('#teeGive').textContent = CONFIG.TEES_COUNT + ' t-shirts';
 
 function show(id) {
   document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));

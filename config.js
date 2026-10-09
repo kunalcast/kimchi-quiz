@@ -13,6 +13,9 @@ const CONFIG = {
   // ⬇ Paste your Apps Script web app URL here (from Deploy → Web app)
   ENDPOINT: 'https://script.google.com/macros/s/AKfycbzMmJJ1XxUbnNOR2sVt_O4ydODukhS-sMSV9fDCIh5wYQG84emyFkndUJo9ZFDnGI_e/exec',
 
+  // How many t-shirts you're giving away (shows on the TV prize card + phones)
+  TEES_COUNT: 10,
+
   // Raffle draw times (24h clock, booth-local time). TV counts down to the next one.
   DRAW_TIMES: ['15:00', '17:00', '19:00'],
 

@@ -56,6 +56,11 @@
   .qr-split { display: flex; align-items: center; justify-content: center; gap: 26px; }
   .qr-card svg { display: block; }
   .tee-shot { width: 240px; border-radius: 14px; display: block; flex: 0 0 auto; box-shadow: 0 8px 22px rgba(0,0,0,.10); }
+  .tee-wrap { position: relative; flex: 0 0 auto; }
+  .tee-badge { position: absolute; top: -12px; right: -14px; transform: rotate(-7deg);
+    background: var(--red); color: #fff; font-weight: 900; font-size: 18px; letter-spacing: .01em;
+    padding: 8px 16px; border-radius: 999px; white-space: nowrap; box-shadow: 0 8px 20px rgba(255,82,29,.45);
+    border: 2.5px solid #fff; }
   .qr-card .scan { color: #111; font-weight: 900; font-size: 25px; margin-top: 12px; text-align: center; letter-spacing: -.01em; }
   .qr-card .scan b { color: var(--red-deep); }
   .steps { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 20px 28px; display: flex; flex-direction: column; gap: 14px; }
@@ -141,7 +146,10 @@
         <div class="qr-card">
           <div class="qr-split">
             <div id="qrBox"></div>
-            <img class="tee-shot" src="assets/tee-mockup.jpg" alt="The Kimchi tee you can win">
+            <div class="tee-wrap">
+              <img class="tee-shot" src="assets/tee-mockup.jpg" alt="The Kimchi tee you can win">
+              <div class="tee-badge" id="teeBadge">🎁 10 t-shirts!</div>
+            </div>
           </div>
           <div class="scan">Scan → play → win this <b>Kimchi tee</b> 🎁</div>
         </div>
@@ -211,6 +219,10 @@ try {
 /* ── header + config text ── */
 $('#eventChip').textContent = CONFIG.EVENT_NAME;
 document.title = 'Kimchi × ' + CONFIG.EVENT_NAME + ' — Live';
+if (CONFIG.TEES_COUNT) {
+  $('#teeBadge').textContent = '🎁 ' + CONFIG.TEES_COUNT + ' t-shirts!';
+  $('#drawSub').textContent = '🎁 ' + CONFIG.TEES_COUNT + ' t-shirts to give away — winners drawn at the booth';
+}
 
 /* ── raffle countdown ── */
 function nextDraw() {

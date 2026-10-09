@@ -2,7 +2,7 @@
 
 Turn booth foot traffic into GitHub stars for [`getkimchi/kimchi`](https://github.com/getkimchi/kimchi):
 attendees scan a QR code → star the repo → play a 10-question quiz → the TV shows a live
-leaderboard → periodic raffle draws pick who gets the 20–30 t-shirts.
+leaderboard → periodic raffle draws pick who gets the 10 t-shirts.
 
 ```
 Phone (scan QR) → play.html      star repo → quiz → score POSTed
@@ -18,7 +18,7 @@ Booth Mac         → admin.html   draw winners · verify ⭐ · track claims
 | `play.html` | Mobile quiz (entry gate → 10 Qs, 15s each, speed + streak bonus) — **deployed** |
 | `index.html` | TV display — open fullscreen, cast from the Mac — **deployed** |
 | `admin.html` | Booth tools — raffle draw, star verification, winners CSV — **LOCAL-ONLY, never deployed** |
-| `config.js` | **The one file you edit** (endpoint URL, draw times, PIN) |
+| `config.js` | **The one file you edit** (endpoint URL, tee count, draw times, PIN) |
 | `apps-script/Code.gs` | The backend — paste into the Google Sheet |
 | `tools/mock-server.py` | Local mock backend for testing |
 
