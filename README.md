@@ -9,7 +9,7 @@ Phone (scan QR) → play.html      star repo → quiz → score POSTed
                         ↓
          Google Sheet via Apps Script (free shared backend)
                         ↓
-TV (cast from Mac) → index.html  live board · live ⭐ count · QR · handout countdown · score-to-beat
+TV (cast from Mac) → index.html  live board · live ⭐ count · QR · podium cut-off · stock
 Booth Mac         → admin.html   champ claims · verify ⭐ · stock counter · winners CSV
 ```
 
@@ -18,7 +18,7 @@ Booth Mac         → admin.html   champ claims · verify ⭐ · stock counter �
 | `play.html` | Mobile quiz (entry gate → 10 Qs, 15s each, speed + streak bonus) — **deployed** |
 | `index.html` | TV display — open fullscreen, cast from the Mac — **deployed** |
 | `admin.html` | Booth tools — champ claims, star verification, stock counter, CSV — **LOCAL-ONLY, never deployed** |
-| `config.js` | **The one file you edit** (endpoint URL, podium size, stock, handout times, PIN) |
+| `config.js` | **The one file you edit** (endpoint URL, podium size, stock, PIN) |
 | `apps-script/Code.gs` | The backend — paste into the Google Sheet |
 | `tools/mock-server.py` | Local mock backend for testing |
 
@@ -75,16 +75,14 @@ Edit [`config.js`](config.js) → replace `PASTE_APPS_SCRIPT_EXEC_URL_HERE` with
 ### Handing out winners (admin.html — LOCAL-ONLY)
 1. On the booth Mac, double-click **`admin.html`** in this project folder (opens as `file://…`, PIN in `config.js`).
    It is intentionally **not** on the website — nobody outside the booth can reach it.
-2. Tee handout times live in `config.js → DRAW_TIMES` (`['15:00','17:00','19:00']`) — the TV counts
-   down to the next one. Edit on github.com → the TV self-updates within a minute.
-3. A podium player at the booth (or at handout time): **🏆 Add the current top 3** — they land on the
+2. A podium player at the booth: **🏆 Add the current top 3** — they land on the
    claim list → **Verify ⭐** → hand the tee → **Claimed ✓** (stock in the bar counts down)
    - ⚠ rate-limited → **Profile ↗** opens their stars tab — eyeball it
    - ✗ no star → "star it right now, then re-check" (they just showed up, they can do it in 10 s)
-4. **📋 Board snapshot** pulls the live top 10 into the list for reference — prior verify/claim marks
+3. **📋 Board snapshot** pulls the live top 10 into the list for reference — prior verify/claim marks
    are preserved per handle (a snapshot never wipes your claim state)
-5. **⬇ Export winners CSV** at the end of the day for your records
-6. **No-shows / disputes:** the **⏳ Standby list** button (opens `standby.html`, same PIN) shows the
+4. **⬇ Export winners CSV** at the end of the day for your records
+5. **No-shows / disputes:** the **⏳ Standby list** button (opens `standby.html`, same PIN) shows the
    board plus ranks 11-20 — call the next person down, verify their ⭐, hand them the tee.
    Rows have Verify ⭐ / Profile ↗ / Absent ✖ (marks persist until cleared) + their email if they left one.
 

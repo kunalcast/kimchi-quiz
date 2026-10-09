@@ -73,8 +73,8 @@
   .drawcard { margin-top: auto; background: linear-gradient(135deg, rgba(255,82,29,.18), rgba(255,82,29,.05));
     border: 2px dashed rgba(255,82,29,.6); border-radius: 22px; padding: 18px 30px 20px; text-align: center; }
   .drawcard h2 { color: var(--cream); font-size: 23px; font-weight: 800; letter-spacing: -.01em; }
-  .drawcard .cd { font-family: var(--mono); font-size: 46px; font-weight: 700; color: var(--gold); margin-top: 6px; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
-  .drawcard p { color: var(--muted); font-size: 18px; margin-top: 6px; }
+  .drawcard p { color: var(--muted); font-size: 20px; margin-top: 10px; font-weight: 600; }
+  .drawcard p b { color: var(--gold); }
 
   /* ── leaderboard ── */
   .right { flex: 1; display: flex; flex-direction: column; min-width: 0; }
@@ -162,7 +162,6 @@
         </div>
         <div class="drawcard">
           <h2>🏆 TOP <span id="winTop">3</span> = THE TEE</h2>
-          <div class="cd" id="drawCd">--:--:--</div>
           <p id="drawSub">🎁 10 tees in stock — while they last</p>
         </div>
       </div>
@@ -225,26 +224,6 @@ const WIN_N = CONFIG.TEES_COUNT || 10; // tees in stock
 const WIN_TOP = CONFIG.WIN_TOP || 3;     // podium size — how many ranks win
 $('#winTop').textContent = WIN_TOP;
 if (CONFIG.TEES_COUNT) $('#teeBadge').textContent = '🎁 ' + CONFIG.TEES_COUNT + ' t-shirts!';
-
-/* ── handout countdown (time pressure next to the pts cut-off) ── */
-function nextHandout() {
-  const now = new Date();
-  const slots = (CONFIG.DRAW_TIMES || []).map((t) => {
-    const [h, m] = t.split(':').map(Number);
-    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
-  }).sort((a, b) => a - b);
-  let target = slots.find((s) => s > now);
-  if (!target && slots.length) target = new Date(slots[0].getTime() + 86400000);
-  return target;
-}
-setInterval(() => {
-  const t = nextHandout();
-  if (!t) { $('#drawCd').textContent = ''; return; }
-  const ms = t - new Date();
-  if (ms <= 0) { $('#drawCd').textContent = '🎉 NOW'; return; }
-  const h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, s = Math.floor(ms / 1000) % 60;
-  $('#drawCd').textContent = [h, m, s].map((x) => String(x).padStart(2, '0')).join(':');
-}, 1000);
 
 /* ── leaderboard rendering (keyed rows, animated reorder) ── */
 const ROW_H = 74, rowEls = new Map(); // github(lower) → element
