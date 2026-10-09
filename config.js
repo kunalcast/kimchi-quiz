@@ -1,7 +1,7 @@
 // ── Kimchi × CYpher 2026 booth config ────────────────────────────────
 // The ONLY file you need to edit after setup:
 //   1. ENDPOINT — paste your Apps Script web app URL (ends with /exec)
-//   2. DRAW_TIMES — when you plan to draw raffle winners (TV countdown)
+//   2. TEES_COUNT — how many leaderboard spots win a tee (TV cut-off + phones)
 //   3. ADMIN_PIN — soft PIN for the booth admin page
 const CONFIG = {
   REPO_OWNER: 'getkimchi',
