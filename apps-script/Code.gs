@@ -54,6 +54,19 @@ function doPost(e) {
     const dur = Math.max(0, Math.min(3600, parseInt(p['DurationSec'], 10) || 0));
 
     const sheet = getDoc_().getSheetByName(SHEET_NAME);
+
+    // ONE PLAY PER GITHUB USERNAME — a repeat POST from the same handle is a
+    // success (so offline retries don't loop) but nothing new is recorded.
+    const lastRow = sheet.getLastRow();
+    if (lastRow >= 2) {
+      const handles = sheet.getRange(2, 3, lastRow - 1, 1).getValues();
+      for (let i = 0; i < handles.length; i++) {
+        if (String(handles[i][0]).trim().toLowerCase() === github.toLowerCase()) {
+          return json_({ result: 'success', duplicate: true, row: i + 2 });
+        }
+      }
+    }
+    const nextRow = lastRow + 1;
     const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
     const row = headers.map(function (h) {
       if (h === 'Timestamp') return new Date();
@@ -64,7 +77,6 @@ function doPost(e) {
       if (h === 'DurationSec') return dur;
       return '';
     });
-    const nextRow = sheet.getLastRow() + 1;
     sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
     return json_({ result: 'success', row: nextRow });
   } catch (err) {

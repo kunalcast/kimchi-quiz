@@ -21,14 +21,15 @@ async function submitPlay(play) {
 
 // Offline-safe submit: 3 retries, then queue in localStorage and retry in background.
 // The sheet is the source of truth — a queued play syncs on the next page load.
+// Returns the backend response, or null if it never got through.
 async function submitPlaySafe(play) {
   for (let i = 0; i < 3; i++) {
-    try { await submitPlay(play); return true; } catch (e) { await sleep(800 * (i + 1)); }
+    try { return await submitPlay(play); } catch (e) { await sleep(800 * (i + 1)); }
   }
   const q = JSON.parse(localStorage.getItem('kimchi_pending') || '[]');
   q.push(play);
   localStorage.setItem('kimchi_pending', JSON.stringify(q));
-  return false;
+  return null;
 }
 
 async function flushPending() {

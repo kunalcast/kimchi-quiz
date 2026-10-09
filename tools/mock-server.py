@@ -149,6 +149,10 @@ class Handler(BaseHTTPRequestHandler):
             'DurationSec': max(0, min(3600, as_int('DurationSec'))),
         }
         rows = load_db()
+        # ONE PLAY PER GITHUB USERNAME (mirrors Apps Script backend)
+        for i, r in enumerate(rows):
+            if str(r.get('GitHub', '')).strip().lower() == github.lower():
+                return self._json({'result': 'success', 'duplicate': True, 'row': i + 2})
         rows.append(row)
         save_db(rows)
         return self._json({'result': 'success', 'row': len(rows) + 1})

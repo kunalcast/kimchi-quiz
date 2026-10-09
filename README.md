@@ -104,7 +104,8 @@ your schedule (24h clock, booth-local time).
 
 ## Notes & guarantees
 
-- **Raffle integrity:** one entry per GitHub username (server dedupes); leaderboard shows best score.
+- **Raffle integrity:** one play per GitHub username — the backend accepts only the first play from a
+  handle (later POSTs are harmless no-ops), and the form warns players to double-check their handle.
 - **Privacy:** only name + GitHub username + score are collected, in your own Google Sheet.
 - The Google Sheet is the source of truth — admin page winner state lives in that Mac's browser
   (`Reset winners list` only clears local tracking).

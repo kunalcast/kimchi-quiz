@@ -71,6 +71,8 @@
   input.mono { font-family: var(--mono); }
   .field { margin-bottom: 1.05rem; }
   .field .err { color: var(--red); font-size: .78rem; margin-top: .35rem; min-height: 1em; }
+  .gh-note { color: var(--gold); font-size: .78rem; line-height: 1.5; margin-top: .5rem; }
+  .gh-note b { color: var(--cream); }
   .back { background: none; border: 0; color: var(--muted); font-size: .85rem; cursor: pointer; text-decoration: underline; padding: .5rem; align-self: center; font-family: inherit; }
 
   /* quiz */
@@ -142,7 +144,7 @@
     <div class="brand"><img src="assets/kimchi-mark.svg" class="logo" alt="kimchi"></div>
     <div class="event-chip">CYpher 2026 · BOOTH GAME</div>
     <h1>Star it.<br><span class="red">Quiz it.</span><br>Win a tee.</h1>
-    <p class="sub">Play the <strong>Kimchi Quiz</strong> — 10 questions, 15 seconds each.<br>Every player lands in the <strong>t-shirt raffle</strong> 🎁</p>
+    <p class="sub">One play per account — make it count.</p>
 
     <div class="star-step">
       <a class="btn star-btn" id="starRepo" href="https://github.com/getkimchi/kimchi" target="_blank" rel="noopener">
@@ -151,7 +153,7 @@
       <button class="btn ghost" id="toForm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp; — I starred it, let's play →</button>
     </div>
 
-    <p class="fine">Raffle winners must show they ⭐ starred the repo to claim their tee —<br>it takes 4 seconds: <a href="https://github.com/getkimchi/kimchi" target="_blank" rel="noopener">github.com/getkimchi/kimchi</a></p>
+    <p class="fine">One play per GitHub account · winners must show they ⭐ starred the repo to claim their tee —<br>it takes 4 seconds: <a href="https://github.com/getkimchi/kimchi" target="_blank" rel="noopener">github.com/getkimchi/kimchi</a></p>
     <p class="hint">👀 Psst… answers hide on <a style="color:inherit" href="https://kimchi.dev" target="_blank" rel="noopener">kimchi.dev</a> and the repo README</p>
   </section>
 
@@ -159,7 +161,7 @@
   <section id="form" class="screen">
     <div class="brand"><img src="assets/kimchi-badge.svg" class="logo badge" alt="kimchi"></div>
     <h1>Who's playing?</h1>
-    <p class="sub">Your GitHub handle goes on the leaderboard &amp; your raffle ticket.</p>
+    <p class="sub">Your GitHub handle is your leaderboard name <b>and</b> your raffle ticket.</p>
     <div class="card" style="padding:1.3rem 1.15rem">
       <div class="field">
         <label for="inName">Display name</label>
@@ -168,8 +170,10 @@
       </div>
       <div class="field">
         <label for="inGithub">GitHub username</label>
-        <input id="inGithub" class="mono" maxlength="39" placeholder="octocat" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <input id="inGithub" class="mono" maxlength="39" placeholder="your exact handle" autocomplete="off" autocapitalize="off" spellcheck="false">
         <div class="err" id="errGithub"></div>
+        <div class="gh-note">⚠️ <b>Double-check it before you start</b> — this is a one-shot play per account,
+        and winners claim their tee by showing <b>this username</b> ⭐ starred the repo. Typo = no tee.</div>
       </div>
       <button class="btn" id="startQuiz">Start the quiz →</button>
     </div>
@@ -202,8 +206,7 @@
     </div>
     <div class="sync-note" id="syncNote"></div>
     <div class="share-row">
-      <button class="btn ghost" id="shareBtn">Share score</button>
-      <button class="btn" id="againBtn">Play again</button>
+      <button class="btn" id="shareBtn">Share your score 🌶️</button>
     </div>
   </section>
 
@@ -359,6 +362,7 @@ async function finish() {
 
   const sent = await submitPlaySafe({ Name: G.name, GitHub: G.gh, Score: G.score, Correct: G.correct, DurationSec: dur });
   if (!sent) $('#syncNote').textContent = '⚡ Spotty wifi — your score is queued and will sync automatically.';
+  else if (sent.duplicate) $('#syncNote').textContent = '🎟️ This account already played — your first entry is the one in the raffle.';
   try {
     const lb = await apiGet('leaderboard');
     const me = (lb.top || []).find((r) => r.github.toLowerCase() === G.gh.toLowerCase());
@@ -382,7 +386,6 @@ function confetti() {
 }
 
 /* ── result actions ── */
-$('#againBtn').addEventListener('click', () => startQuiz(G.name, G.gh));
 $('#shareBtn').addEventListener('click', async () => {
   const text = 'I scored ' + G.score + ' on the Kimchi Quiz at CYpher 2026 🌶️⭐ github.com/getkimchi/kimchi';
   const url = 'https://github.com/getkimchi/kimchi';
