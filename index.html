@@ -326,7 +326,6 @@ function renderTicker() {
     items.push({
       t: isNaN(t) ? 0 : t,
       html: '🌶️ <b>' + esc(r.name) + '</b> ' + (fresh ? 'just entered the draw' : 'entered the draw') +
-        ' · <span class="r">' + Number(r.score).toLocaleString() + ' pts</span>' +
         (isNaN(t) ? '' : ' · ' + timeAgoShort(t))
     });
   });
