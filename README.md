@@ -1,29 +1,30 @@
-# 🫙 Kimchi × CYpher 2026 — Star-to-Win Booth Game
+# 🫙 Kimchi × KubeCon SLC 2026 — Star-to-Win Booth Game
 
 Turn booth foot traffic into GitHub stars for [`getkimchi/kimchi`](https://github.com/getkimchi/kimchi):
-attendees scan a QR code → star the repo → play a 10-question quiz → the TV shows a live
-leaderboard → **top 3 win a t-shirt**, while the 10 in stock last.
+attendees scan a QR code → star the repo → play a 10-question quiz (drawn from a bank of 50) →
+every play = one entry → **at 5:00 PM we draw ONE lucky winner for a Grand Theft Auto VI disc**
+(PS5 or Xbox Series X|S, winner's pick) at the Kimchi booth.
 
 ```
 Phone (scan QR) → play.html      star repo → quiz → score POSTed
                         ↓
          Google Sheet via Apps Script (free shared backend)
                         ↓
-TV (cast from Mac) → index.html  live board · live ⭐ count · QR · podium cut-off · stock
-Booth Mac         → admin.html   champ claims · verify ⭐ · stock counter · winners CSV
+TV (cast from Mac) → index.html  prize art · 5:00 PM countdown · live entry count · QR
+Booth Mac        → draw.html     the 5 PM draw · verify ⭐ · no-show redraws (LOCAL-ONLY)
 ```
 
 | File | What it is |
 |---|---|
-| `play.html` | Mobile quiz (entry gate → 10 Qs, 15s each, speed + streak bonus) — **deployed** |
-| `index.html` | TV display — open fullscreen, cast from the Mac — **deployed** |
-| `admin.html` | Booth tools — champ claims, star verification, stock counter, CSV — **LOCAL-ONLY, never deployed** |
-| `config.js` | **The one file you edit** (endpoint URL, podium size, stock, PIN) |
+| `play.html` | Mobile quiz (entry gate → 10 random Qs from the 50-bank, 15s each, speed + streak bonus) — **deployed** |
+| `index.html` | TV display — GTA VI prize panel, draw countdown, live player/play counts — open fullscreen, cast from the Mac — **deployed** |
+| `draw.html` | The 5:00 PM lucky draw — pulls the entry pool, spins, verify ⭐, redraw on no-show — **LOCAL-ONLY, never deployed** |
+| `config.js` | **The one file you edit** (endpoint URL, prize, draw time, PIN) |
 | `apps-script/Code.gs` | The backend — paste into the Google Sheet |
 | `tools/mock-server.py` | Local mock backend for testing |
 
-> 🔒 `admin.html` is gitignored on purpose: it only exists in this folder on the booth
-> Mac and is never published to GitHub Pages. Double-click it to open (`file://`).
+> 🔒 `admin.html` / booth tools stay gitignored on purpose: they only exist in this folder on the booth
+> Mac and are never published to GitHub Pages. Double-click `draw.html` to open it (`file://`).
 > Its PIN (`config.js → ADMIN_PIN`) guards against shoulder-surfing at the booth.
 
 ---
@@ -32,13 +33,16 @@ Booth Mac         → admin.html   champ claims · verify ⭐ · stock counter �
 
 ### 1. Google Sheet + Apps Script backend
 
-1. Go to [sheets.new](https://sheets.new) → name it **Kimchi Cypher Quiz**
+1. Go to [sheets.new](https://sheets.new) → name it **Kimchi KubeCon Quiz**
 2. Rename the first tab to **`Plays`** (double-click the tab → rename)
-3. In row 1 of `Plays`, enter these headers (case matters — `Email` in column G is optional):
+3. In row 1 of `Plays`, enter these headers (column **order doesn't matter** — the backend matches
+   by header name — but spelling/case does):
 
-   | A | B | C | D | E | F | G |
-   |---|---|---|---|---|---|---|
-   | Timestamp | Name | GitHub | Score | Correct | DurationSec | Email |
+   | Timestamp | Name | GitHub | Email | Designation | Company | Score | Correct | DurationSec |
+   |---|---|---|---|---|---|---|---|---|
+
+   > ⚠ **Upgrading from the CYpher sheet?** Just insert the `Designation` and `Company` columns —
+   > rows written before the change keep their data, new rows fill everything.
 
 4. **Extensions → Apps Script** → delete everything in `Code.gs` → paste the contents of [`apps-script/Code.gs`](apps-script/Code.gs)
 5. (Optional but recommended) In the editor toolbar: **Run → initialSetup** → authorize
@@ -49,17 +53,26 @@ Booth Mac         → admin.html   champ claims · verify ⭐ · stock counter �
    - **Deploy** → authorize the scopes (Google asks once)
 7. Copy the **Web app URL** — it ends in `/exec`
 
+> ⚠ **Email is now REQUIRED** by the backend (we need it to reach the winner). If you reuse an
+> already-deployed older script, `Designation`/`Company` are silently dropped and email stays
+> optional — redeploy (Deploy → Manage deployments → ✏️ → New version) to capture everything.
+
 ### 2. Point the site at your backend
 
-Edit [`config.js`](config.js) → replace `PASTE_APPS_SCRIPT_EXEC_URL_HERE` with your `/exec` URL.
+Edit [`config.js`](config.js) → replace the `ENDPOINT` value with your `/exec` URL.
 (Easiest: open the repo on github.com → config.js → ✏️ edit → paste → commit. Pages updates in ~1 min.)
+
+While you're in `config.js`:
+- `DRAW_TIME: '17:00'` — the lucky draw. 24h, **local time of the booth Mac** (Salt Palace = MST).
+- `PRIZE_NAME` / `PRIZE_SUB` — what's on screen.
+- `ADMIN_PIN` — change it before the doors open.
 
 ### 3. Sanity test (2 min)
 
 1. Open the quiz URL on your phone, play one game
-2. Check the Google Sheet — your row should be there
-3. Delete the test rows from the sheet (or leave them; only-real-player rows matter)
-4. Open the TV URL — your score should appear within 10 seconds
+2. Check the Google Sheet — your row should be there (name, email, designation, company, GitHub, score)
+3. Delete the test rows from the sheet
+4. Open the TV URL — the entry counter should bump within 10 seconds
 
 ---
 
@@ -71,26 +84,24 @@ Edit [`config.js`](config.js) → replace `PASTE_APPS_SCRIPT_EXEC_URL_HERE` with
 3. Cast the whole screen (System Settings → Displays → AirPlay, or a USB-C/HDMI cable —
    a cable is more reliable than conference wifi)
 4. Leave it running. It polls every 10 s and heals itself if wifi drops (shows "reconnecting").
+   The countdown targets 5:00 PM in the **Mac's local timezone** — keep the Mac on Salt Lake time.
 
-### Handing out winners (admin.html — LOCAL-ONLY)
-1. On the booth Mac, double-click **`admin.html`** in this project folder (opens as `file://…`, PIN in `config.js`).
+### The 5:00 PM draw (draw.html — LOCAL-ONLY)
+1. On the booth Mac, double-click **`draw.html`** in this project folder (opens as `file://…`, PIN in `config.js`).
    It is intentionally **not** on the website — nobody outside the booth can reach it.
-2. A podium player at the booth: **🏆 Add the current top 3** — they land on the
-   claim list → **Verify ⭐** → hand the tee → **Claimed ✓** (stock in the bar counts down)
+2. At 5:00 PM, gather a crowd → **🎰 DRAW THE WINNER** — it spins and lands on one entry.
+3. Winner walks up: **Verify ⭐** → hand over the GTA VI disc. 🎮
    - ⚠ rate-limited → **Profile ↗** opens their stars tab — eyeball it
-   - ✗ no star → "star it right now, then re-check" (they just showed up, they can do it in 10 s)
-3. **📋 Board snapshot** pulls the live top 10 into the list for reference — prior verify/claim marks
-   are preserved per handle (a snapshot never wipes your claim state)
-4. **⬇ Export winners CSV** at the end of the day for your records
-5. **No-shows / disputes:** the **⏳ Standby list** button (opens `standby.html`, same PIN) shows the
-   board plus ranks 11-20 — call the next person down, verify their ⭐, hand them the tee.
-   Rows have Verify ⭐ / Profile ↗ / Absent ✖ (marks persist until cleared) + their email if they left one.
+   - ✗ no star → "star it right now, then re-check" (10 seconds)
+4. **No-show or no star:** **✖ Redraw** — the voided pick is logged (struck through) and excluded
+   from the next spin.
+5. The **Draw log** (local to that Mac's browser) keeps every pick of the day for your records.
+   The Google Sheet always has the full entry pool — export it for the lead list
+   (name, work email, designation, company are all there).
 
 ### Claim rule (say it out loud at the booth)
-> "Make the top 3 and the tee is yours — while the 10 in stock last. Show your ⭐ starred repo to claim."
-
-> Current claims (champ button, stock) and the board snapshot are **local to that Mac's browser** —
-> the Google Sheet always keeps every play, so nothing is lost if the Mac restarts.
+> "Star the repo, beat the quiz, and you're in the 5 PM draw — one of you drives home with GTA VI.
+> Show your ⭐ starred repo to claim the disc."
 
 ---
 
@@ -99,11 +110,13 @@ Edit [`config.js`](config.js) → replace `PASTE_APPS_SCRIPT_EXEC_URL_HERE` with
 | Symptom | Fix |
 |---|---|
 | Play submitted but fetch "failed" | Known Apps Script quirk — the row usually lands anyway. Check the sheet. |
-| Leaderboard stuck / reconnecting | Bad wifi. It retries every 10 s — nothing is lost. |
+| TV stuck / reconnecting | Bad wifi. It retries every 10 s — nothing is lost. |
 | Score didn't sync from a phone | The play is queued on that phone; it syncs when the page is next opened on wifi. |
 | Verify ⭐ rate-limited | Use **Profile ↗** and eyeball the stars tab. |
 | Changed Apps Script code | **Deploy → Manage deployments → ✏️ → New version → Deploy** (edits don't auto-update). Same URL. |
+| Draw button says "no entries" | Backend didn't return the raffle pool — check wifi, then `config.js → ENDPOINT`. |
 | Star count on TV frozen | Backend caches it 60 s; also tolerates offline. Give it a minute. |
+| Designation/Company columns empty | Old Apps Script deployment still live — redeploy a new version (see setup ⚠). |
 
 ## Notes & guarantees
 
@@ -111,10 +124,14 @@ Edit [`config.js`](config.js) → replace `PASTE_APPS_SCRIPT_EXEC_URL_HERE` with
   config changes both picked up. Never refresh it by hand mid-event.
 - **Fair play:** one play per GitHub username — the backend accepts only the first play from a
   handle (later POSTs are harmless no-ops), and the form warns players to double-check their handle.
-- **Privacy:** name + GitHub username + score are collected, plus an optional email
-  (updates), all in your own Google Sheet.
-- **Tee artwork:** the prize mockup lives at `assets/tee-mockup.jpg` (TV card) and
-  `assets/tee-mockup-thumb.jpg` (phone strips) — swap in a photo of your real t-shirt
-  using the same filenames and every page picks it up.
-- The Google Sheet is the source of truth — admin page winner state lives in that Mac's browser
-  (`Reset winners list` only clears local tracking).
+  The draw pool is unique handles, so nobody can farm entries.
+- **The questions:** a bank of 50 in `play.html` (~30 Software Factory/Gateway/Inference facts +
+  ~20 Kubernetes/KubeCon trivia), all backed by kimchi.dev/software-factory and cncf.io — after each
+  answer the player sees the fact with its source. 10 are drawn at random per play.
+- **Privacy:** full name, work email (required), designation, company, GitHub username and score,
+  all in your own Google Sheet.
+- **Prize artwork:** the display art is `assets/gta-vi-disc.svg` (original GTA-VI-styled art, safe
+  to commit). Want the real box art? Drop a JPG at `assets/gta-vi-disc.jpg` and swap the
+  `gta-vi-disc.svg` references in `play.html`, `index.html` and `draw.html` for that file.
+- The Google Sheet is the source of truth — the draw log lives only in that Mac's browser
+  (`localStorage`), and the sheet keeps every play if the Mac restarts.

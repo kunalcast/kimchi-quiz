@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Kimchi Quiz — CYpher 2026</title>
+<title>Kimchi Quiz — KubeCon SLC 2026</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌶️</text></svg>">
 <script src="config.js"></script>
 <script src="assets/app.js"></script>
@@ -133,6 +133,7 @@
   .raffle .ticket { font-size: 2rem; }
   .raffle h2 { font-size: 1.05rem; margin-top: .35rem; color: var(--cream); }
   .raffle p { color: var(--muted); font-size: .85rem; margin-top: .3rem; line-height: 1.5; }
+  .raffle p b { color: var(--cream); }
   .rank-line { font-family: var(--mono); font-size: .8rem; color: var(--green); margin-top: .5rem; min-height: 1.1em; }
   .sync-note { font-size: .78rem; color: var(--gold); text-align: center; margin-top: .8rem; min-height: 1em; }
   .share-row { display: flex; gap: .7rem; margin-top: 1.05rem; }
@@ -147,13 +148,13 @@
   <!-- ══════ SPLASH ══════ -->
   <section id="splash" class="screen active">
     <div class="brand"><img src="assets/kimchi-mark.svg" class="logo" alt="kimchi"></div>
-    <div class="event-chip">CYpher 2026 · BOOTH GAME</div>
-    <h1>Star it.<br><span class="red">Quiz it.</span><br>Win a tee.</h1>
-    <p class="sub">One play per account — make it count.</p>
+    <div class="event-chip">KUBECON + CLOUDNATIVECON NA · SALT LAKE CITY</div>
+    <h1>Star it.<br><span class="red">Quiz it.</span><br>Win GTA VI.</h1>
+    <p class="sub">One play per account — make it count.<br><strong>One player</strong> leaves with the game.</p>
 
     <div class="tee-strip">
-      <img src="assets/tee-mockup-thumb.jpg" alt="Kimchi t-shirt">
-      <p><b>🎁 Win this tee</b> — make it to the <b>top 3</b>!<br><b id="teeGive">10 t-shirts</b> in stock — while they last 👕</p>
+      <img src="assets/gta-vi-disc.svg" alt="Grand Theft Auto VI">
+      <p><b>🎁 Win Grand Theft Auto VI</b> — PS5 or Xbox disc, winner's pick.<br><b>Lucky draw at 5:00 PM</b> at the Kimchi booth 🎮</p>
     </div>
 
     <div class="star-step">
@@ -163,33 +164,42 @@
       <button class="btn ghost" id="toForm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp; — I starred it, let's play →</button>
     </div>
 
-    <p class="fine">One play per GitHub account · winners must show they ⭐ starred the repo to claim their tee —<br>it takes 4 seconds: <a href="https://github.com/getkimchi/kimchi" target="_blank" rel="noopener">github.com/getkimchi/kimchi</a></p>
-    <p class="hint">👀 Psst… answers hide on <a style="color:inherit" href="https://kimchi.dev" target="_blank" rel="noopener">kimchi.dev</a> and the repo README</p>
+    <p class="fine">One play per GitHub account · the winner shows they ⭐ starred the repo to claim the game —<br>it takes 4 seconds: <a href="https://github.com/getkimchi/kimchi" target="_blank" rel="noopener">github.com/getkimchi/kimchi</a></p>
+    <p class="hint">👀 Psst… answers hide on <a style="color:inherit" href="https://kimchi.dev/software-factory" target="_blank" rel="noopener">kimchi.dev/software-factory</a> and the repo README</p>
   </section>
 
   <!-- ══════ FORM ══════ -->
   <section id="form" class="screen">
     <div class="brand"><img src="assets/kimchi-badge.svg" class="logo badge" alt="kimchi"></div>
     <h1>Who's playing?</h1>
-    <p class="sub">Your GitHub handle is your leaderboard name <b>and</b> your tee claim.</p>
+    <p class="sub">The draw is at <b>5:00 PM</b> at the booth — leave your details so we can hand over the disc.</p>
     <div class="card" style="padding:1.3rem 1.15rem">
       <div class="field">
-        <label for="inName">Display name</label>
-        <input id="inName" maxlength="40" placeholder="Ada Lovelace" autocomplete="off">
+        <label for="inName">Full name</label>
+        <input id="inName" maxlength="40" placeholder="Ada Lovelace" autocomplete="name">
         <div class="err" id="errName"></div>
+      </div>
+      <div class="field">
+        <label for="inEmail">Work email</label>
+        <input id="inEmail" type="email" maxlength="80" placeholder="ada@yourcompany.com" autocomplete="email" autocapitalize="off" spellcheck="false">
+        <div class="err" id="errEmail"></div>
+      </div>
+      <div class="field">
+        <label for="inDesig">Designation</label>
+        <input id="inDesig" maxlength="60" placeholder="Platform Engineer" autocomplete="organization-title">
+        <div class="err" id="errDesig"></div>
+      </div>
+      <div class="field">
+        <label for="inCompany">Company</label>
+        <input id="inCompany" maxlength="60" placeholder="Your company" autocomplete="organization">
+        <div class="err" id="errCompany"></div>
       </div>
       <div class="field">
         <label for="inGithub">GitHub username</label>
         <input id="inGithub" class="mono" maxlength="39" placeholder="your exact handle" autocomplete="off" autocapitalize="off" spellcheck="false">
         <div class="err" id="errGithub"></div>
-        <div class="gh-note">⚠️ <b>Double-check it before you start</b> — this is a one-shot play per account,
-        and winners claim their tee by showing <b>this username</b> ⭐ starred the repo. Typo = no tee.</div>
-      </div>
-      <div class="field">
-        <label for="inEmail">Email <span style="text-transform:none;color:var(--muted)">(optional)</span></label>
-        <input id="inEmail" type="email" maxlength="80" placeholder="you@example.com" autocomplete="off">
-        <div class="err" id="errEmail"></div>
-        <div class="gh-note" style="color:var(--muted)">Want a nudge when kimchi ships something cool? Drop your email — no spam, promise.</div>
+        <div class="gh-note">⚠️ <b>Double-check it before you start</b> — one play per account,
+        and the winner claims the game by showing <b>this username</b> ⭐ starred the repo. Typo = no GTA.</div>
       </div>
       <button class="btn" id="startQuiz">Start the quiz →</button>
     </div>
@@ -215,18 +225,18 @@
       <div class="verdict" id="verdict"></div>
     </div>
     <div class="raffle">
-      <div class="ticket">👑</div>
-      <h2 id="raffleName">You're on the board!</h2>
-      <p><b>Top 3 win</b> while the <b>10</b> last.<br>Claim at the booth by showing you <b>⭐ starred</b> the repo.</p>
+      <div class="ticket">🎟️</div>
+      <h2 id="raffleName">You're in the draw!</h2>
+      <p><b>Lucky draw at 5:00 PM</b> at the Kimchi booth.<br>One player wins <b>Grand Theft Auto VI</b> — winner shows their ⭐ to claim.</p>
       <div class="rank-line" id="rankLine"></div>
     </div>
     <div class="tee-strip">
-      <img src="assets/tee-mockup-thumb.jpg" alt="Kimchi t-shirt">
-      <p>👕 This tee could be yours — <b>finish in the top 3</b> 🎁<br>Claims verified at the booth: show your ⭐.</p>
+      <img src="assets/gta-vi-disc.svg" alt="Grand Theft Auto VI">
+      <p>🎮 This disc could be yours — <b>draw at 5:00 PM sharp</b>.<br>Claim verified at the booth: show your ⭐ on getkimchi/kimchi.</p>
     </div>
     <div class="sync-note" id="syncNote"></div>
     <div class="share-row">
-      <button class="btn" id="shareBtn">Share your score 🌶️</button>
+      <button class="btn" id="shareBtn">Tell your crew 🌶️</button>
     </div>
   </section>
 
@@ -234,32 +244,64 @@
 <div class="confetti" id="confetti"></div>
 
 <script>
+/* Question bank — 50 entries, 10 drawn at random per play.
+   Facts are backed by kimchi.dev/software-factory, kimchi.dev and cncf.io. */
 const QUESTIONS = [
-  { q: 'What is Kimchi?', o: ['A Korean pop band', 'A terminal coding agent', 'A cloud database', 'A salad bar chain'], a: 1, fact: 'Kimchi is a coding agent CLI powered by kimchi.dev — named after Korea\u2019s legendary fermented dish.' },
-  { q: 'Which command installs Kimchi on macOS with Homebrew?', o: ['brew install kimchi', 'brew install getkimchi/tap/kimchi', 'brew tap kimchi agent', 'sudo apt install kimchi'], a: 1, fact: 'Or the one-liner: curl -fsSL github.com/getkimchi/kimchi/releases/latest/download/install.sh | bash' },
-  { q: 'After installing, what one-time command sets up your API key?', o: ['kimchi login', 'kimchi init', 'kimchi setup', 'kimchi auth'], a: 2, fact: 'kimchi setup — then just run kimchi to launch the agent.' },
-  { q: 'What does Ctrl+P do inside Kimchi\u2019s interactive CLI?', o: ['Pastes code', 'Cycles through models', 'Prints the transcript', 'Opens preferences'], a: 1, fact: 'Ctrl+P cycles models — the last stop in the cycle is multi-model mode.' },
-  { q: 'Kimchi is powered by\u2026', o: ['One very large model', 'Multi-model orchestration', 'A room of interns', 'Quantum annealing'], a: 1, fact: 'Each task type — plan, build, review, explore — is routed to the right model for the job.' },
-  { q: 'What does Kimchi enforce BEFORE a request hits a model?', o: ['Hard budget caps', 'Karma points', 'Code style rules', 'Lunch breaks'], a: 0, fact: 'One enforcement layer: spending, data, deployment and routing — before any request leaves.' },
-  { q: 'Can Kimchi run inside your own perimeter?', o: ['No, cloud only', 'Only on Tuesdays', 'Yes — Kubernetes on AWS, GCP, Azure or on-prem', 'Only in Seoul'], a: 2, fact: 'Deploy serverless or inside your VPC — your code never leaves the perimeter.' },
-  { q: 'Does Kimchi let your prompts and code train the models?', o: ['Yes, by default', 'Only for enterprise', 'No — excluded from training', 'Just the funny bits'], a: 2, fact: 'Private by architecture: prompts, code and outputs stay out of model training.' },
-  { q: 'Which of these is a real Kimchi product for handing sessions to the cloud?', o: ['Kimchi Express', 'Teleport', 'Kimchi Van', 'Beam Me Up'], a: 1, fact: 'Teleport hands agent sessions off to the cloud. Also in the fridge: Studio, Inference, Code Review.' },
-  { q: 'What\u2019s the main vegetable in classic kimchi (the dish)?', o: ['Iceberg lettuce', 'Napa cabbage', 'Kale', 'Zucchini'], a: 1, fact: 'Napa cabbage + gochugaru + time = kimchi.' },
-  { q: 'What gives kimchi its signature red color?', o: ['Tomato paste', 'Gochugaru chili flakes', 'Beetroot', 'Food coloring'], a: 1, fact: 'Gochugaru — Korean chili flakes. Mildly spicy, deeply addictive.' },
-  { q: 'Traditional kimchi ferments in an earthenware jar called a\u2026', o: ['Onggi', 'Tagine', 'Dutch oven', 'Mason jar'], a: 0, fact: 'Onggi jars breathe while fermenting — centuries before CI/CD pipelines.' },
-  { q: 'Which of these does NOT belong in kimchi?', o: ['Garlic', 'Ginger', 'Scallions', 'Chocolate'], a: 3, fact: 'Garlic, ginger, scallions — yes. Chocolate — please, no.' },
-  { q: 'Kimchi jjigae is a beloved Korean\u2026', o: ['Stew', 'Dance', 'Board game', 'Karaoke style'], a: 0, fact: 'Kimchi jjigae: bubbling hot stew built on aged kimchi. Winter essential.' },
-  { q: 'On GitHub, what does starring a repo do?', o: ['Forks the code', 'Saves it to your stars and tells the maintainers you care', 'Gives you commit access', 'Downloads the code'], a: 1, fact: '⭐ = bookmark + love. It helps other devs discover the project.' },
-  { q: 'What\u2019s the keyboard shortcut to star the repo you\u2019re viewing on github.com?', o: ['Ctrl+S', 'Alt+S', 'S', 'Shift+*'], a: 2, fact: 'Just press S on any repo page. Try it on github.com/getkimchi/kimchi 👀' },
-  { q: 'What is a \u201cfork\u201d on GitHub?', o: ['Cutlery', 'Your own copy of a repo you can change freely', 'A broken build', 'A pull request'], a: 1, fact: 'Fork → tweak → open a pull request upstream. That\u2019s open source.' }
+  { q: 'In `kimchi factory run KIM-482`, which stage drafts the spec your team approves?', o: ['ticket', 'plan', 'code', 'deploy'], a: 1, fact: 'Plan agents read the issue, the codebase and past decisions, then draft a plan your team can approve before a line is written. — kimchi.dev/software-factory' },
+  { q: 'Put the Software Factory loop in order:', o: ['plan → code → review → test → deploy', 'ticket → plan → code → test → review → deploy → monitor', 'code → test → plan → deploy → monitor', 'ticket → code → deploy → monitor'], a: 1, fact: 'The loop is ticket → plan → code → test → review → deploy → monitor — one continuous cycle. — kimchi.dev/software-factory' },
+  { q: 'In the sample run for ticket KIM-482, what did the `review` stage report?', o: ['PR #918 reviewed: score 92, 1 warning fixed', 'Merge blocked by policy', 'PR auto-closed for staleness', 'Review skipped — over budget'], a: 0, fact: 'review → "PR #918 reviewed: score 92, 1 warning fixed", then it merged through CI. — kimchi.dev/software-factory' },
+  { q: 'Which of these is NOT a stage in Kimchi\u2019s factory loop?', o: ['Plan', 'Test', 'Monitor', 'Retrospective'], a: 3, fact: 'The loop stages: Plan, Code, Review, Test, Deploy, Monitor. No retro — agents don\u2019t do meetings.' },
+  { q: 'What does the `monitor` stage report at the end of the factory run?', o: ['CPU at 42%', '99.99% uptime', '$0.84 spent, within team budget', '12 standups scheduled'], a: 2, fact: 'monitor → "$0.84 spent, within team budget" — spend per ticket, tracked. — kimchi.dev/software-factory' },
+  { q: 'Kimchi\u2019s control plane (policies, budgets, secrets, MCP gateway, audit trail) is called…', o: ['Gateway', 'Bridge', 'Airport', 'Tollbooth'], a: 0, fact: 'The Gateway is the control plane — auto-router, policies, budgets, secrets, MCP gateway, audit trail. — kimchi.dev/software-factory' },
+  { q: 'Where does the Kimchi Gateway control plane run?', o: ['Only on-device', 'Kimchi cloud, EU region', 'Las Vegas', 'On the conference wifi'], a: 1, fact: 'Gateway runs in Kimchi cloud, EU region — and you can self-host it. — kimchi.dev/software-factory' },
+  { q: 'What does Kimchi\u2019s auto-router do?', o: ['Assigns Jira tickets', 'Routes Kubernetes pods', 'Picks the best model for each task', 'Picks your lunch order'], a: 2, fact: 'Auto-router picks the best model for each task automatically. — kimchi.dev/software-factory' },
+  { q: 'Budgets in Kimchi are enforced as…', o: ['Monthly PDF reports', 'Gentle suggestions', 'Vibes and prayers', 'Hard caps per user, team and org'], a: 3, fact: 'Budget caps per user, team, and org — hard caps, not alerts. — kimchi.dev/software-factory' },
+  { q: 'Which Kimchi capability records every agent action and model call?', o: ['The README', 'Audit trail', 'Git blame', 'Screen recording'], a: 1, fact: 'Every agent action and model call is recorded in the audit trail. — kimchi.dev/software-factory' },
+  { q: 'Kimchi Workspaces are…', o: ['Slack channels', 'Persistent cloud dev environments', 'Office pods in Paris', 'CSS breakpoints'], a: 1, fact: 'Workspaces: persistent cloud dev environments with teleport sessions, remote plan execution and in-region isolation. — kimchi.dev/software-factory' },
+  { q: 'What does "secrets brokering" mean in Kimchi Workspaces?', o: ['Selling API keys on a marketplace', 'Rotating passwords by email', 'Hardcoding secrets in CI', 'Agents use credentials without secrets ever entering the workspace'], a: 3, fact: 'Secrets brokering: agents use your credentials without secrets ever being placed in the workspace. — kimchi.dev/software-factory' },
+  { q: 'Which workspace feature is on Kimchi\u2019s "coming soon" list?', o: ['GPU workspaces', 'Fax integration', 'PagerDuty for actual pagers', 'RSS feeds'], a: 0, fact: 'GPU workspaces — remote workspaces with GPUs for ML and inference — coming soon. — kimchi.dev/software-factory' },
+  { q: 'Teleport in Kimchi lets you…', o: ['Move a session to the cloud, or run an approved plan remotely', 'Skip the KubeCon badge line', 'Time-travel a git rebase', 'Beam to the keynote'], a: 0, fact: 'Teleport sessions and remote plan execution are built into Workspaces. — kimchi.dev/software-factory' },
+  { q: 'Kimchi\u2019s hosted open-weight models physically run on…', o: ['Spare booth laptops', 'Dedicated GPUs in Paris', 'The Solutions Showcase wifi', 'Edge smart fridges'], a: 1, fact: 'Open-weight models run on Kimchi GPUs in Paris — EU hosted. — kimchi.dev/software-factory' },
+  { q: 'Which model families does Kimchi actually host?', o: ['GPT-5 and Claude', 'LLaMA and Mistral only', 'GLM, MiniMax and Kimi', 'Stable Diffusion'], a: 2, fact: 'GLM, MiniMax, Kimi — DeepSeek too in the capabilities table — routed per task. — kimchi.dev/software-factory' },
+  { q: 'Kimchi Inference exposes which API style?', o: ['SOAP', 'OpenAI-compatible API', 'IRC commands', 'Fax'], a: 1, fact: 'Serverless API for open-source models — OpenAI-compatible, zero infrastructure. — kimchi.dev/inference' },
+  { q: 'Your prompts and code on Kimchi are…', o: ['Sold to advertisers', 'Used for training by default', 'Posted on X', 'Excluded from model training'], a: 3, fact: 'No training on your data — prompts, code and outputs stay out of model training. Private by architecture. — kimchi.dev' },
+  { q: '"Bring your own provider" (coming soon) means you can…', o: ['Bring snacks to the booth', 'Connect your own OpenAI-compatible inference endpoint', 'Bring your own blender', 'Invite your whole team for free'], a: 1, fact: 'Coming soon: connect your own OpenAI-compatible inference endpoint. — kimchi.dev/software-factory' },
+  { q: 'PII redaction in Kimchi happens…', o: ['Never', 'Once a quarter', 'Before personal data reaches a model', 'After the model answers'], a: 2, fact: 'PII redaction detects and redacts personal data in prompts before it reaches a model. — kimchi.dev/software-factory' },
+  { q: 'Admins can enforce which permission mode policy across CLI, Studio and IDEs?', o: ['Blocking yolo mode', 'Mandatory dark mode', 'Caps lock only', 'Spaces over tabs'], a: 0, fact: 'Admin policy enforcement — e.g. block yolo mode across CLI, Studio and IDEs. — kimchi.dev/software-factory' },
+  { q: 'Self-hosted Kimchi runs…', o: ['Only serverless', 'Only on Raspberry Pi', 'On-prem only, with fax', 'In your own cloud or data center — air-gapped option included'], a: 3, fact: 'Run Kimchi in your own cloud or data center, with an air-gapped option. — kimchi.dev/software-factory' },
+  { q: 'What does the Kimchi MCP Gateway provide?', o: ['Free Minecraft hosting', 'One governed entry point for every MCP server, with policies, secrets and audit logs', 'A meme registry', 'DNS for your laptop'], a: 1, fact: 'MCP Gateway: one governed entry point for every MCP server your agents use. — kimchi.dev/software-factory' },
+  { q: 'What\u2019s the current status of SSO, SCIM and enterprise audit logs in Kimchi?', o: ['GA since 1999', 'Cancelled forever', 'On the "coming soon" list', 'Carrier pigeon only'], a: 2, fact: 'SSO, SCIM and audit logs are listed under coming soon. — kimchi.dev/software-factory' },
+  { q: 'Kimchi is built by…', o: ['CAST AI', 'Rockstar Games', 'Nintendo', 'The CNCF'], a: 0, fact: 'Kimchi\u2019s enterprise controls are backed by CAST AI\u2019s security program. — kimchi.dev' },
+  { q: 'Which of these is NOT a Kimchi surface?', o: ['CLI', 'VS Code plugin', 'Web IDE', 'Photoshop plugin'], a: 3, fact: 'Surfaces: CLI, VS Code plugin, Web IDE and the Kimchi desktop app. — kimchi.dev/software-factory' },
+  { q: 'Kimchi Studio is…', o: ['A tattoo parlor', 'The visual workspace for your agents', 'A synthesizer app', 'A cooking show'], a: 1, fact: 'Studio: watch, guide and resume agents — connects to Slack, Atlassian and any MCP server. — kimchi.dev' },
+  { q: 'Beyond coding, review and test agents, Kimchi also runs…', o: ['Only chess bots', 'Weather balloons', 'Knowledge-work agents for sales, marketing, support and ops', 'Tamagotchis'], a: 2, fact: 'The stack: engineering agents plus knowledge-work agents — sales, marketing, support, ops. — kimchi.dev/software-factory' },
+  { q: 'Kimchi Code Reviewer works…', o: ['On every merge or pull request', 'Only on weekends', 'Only when asked nicely', 'By fax'], a: 0, fact: 'AI review on every merge request or pull request — inline, before the merge. — kimchi.dev/software-factory' },
+  { q: 'Kimchi\u2019s cost-per-PR reporting exists to prove…', o: ['Nothing, it\u2019s decorative', 'Font loading speed', 'Lunch quality', 'ROI on AI spend, PR by PR'], a: 3, fact: 'Cost per PR and ROI reporting — prove the return on AI spend, PR by PR. — kimchi.dev/software-factory' },
+  { q: 'Correct way to install the Kimchi CLI with Homebrew?', o: ['brew install kimchi', 'brew install getkimchi/tap/kimchi', 'brew tap kimchi agent', 'sudo apt install kimchi'], a: 1, fact: 'brew install getkimchi/tap/kimchi — or the install.sh one-liner from GitHub releases. — getkimchi/kimchi README' },
+  { q: 'After installing, what one-time command sets up your API key?', o: ['kimchi login', 'kimchi init', 'kimchi setup', 'kimchi auth'], a: 2, fact: 'kimchi setup — then just run kimchi to launch the agent. — getkimchi/kimchi README' },
+  { q: 'What does Ctrl+P do inside Kimchi\u2019s interactive CLI?', o: ['Pastes code', 'Cycles through models — the last stop is multi-model mode', 'Prints the transcript', 'Opens preferences'], a: 1, fact: 'Ctrl+P cycles models; the cycle ends in multi-model mode. — getkimchi/kimchi README' },
+  { q: 'The official Kimchi install one-liner pipes…', o: ['install.sh from GitHub releases into bash', 'npm into oblivion', 'curl into /dev/null', 'pip into snake'], a: 0, fact: 'curl -fsSL github.com/getkimchi/kimchi/releases/latest/download/install.sh | bash — kimchi.dev' },
+  { q: 'KubeCon + CloudNativeCon North America 2026 is being held in…', o: ['Denver', 'Atlanta', 'Salt Lake City', 'Detroit'], a: 2, fact: 'Nov 9–12, 2026 — Salt Palace Convention Center, Salt Lake City. — cncf.io' },
+  { q: 'This year\u2019s KubeCon venue is called…', o: ['Salt Palace Convention Center', 'The Crystal Cathedral', 'The Hangar', 'Area 51'], a: 0, fact: 'The Salt Palace Convention Center — badge pickup at the 200 South entrance. — events.linuxfoundation.org' },
+  { q: 'Which brand-new track debuted at KubeCon NA 2026?', o: ['Blockchain Basics', 'Metaverse Ops', 'Mainframe Mondays', 'AI Inference + Agentic'], a: 3, fact: 'New this year: the AI Inference + Agentic track — vLLM, KServe, Ray, OpenTelemetry. — cncf.io' },
+  { q: 'Kubernetes grew out of which internal Google system?', o: ['Spanner', 'Borg', 'MapReduce', 'Google Wave'], a: 1, fact: 'Kubernetes descends from Borg, Google\u2019s internal cluster manager.' },
+  { q: '"Kubernetes" is Greek for…', o: ['Football captain', 'Ant colony leader', 'Helmsman — the ship\u2019s pilot', 'Gardener'], a: 2, fact: 'Κυβερνήτης — helmsman or pilot. Hence the ship\u2019s-wheel logo.' },
+  { q: 'The smallest deployable unit in Kubernetes is…', o: ['A Pod', 'A container', 'A node', 'A Service'], a: 0, fact: 'A Pod — one or more containers sharing network and storage.' },
+  { q: 'All Kubernetes cluster state lives in…', o: ['An S3 bucket', 'A sidecar', '/tmp', 'etcd'], a: 3, fact: 'etcd — the distributed key-value store that is the cluster\u2019s source of truth.' },
+  { q: 'Which control-plane component decides which node a pod runs on?', o: ['kubelet', 'kube-scheduler', 'etcd', 'kube-proxy'], a: 1, fact: 'kube-scheduler watches for new pods and binds them to nodes.' },
+  { q: 'One pod on every node in the cluster — that\u2019s a…', o: ['ReplicaSet', 'Deployment', 'DaemonSet', 'StatefulSet'], a: 2, fact: 'DaemonSet — how node-level agents like log collectors run everywhere.' },
+  { q: 'Helm is best described as…', o: ['A package manager for Kubernetes', 'A service mesh', 'A container runtime', 'A YAML linter'], a: 0, fact: 'Helm charts package, version and install Kubernetes apps.' },
+  { q: 'A Kubernetes Operator is…', o: ['The person running the booth', 'A node administrator', 'An etcd CLI', 'Custom controllers + CRDs that manage an application'], a: 3, fact: 'Operators encode operational knowledge into controllers watching custom resources.' },
+  { q: '`kubectl apply -f` is the ___ way to manage objects.', o: ['imperative', 'declarative', 'chaotic', 'manual'], a: 1, fact: 'apply is declarative — desired state in YAML; create/replace are imperative.' },
+  { q: 'Argo CD and Flux are the poster children of…', o: ['NoOps', 'FinOps', 'GitOps', 'ChatOps'], a: 2, fact: 'GitOps — cluster state synced from Git as the single source of truth.' },
+  { q: 'Kubernetes 1.0 shipped in…', o: ['2015', '2005', '2020', '1998'], a: 0, fact: 'K8s 1.0 landed July 2015 — and the CNCF was formed alongside it.' },
+  { q: 'Salt Lake City sits in which time zone in November?', o: ['EST (UTC-5)', 'MST (UTC-7)', 'PST (UTC-8)', 'CST (UTC-6)'], a: 1, fact: 'Mountain Standard Time, UTC-7 — all KubeCon session times are listed in MST. — events.linuxfoundation.org' },
+  { q: 'Which of these was a CNCF-hosted co-located event on Monday at KubeCon NA 2026?', o: ['DockerCon', 'VMworld', 'WasmCon', 'MongoDB World'], a: 2, fact: 'Co-located events: WasmCon, ArgoCon, BackstageCon, CiliumCon, Cloud Native AI + Inference Day… — cncf.io' }
 ];
 
 const $ = (s) => document.querySelector(s);
 const QUESTION_MS = 15000;
 let G = null; // game state
-
-/* prize count from config.js — single source of truth for the giveaway number */
-if (CONFIG.TEES_COUNT) $('#teeGive').textContent = CONFIG.TEES_COUNT + ' t-shirts';
 
 function show(id) {
   document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
@@ -274,6 +316,8 @@ $('#toForm').addEventListener('click', () => {
   $('#inName').value = localStorage.getItem('kimchi_name') || '';
   $('#inGithub').value = localStorage.getItem('kimchi_github') || '';
   $('#inEmail').value = localStorage.getItem('kimchi_email') || '';
+  $('#inDesig').value = localStorage.getItem('kimchi_desig') || '';
+  $('#inCompany').value = localStorage.getItem('kimchi_company') || '';
   show('form');
 });
 $('#backToSplash').addEventListener('click', () => show('splash'));
@@ -281,28 +325,35 @@ $('#backToSplash').addEventListener('click', () => show('splash'));
 /* ── form validation ── */
 $('#startQuiz').addEventListener('click', () => {
   const name = $('#inName').value.trim();
-  const gh = $('#inGithub').value.trim();
   const email = $('#inEmail').value.trim();
+  const desig = $('#inDesig').value.trim();
+  const company = $('#inCompany').value.trim();
+  const gh = $('#inGithub').value.trim();
   let ok = true;
   $('#errName').textContent = ''; $('#errGithub').textContent = ''; $('#errEmail').textContent = '';
-  if (name.length < 2) { $('#errName').textContent = 'What should we call you? (2+ chars)'; ok = false; }
+  $('#errDesig').textContent = ''; $('#errCompany').textContent = '';
+  if (name.length < 2) { $('#errName').textContent = 'Full name, please (2+ chars)'; ok = false; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    $('#errEmail').textContent = 'We need a work email to reach you if you win'; ok = false;
+  }
+  if (desig.length < 2) { $('#errDesig').textContent = 'Your role/designation (2+ chars)'; ok = false; }
+  if (company.length < 2) { $('#errCompany').textContent = 'Which company are you with? (2+ chars)'; ok = false; }
   if (!/^[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}$/.test(gh)) {
     $('#errGithub').textContent = 'GitHub usernames: letters, numbers, single hyphens'; ok = false;
-  }
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    $('#errEmail').textContent = 'That email doesn\u2019t look right — or just leave it blank'; ok = false;
   }
   if (!ok) return;
   localStorage.setItem('kimchi_name', name);
   localStorage.setItem('kimchi_github', gh);
   localStorage.setItem('kimchi_email', email);
-  startQuiz(name, gh, email);
+  localStorage.setItem('kimchi_desig', desig);
+  localStorage.setItem('kimchi_company', company);
+  startQuiz(name, gh, email, desig, company);
 });
 
 /* ── quiz engine ── */
-function startQuiz(name, gh, email) {
+function startQuiz(name, gh, email, desig, company) {
   G = {
-    name, gh, email, qs: shuffle(QUESTIONS).slice(0, 10),
+    name, gh, email, desig, company, qs: shuffle(QUESTIONS).slice(0, 10),
     idx: 0, score: 0, correct: 0, streak: 0, maxStreak: 0,
     started: Date.now(), locked: false, tStart: 0,
     timer: null, timeLeft: QUESTION_MS
@@ -380,32 +431,31 @@ function answer(i) {
 async function finish() {
   const dur = Math.round((Date.now() - G.started) / 1000);
   $('#finalScore').textContent = G.score;
-  const v = G.correct >= 9 ? 'Fermentation genius 🧠' : G.correct >= 7 ? 'Properly seasoned 🌶️' : G.correct >= 5 ? 'Still fermenting… 🥬' : 'That kimchi was too spicy 😅';
+  const v = G.correct >= 9 ? 'Zero-day hunter 🧠' : G.correct >= 7 ? 'Production-ready 🌶️' : G.correct >= 5 ? 'Still in staging… 🥬' : 'That ticket needs a redo 😅';
   $('#verdict').innerHTML = '<b>' + G.correct + '/10 correct</b> · ' + v + (G.maxStreak >= 3 ? ' · best streak ' + G.maxStreak + ' 🔥' : '');
-  $('#raffleName').textContent = G.name + ', you\u2019re on the board!';
+  $('#raffleName').textContent = G.name.split(' ')[0] + ', you\u2019re in the draw!';
   $('#rankLine').textContent = ''; $('#syncNote').textContent = '';
   show('result');
   if (G.score >= 1800) confetti();
   localStorage.setItem('kimchi_last', JSON.stringify({ name: G.name, gh: G.gh, score: G.score }));
 
-  const sent = await submitPlaySafe({ Name: G.name, GitHub: G.gh, Email: G.email || '', Score: G.score, Correct: G.correct, DurationSec: dur });
-  if (!sent) $('#syncNote').textContent = '⚡ Spotty wifi — your score is queued and will sync automatically.';
-  else if (sent.duplicate) $('#syncNote').textContent = '🎟️ This account already played — your first score is the one that counts.';
+  const sent = await submitPlaySafe({
+    Name: G.name, GitHub: G.gh, Email: G.email, Designation: G.desig, Company: G.company,
+    Score: G.score, Correct: G.correct, DurationSec: dur
+  });
+  if (!sent) $('#syncNote').textContent = '⚡ Spotty wifi — your entry is queued on this phone and will sync automatically.';
+  else if (sent.duplicate) $('#syncNote').textContent = '🎟️ This GitHub account already played — one entry per handle.';
   try {
     const lb = await apiGet('leaderboard');
-    const me = (lb.top || []).find((r) => r.github.toLowerCase() === G.gh.toLowerCase());
-    const winTop = CONFIG.WIN_TOP || 3;
-    const target = (lb.top || [])[winTop - 1];
-    if (me && me.rank <= winTop) $('#rankLine').textContent = '🏆 You\u2019re #' + me.rank + ' — ON THE PODIUM! Claim your tee while stock lasts!';
-    else if (me && target) $('#rankLine').textContent = '📺 You\u2019re #' + me.rank + ' — score >' + Number(target.score).toLocaleString() + ' pts to bust into the top ' + winTop + '!';
-    else if (me) $('#rankLine').textContent = '📺 You\u2019re #' + me.rank + ' — podium = top ' + winTop + ', go seize it!';
-    else $('#rankLine').textContent = lb.players ? 'Chasing ' + lb.players + ' players at CYpher' : '';
-  } catch (e) { /* leaderboard unreachable — fine */ }
+    const n = lb.players || 0;
+    if (n > 1) $('#rankLine').textContent = '🎟️ ' + n + ' players in today\u2019s draw so far — see you at 5:00 PM!';
+    else $('#rankLine').textContent = '🎟️ First entry of the day — the pool is yours… for now.';
+  } catch (e) { /* counts unreachable — fine */ }
 }
 
 function confetti() {
   const c = $('#confetti');
-  const bits = ['🌶️', '🥬', '⭐', '🔥', '🫙', '🥢'];
+  const bits = ['🎮', '🌶️', '🌴', '⭐', '🚗', '🫙'];
   for (let i = 0; i < 26; i++) {
     const el = document.createElement('i');
     el.textContent = bits[Math.floor(Math.random() * bits.length)];
@@ -420,7 +470,7 @@ function confetti() {
 
 /* ── result actions ── */
 $('#shareBtn').addEventListener('click', async () => {
-  const text = 'I scored ' + G.score + ' on the Kimchi Quiz at CYpher 2026 🌶️⭐ github.com/getkimchi/kimchi';
+  const text = 'I just scored ' + G.score + ' on the Kimchi Quiz at KubeCon SLC and entered the GTA VI draw 🎮🌶️ github.com/getkimchi/kimchi';
   const url = 'https://github.com/getkimchi/kimchi';
   if (navigator.share) { try { await navigator.share({ title: 'Kimchi Quiz', text, url }); } catch (e) {} }
   else { try { await navigator.clipboard.writeText(text); $('#syncNote').textContent = 'Copied to clipboard!'; } catch (e) {} }

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>KIMCHI × CYpher 2026 — Live Leaderboard</title>
+<title>KIMCHI × KubeCon SLC 2026 — GTA VI Draw</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫙</text></svg>">
 <script src="config.js"></script>
 <script src="assets/app.js"></script>
@@ -23,7 +23,7 @@
     transform-origin: center center; background: var(--bg); overflow: hidden; }
   .bg-glow { position: absolute; width: 1400px; height: 900px; top: -450px; left: 260px;
     background: radial-gradient(closest-side, rgba(255,82,29,.16), transparent 70%); pointer-events: none; }
-  .bg-glow.g2 { top: auto; bottom: -500px; left: -300px; background: radial-gradient(closest-side, rgba(81,207,102,.07), transparent 70%); }
+  .bg-glow.g2 { top: auto; bottom: -500px; left: -300px; background: radial-gradient(closest-side, rgba(155,57,230,.10), transparent 70%); }
   .bg-emoji { position: absolute; opacity: .055; pointer-events: none; user-select: none; }
   @keyframes drift { 0% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-26px) rotate(8deg); } 100% { transform: translateY(0) rotate(0deg); } }
 
@@ -55,7 +55,7 @@
   .qr-card { background: #fff; border-radius: 26px; padding: 24px 28px 20px; }
   .qr-split { display: flex; align-items: center; justify-content: center; gap: 26px; }
   .qr-card svg { display: block; }
-  .tee-shot { width: 240px; border-radius: 14px; display: block; flex: 0 0 auto; box-shadow: 0 8px 22px rgba(0,0,0,.10); }
+  .tee-shot { width: 200px; border-radius: 14px; display: block; flex: 0 0 auto; box-shadow: 0 8px 22px rgba(0,0,0,.10); }
   .tee-wrap { position: relative; flex: 0 0 auto; }
   .tee-badge { position: absolute; top: -12px; right: -14px; transform: rotate(-7deg);
     background: var(--red); color: #fff; font-weight: 900; font-size: 18px; letter-spacing: .01em;
@@ -72,39 +72,45 @@
   .step.s1 .n { border-color: rgba(224,49,49,.6); color: var(--red); }
   .drawcard { margin-top: auto; background: linear-gradient(135deg, rgba(255,82,29,.18), rgba(255,82,29,.05));
     border: 2px dashed rgba(255,82,29,.6); border-radius: 22px; padding: 18px 30px 20px; text-align: center; }
-  .drawcard h2 { color: var(--cream); font-size: 23px; font-weight: 800; letter-spacing: -.01em; }
+  .drawcard h2 { color: var(--cream); font-size: 26px; font-weight: 800; letter-spacing: -.01em; }
+  .drawcard h2 b { color: var(--gold); }
+  .drawcard .cd { font-family: var(--mono); font-size: 54px; font-weight: 900; color: var(--gold);
+    letter-spacing: .02em; margin-top: 8px; font-variant-numeric: tabular-nums; }
   .drawcard p { color: var(--muted); font-size: 20px; margin-top: 10px; font-weight: 600; }
-  .drawcard p b { color: var(--gold); }
+  .drawcard p b { color: var(--green); }
 
-  /* ── leaderboard ── */
+  /* ── prize panel (right) ── */
   .right { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-  .lb-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 18px; }
-  .lb-head h1 { font-size: 40px; font-weight: 900; letter-spacing: -.02em; color: var(--cream); }
-  .lb-head h1 span { color: var(--red); }
-  .lb-head .meta { font-family: var(--mono); font-size: 20px; color: var(--muted); }
-  .lb-head .meta b { color: var(--green); }
-  .lb-rows { position: relative; height: 740px; }
-  .row { position: absolute; left: 0; right: 0; height: 64px; display: flex; align-items: center; gap: 20px;
-    background: var(--panel); border: 1px solid var(--line); border-radius: 15px; padding: 0 24px;
-    transition: top .7s cubic-bezier(.22,1,.36,1), opacity .5s, transform .5s; }
-  .row.m1 { background: linear-gradient(90deg, rgba(255,212,59,.14), var(--panel) 55%); border-color: rgba(255,212,59,.55); transform: scale(1.02); }
-  .row.m2 { background: linear-gradient(90deg, rgba(201,201,209,.10), var(--panel) 55%); border-color: rgba(201,201,209,.4); }
-  .row.m3 { background: linear-gradient(90deg, rgba(205,127,50,.12), var(--panel) 55%); border-color: rgba(205,127,50,.45); }
-  .row .rank { flex: 0 0 52px; font-weight: 900; font-size: 26px; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .row.m1 .rank { font-size: 30px; }
-  .row .who { flex: 1; min-width: 0; }
-  .row .name { font-size: 22px; font-weight: 700; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -.01em; }
-  .row .gh { font-family: var(--mono); font-size: 15px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .row .pts { font-size: 26px; font-weight: 900; color: var(--green); font-variant-numeric: tabular-nums; }
-  .row.m1 .pts { color: var(--gold); }
-  .row .pts small { font-size: 13px; color: var(--muted); font-weight: 600; margin-left: 4px; }
-  .row .tee-tag { font-size: 24px; margin-left: 12px; flex: 0 0 auto; }
-  .row.intee { border-left: 5px solid var(--green); }
-  .row.entering { opacity: 0; transform: translateY(26px); }
-  .empty-lb { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--muted); }
-  .empty-lb .icon { font-size: 60px; }
-  .empty-lb p { font-size: 26px; }
-  .empty-lb p b { color: var(--cream); }
+  .pr-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 18px; }
+  .pr-head h1 { font-size: 40px; font-weight: 900; letter-spacing: -.02em; color: var(--cream); }
+  .pr-head h1 span { color: var(--red); }
+  .pr-head .meta { font-family: var(--mono); font-size: 20px; color: var(--muted); }
+  .pr-head .meta b { color: var(--green); }
+  .prize-hero { display: flex; gap: 38px; align-items: stretch; }
+  .prize-art { flex: 0 0 460px; position: relative; }
+  .prize-art img { width: 460px; border-radius: 26px; display: block;
+    box-shadow: 0 30px 80px rgba(155,57,230,.35), 0 10px 30px rgba(0,0,0,.5); }
+  .prize-art .psa { position: absolute; top: 18px; right: 18px; background: rgba(21,7,34,.85);
+    border: 1.5px solid rgba(255,212,59,.6); color: var(--gold); font-family: var(--mono);
+    font-size: 17px; font-weight: 700; padding: 7px 14px; border-radius: 999px; }
+  .stats { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+  .stat-row { display: flex; gap: 20px; }
+  .stat { flex: 1; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 20px 26px; }
+  .stat .k { font-family: var(--mono); font-size: 16px; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; }
+  .stat .v { font-size: 52px; font-weight: 900; color: var(--cream); font-variant-numeric: tabular-nums; letter-spacing: -.02em; margin-top: 4px; }
+  .stat .v.bump { animation: bump .5s ease; }
+  .stat .s { font-size: 17px; color: var(--muted); margin-top: 2px; }
+  .factcard { flex: 1; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 24px 28px;
+    display: flex; flex-direction: column; min-height: 0; }
+  .factcard .k { font-family: var(--mono); font-size: 16px; letter-spacing: .12em; color: var(--red);
+    text-transform: uppercase; margin-bottom: 14px; }
+  .factcard .fact { font-size: 27px; line-height: 1.35; color: var(--cream); font-weight: 600;
+    transition: opacity .45s ease; flex: 1; display: flex; align-items: center; }
+  .factcard .fact.fade { opacity: 0; }
+  .factcard .fact small { display: block; margin-top: 10px; font-size: 17px; color: var(--muted); font-weight: 500; font-family: var(--mono); }
+  .factdots { display: flex; gap: 8px; margin-top: 16px; }
+  .factdots i { width: 26px; height: 5px; border-radius: 99px; background: var(--panel2); }
+  .factdots i.on { background: var(--red); }
 
   /* ── ticker ── */
   footer { height: 74px; margin: 0 -52px; border-top: 1px solid var(--line); background: rgba(21,23,30,.65); display: flex; align-items: stretch; overflow: hidden; }
@@ -135,7 +141,7 @@
       <div class="brand">
         <img class="logo" src="assets/kimchi-logo.svg" alt="kimchi">
         <span class="x">×</span>
-        <span class="event" id="eventChip">CYpher 2026</span>
+        <span class="event" id="eventChip">KubeCon NA 2026 · SLC</span>
       </div>
       <div class="starbox">
         <span class="repopath">github.com/<b>getkimchi/kimchi</b></span>
@@ -149,32 +155,52 @@
           <div class="qr-split">
             <div id="qrBox"></div>
             <div class="tee-wrap">
-              <img class="tee-shot" src="assets/tee-mockup.jpg" alt="The Kimchi tee you can win">
-              <div class="tee-badge" id="teeBadge">🎁 10 t-shirts!</div>
+              <img class="tee-shot" src="assets/gta-vi-disc.svg" alt="Grand Theft Auto VI — the prize">
+              <div class="tee-badge">🎁 GTA VI!</div>
             </div>
           </div>
-          <div class="scan">Scan → play → win this <b>Kimchi tee</b> 🎁</div>
+          <div class="scan">Scan → play → enter the draw for <b>GTA VI</b> 🎮</div>
         </div>
         <div class="steps">
           <div class="step s1"><div class="n">1</div><p><b>Star</b> github.com/getkimchi/kimchi</p></div>
           <div class="step"><div class="n">2</div><p>Beat the <b>Kimchi Quiz</b> — 10 Qs, 15s each</p></div>
-          <div class="step"><div class="n">3</div><p>Climb into the <b>top 3</b> &amp; the tee is yours 👕 (while stock lasts)</p></div>
+          <div class="step"><div class="n">3</div><p>Be here at <b>5:00 PM</b> — we draw <b>one</b> GTA VI winner 🎮</p></div>
         </div>
         <div class="drawcard">
-          <h2>🏆 TOP <span id="winTop">3</span> = THE TEE</h2>
-          <p id="drawSub">🎁 10 tees in stock — while they last</p>
+          <h2>🎰 LUCKY DRAW AT <b>5:00 PM MST</b></h2>
+          <div class="cd" id="countdown">--:--:--</div>
+          <p>every quiz = one entry · <b id="playersNow">0 players</b> in the pool</p>
         </div>
       </div>
 
       <div class="right">
-        <div class="lb-head">
-          <h1>LIVE <span>LEADERBOARD</span></h1>
-          <div class="meta" id="lbMeta">warming up…</div>
+        <div class="pr-head">
+          <h1>WIN <span>GRAND THEFT AUTO VI</span></h1>
+          <div class="meta" id="drawMeta">warming up…</div>
         </div>
-        <div class="lb-rows" id="lbRows">
-          <div class="empty-lb" id="emptyLb">
-            <div class="icon">🏆</div>
-            <p><b>Top 3</b> win this tee — be the first to play! 🎁</p>
+        <div class="prize-hero">
+          <div class="prize-art">
+            <img src="assets/gta-vi-disc.svg" alt="Grand Theft Auto VI">
+            <div class="psa">PS5 · XBOX</div>
+          </div>
+          <div class="stats">
+            <div class="stat-row">
+              <div class="stat">
+                <div class="k">Players in the draw</div>
+                <div class="v" id="statPlayers">0</div>
+                <div class="s">unique GitHub accounts</div>
+              </div>
+              <div class="stat">
+                <div class="k">Quiz plays</div>
+                <div class="v" id="statPlays">0</div>
+                <div class="s">total games today</div>
+              </div>
+            </div>
+            <div class="factcard">
+              <div class="k">📡 Live from kimchi.dev — did you know?</div>
+              <div class="fact" id="factLine">Loading the facts…</div>
+              <div class="factdots" id="factDots"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -200,7 +226,7 @@ addEventListener('resize', fit); fit();
 /* ── floating background ingredients ── */
 (function () {
   const layer = $('#emojiLayer');
-  const items = [['🌶️', 130, 9, 250, 18], ['🥬', 110, 14, 1020, 80], ['🌶️', 90, 10, 1700, 760], ['🥬', 150, 12, 430, 940], ['🫙', 120, 10, 1560, 300]];
+  const items = [['🌶️', 130, 9, 250, 18], ['🎮', 110, 14, 1020, 80], ['🌴', 90, 10, 1700, 760], ['🥬', 150, 12, 430, 940], ['🫙', 120, 10, 1560, 300]];
   items.forEach(([e, size, dur, x, y]) => {
     const d = document.createElement('div');
     d.className = 'bg-emoji'; d.textContent = e;
@@ -218,56 +244,60 @@ try {
 } catch (e) { $('#qrBox').textContent = 'QR failed — check config'; }
 
 /* ── header + config text ── */
-$('#eventChip').textContent = CONFIG.EVENT_NAME;
-document.title = 'Kimchi × ' + CONFIG.EVENT_NAME + ' — Live';
-const WIN_N = CONFIG.TEES_COUNT || 10; // tees in stock
-const WIN_TOP = CONFIG.WIN_TOP || 3;     // podium size — how many ranks win
-$('#winTop').textContent = WIN_TOP;
-if (CONFIG.TEES_COUNT) $('#teeBadge').textContent = '🎁 ' + CONFIG.TEES_COUNT + ' t-shirts!';
+$('#eventChip').textContent = CONFIG.EVENT_NAME + ' · ' + (CONFIG.EVENT_CITY || '');
+document.title = 'Kimchi × ' + (CONFIG.EVENT_CITY || 'KubeCon') + ' — GTA VI Draw';
 
-/* ── leaderboard rendering (keyed rows, animated reorder) ── */
-const ROW_H = 74, rowEls = new Map(); // github(lower) → element
-function renderBoard(lb) {
-  const top = (lb.top || []).slice(0, 10);
-  const holder = $('#lbRows');
-  const seen = new Set();
-  top.forEach((r, i) => {
-    const key = String(r.github).toLowerCase();
-    seen.add(key);
-    let el = rowEls.get(key);
-    const fresh = !el;
-    if (fresh) {
-      el = document.createElement('div');
-      el.className = 'row entering';
-      el.innerHTML = '<div class="rank"></div><div class="who"><div class="name"></div><div class="gh"></div></div><div class="pts"></div><span class="tee-tag">👕</span>';
-      rowEls.set(key, el);
-      holder.appendChild(el);
-      requestAnimationFrame(() => requestAnimationFrame(() => el.classList.remove('entering')));
-    }
-    el.classList.remove('m1', 'm2', 'm3');
-    el.classList.toggle('intee', i < WIN_TOP);
-    el.querySelector('.tee-tag').textContent = i < WIN_TOP ? '👕' : '';
-    if (i === 0) el.classList.add('m1'); else if (i === 1) el.classList.add('m2'); else if (i === 2) el.classList.add('m3');
-    el.style.top = i * ROW_H + 'px';
-    el.querySelector('.rank').textContent = i < 3 ? ['🥇', '🥈', '🥉'][i] : '#' + (i + 1);
-    el.querySelector('.name').textContent = r.name;
-    el.querySelector('.gh').textContent = '@' + r.github;
-    el.querySelector('.pts').innerHTML = r.score.toLocaleString() + '<small>pts</small>';
-  });
-  rowEls.forEach((el, key) => {
-    if (!seen.has(key)) { el.style.opacity = '0'; el.style.transform = 'translateY(26px)'; setTimeout(() => { el.remove(); rowEls.delete(key); }, 600); }
-  });
-  $('#emptyLb').style.display = (lb.players || 0) === 0 ? 'flex' : 'none';
-  $('#lbMeta').innerHTML = '🏆 top <b>' + WIN_TOP + '</b> win the tee · ' + (lb.players || 0) + ' players · 🎁 ' + WIN_N + ' in stock';
-  /* score to beat = rank #WIN_TOP — climb onto the podium while stock lasts */
-  const topN = lb.top || [];
-  if (!topN.length) {
-    $('#drawSub').innerHTML = 'No podium yet — any play wins a tee while stock lasts · 🎁 ' + WIN_N + ' in stock!';
-  } else if (topN.length < WIN_TOP) {
-    $('#drawSub').innerHTML = 'Everyone is on the podium right now — 🎁 ' + WIN_N + ' tees in stock!';
-  } else {
-    $('#drawSub').innerHTML = '<b>&gt;' + Number(topN[WIN_TOP - 1].score).toLocaleString() + '</b> pts gets you on the podium — that\u2019s a tee! 🎁 ' + WIN_N + ' in stock';
+/* ── draw countdown ── */
+function tickCountdown() {
+  const t = drawDate().getTime() - Date.now();
+  const el = $('#countdown');
+  if (t <= 0) { el.textContent = 'DRAW TIME! 🎉'; return; }
+  const h = Math.floor(t / 3600000), m = Math.floor((t % 3600000) / 60000), s = Math.floor((t % 60000) / 1000);
+  el.textContent = (h > 0 ? h + ':' : '') + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+tickCountdown();
+setInterval(tickCountdown, 1000);
+
+/* ── rotating facts — researched from kimchi.dev/software-factory & cncf.io ── */
+const FACTS = [
+  { t: 'Kimchi Software Factory runs a full loop — ticket → plan → code → test → review → deploy → monitor — with governed agents at every stage.', s: 'kimchi.dev/software-factory' },
+  { t: 'Kimchi Inference hosts GLM, MiniMax and Kimi on dedicated GPUs in Paris — OpenAI-compatible, zero infrastructure.', s: 'kimchi.dev/software-factory' },
+  { t: 'Budgets in Kimchi are hard caps per user, team and org — enforced before a request ever hits a model. Hard caps, not alerts.', s: 'kimchi.dev/software-factory' },
+  { t: 'Workspaces are persistent cloud dev environments — teleport sessions, secrets brokering, in-region isolation. GPU workspaces coming soon.', s: 'kimchi.dev/software-factory' },
+  { t: 'KubeCon + CloudNativeCon NA 2026: Nov 9–12 at the Salt Palace, SLC — with the first-ever AI Inference + Agentic track.', s: 'cncf.io' },
+  { t: 'Your prompts and code never become training data — private by architecture.', s: 'kimchi.dev' },
+  { t: 'Agents use your credentials without secrets ever entering the workspace — that’s secrets brokering.', s: 'kimchi.dev/software-factory' },
+  { t: 'The MCP Gateway: one governed entry point for every MCP server your agents use — policies, secrets, audit logs.', s: 'kimchi.dev/software-factory' }
+];
+let factIdx = 0;
+const dots = $('#factDots');
+FACTS.forEach(() => { const i = document.createElement('i'); dots.appendChild(i); });
+function renderFact(fade) {
+  const el = $('#factLine');
+  const apply = () => {
+    el.innerHTML = FACTS[factIdx].t + '<small>— ' + FACTS[factIdx].s + '</small>';
+    [...dots.children].forEach((d, i) => d.classList.toggle('on', i === factIdx));
+    el.classList.remove('fade');
+  };
+  if (fade) { el.classList.add('fade'); setTimeout(apply, 450); }
+  else apply();
+}
+renderFact(false);
+setInterval(() => { factIdx = (factIdx + 1) % FACTS.length; renderFact(true); }, 8000);
+
+/* ── stats board (players, plays) ── */
+function bumpIfChanged(sel, val) {
+  const el = $(sel);
+  if (el.textContent !== String(val)) {
+    el.textContent = String(val);
+    el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
   }
+}
+function renderStats(lb) {
+  bumpIfChanged('#statPlayers', lb.players || 0);
+  bumpIfChanged('#statPlays', lb.plays || lb.players || 0);
+  $('#playersNow').textContent = (lb.players || 0) + ' player' + ((lb.players || 0) === 1 ? '' : 's');
+  $('#drawMeta').innerHTML = '🎰 <b>' + drawTimeLabel() + '</b> · ' + (lb.players || 0) + ' entries · ⭐ github.com/getkimchi/kimchi';
 }
 
 /* ── live-event ticker (LATEST banner) ──
@@ -292,8 +322,8 @@ function renderTicker() {
     const fresh = !isNaN(t) && Date.now() - t < 10 * 60000;
     items.push({
       t: isNaN(t) ? 0 : t,
-      html: '🌶️ <b>' + esc(r.name) + '</b> ' + (fresh ? 'just scored' : 'scored') +
-        ' <span class="r">' + Number(r.score).toLocaleString() + '</span>' +
+      html: '🌶️ <b>' + esc(r.name) + '</b> ' + (fresh ? 'just entered the draw' : 'entered the draw') +
+        ' · <span class="r">' + Number(r.score).toLocaleString() + ' pts</span>' +
         (isNaN(t) ? '' : ' · ' + timeAgoShort(t))
     });
   });
@@ -302,7 +332,7 @@ function renderTicker() {
     html: '⭐ someone just starred <b>getkimchi/kimchi</b> · ' + timeAgoShort(e.t)
   }));
   items.sort((a, b) => b.t - a.t);
-  const msg = '🏆 <b>Top ' + WIN_TOP + ' win this tee</b> — 🎁 ' + WIN_N + ' in stock, only while they last &nbsp;·&nbsp; ⭐ github.com/getkimchi/kimchi &nbsp;·&nbsp; 👀 Quiz answers hide on <b>kimchi.dev</b>';
+  const msg = '🎰 <b>GTA VI draw at ' + drawTimeLabel() + '</b> — every quiz = one entry &nbsp;·&nbsp; ⭐ github.com/getkimchi/kimchi &nbsp;·&nbsp; 👀 Quiz answers hide on <b>kimchi.dev/software-factory</b>';
   const spans = items.map((i) => '<span>' + i.html + '</span>').join('') + '<span>' + msg + '</span>';
   const core = items.map((i) => i.html.replace(/ · (just now|\d+m ago)/, '')).join('|');
   const labels = items.map((i) => (i.t ? timeAgoShort(i.t) : '')).join(',');
@@ -321,7 +351,7 @@ async function pollBoard() {
   try {
     const lb = await apiGet('leaderboard');
     lastLb = lb;
-    renderBoard(lb);
+    renderStats(lb);
     renderTicker();
     setOnline(true);
   } catch (e) { setOnline(false); }

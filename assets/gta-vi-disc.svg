@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-label="GTA VI prize art">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b0f4e"/>
+      <stop offset=".45" stop-color="#a12b6d"/>
+      <stop offset=".78" stop-color="#f2613c"/>
+      <stop offset="1" stop-color="#ffb347"/>
+    </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e05a38"/>
+      <stop offset="1" stop-color="#1b0f2e"/>
+    </linearGradient>
+    <radialGradient id="sun" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#fff3c4"/>
+      <stop offset="1" stop-color="#ff8a3d"/>
+    </radialGradient>
+    <linearGradient id="vi" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9b39e6"/>
+      <stop offset="1" stop-color="#4b1586"/>
+    </linearGradient>
+    <radialGradient id="vig" cx=".5" cy=".5" r=".72">
+      <stop offset=".72" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".4"/>
+    </radialGradient>
+  </defs>
+
+  <!-- sunset sky + sun -->
+  <rect width="800" height="1000" fill="url(#sky)"/>
+  <circle cx="400" cy="630" r="185" fill="url(#sun)"/>
+
+  <!-- skyline silhouettes -->
+  <g fill="#1a0b26">
+    <rect x="120" y="600" width="52" height="120"/><rect x="185" y="560" width="34" height="160"/>
+    <rect x="235" y="620" width="46" height="100"/><rect x="300" y="585" width="30" height="135"/>
+    <rect x="470" y="570" width="40" height="150"/><rect x="525" y="610" width="52" height="110"/>
+    <rect x="590" y="590" width="30" height="130"/><rect x="650" y="560" width="42" height="160"/>
+  </g>
+
+  <!-- ocean -->
+  <rect y="700" width="800" height="300" fill="url(#sea)"/>
+  <g stroke="#ffb347" stroke-width="6" stroke-linecap="round" opacity=".55">
+    <line x1="330" y1="730" x2="470" y2="730"/><line x1="350" y1="760" x2="450" y2="760"/>
+    <line x1="370" y1="790" x2="430" y2="790"/><line x1="385" y1="820" x2="415" y2="820"/>
+  </g>
+
+  <!-- palms -->
+  <g fill="#150722">
+    <path d="M118 1000 C100 830 138 700 208 616 L226 632 C170 720 150 860 168 1000 Z"/>
+    <path d="M208 616 Q140 552 64 592 Q148 612 202 640 Z"/>
+    <path d="M208 616 Q150 512 78 520 Q166 552 210 634 Z"/>
+    <path d="M208 616 Q192 496 140 466 Q230 528 228 620 Z"/>
+    <path d="M208 616 Q262 528 330 522 Q252 570 222 638 Z"/>
+    <path d="M208 616 Q288 566 344 592 Q262 610 220 640 Z"/>
+    <path d="M682 1000 C700 820 660 690 592 606 L574 622 C630 712 650 860 632 1000 Z"/>
+    <path d="M592 606 Q660 544 736 584 Q652 604 598 634 Z"/>
+    <path d="M592 606 Q650 504 722 512 Q636 546 590 628 Z"/>
+    <path d="M592 606 Q608 488 660 458 Q572 520 572 616 Z"/>
+    <path d="M592 606 Q540 520 472 514 Q548 562 578 632 Z"/>
+    <path d="M592 606 Q512 558 456 584 Q538 602 580 634 Z"/>
+  </g>
+
+  <!-- giant VI -->
+  <text x="400" y="560" text-anchor="middle" font-family="Verdana, 'Arial Black', sans-serif"
+        font-size="400" font-style="italic" font-weight="900" fill="url(#vi)"
+        stroke="#fdf6 ec" stroke-width="0" opacity=".92">VI</text>
+
+  <!-- title block -->
+  <g font-family="Verdana, 'Arial Black', sans-serif" font-weight="900" text-anchor="middle" fill="#fdf6ec">
+    <text x="400" y="240" font-size="86" letter-spacing="6" stroke="#17101f" stroke-width="3" textLength="640" lengthAdjust="spacingAndGlyphs">GRAND</text>
+    <text x="400" y="330" font-size="54" letter-spacing="10" textLength="560" lengthAdjust="spacingAndGlyphs">THEFT</text>
+    <text x="400" y="420" font-size="120" font-style="italic" letter-spacing="4" stroke="#17101f" stroke-width="4" textLength="640" lengthAdjust="spacingAndGlyphs">AUTO</text>
+  </g>
+
+  <!-- bottom strip -->
+  <rect y="880" width="800" height="120" fill="#150722" opacity=".88"/>
+  <text x="400" y="955" text-anchor="middle" font-family="Verdana, Arial, sans-serif" font-size="40"
+        font-weight="700" fill="#ffd43b" letter-spacing="8">WINNER</text>
+
+  <rect width="800" height="1000" fill="url(#vig)"/>
+  <rect x="6" y="6" width="788" height="988" fill="none" stroke="#150722" stroke-width="12" rx="18"/>
+</svg>

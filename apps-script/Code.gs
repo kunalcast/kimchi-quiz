@@ -1,9 +1,10 @@
 /**
- * Kimchi × CYpher 2026 — booth quiz backend (Google Apps Script)
+ * Kimchi × KubeCon SLC 2026 — booth quiz backend (Google Apps Script)
  *
  * SETUP (see README.md for the full walkthrough):
  *   1. Create a Google Sheet with a tab named "Plays" and these headers in row 1:
- *      Timestamp | Name | GitHub | Score | Correct | DurationSec
+ *      Timestamp | Name | GitHub | Email | Designation | Company | Score | Correct | DurationSec
+ *      (column order doesn't matter — writes are matched by header name)
  *   2. Extensions → Apps Script → paste this entire file
  *   3. (Optional but recommended) Run initialSetup() once and authorize
  *   4. Deploy → New deployment → Web app → Execute as: Me → Who has access: Anyone
@@ -47,11 +48,14 @@ function doPost(e) {
     const name = String(p['Name'] || '').substring(0, 40).trim();
     const github = String(p['GitHub'] || '').substring(0, 39).trim();
     const email = String(p['Email'] || '').substring(0, 80).trim();
+    const designation = String(p['Designation'] || '').substring(0, 60).trim();
+    const company = String(p['Company'] || '').substring(0, 60).trim();
     if (!name || !/^[A-Za-z0-9-]{1,39}$/.test(github)) {
       return json_({ result: 'error', error: 'invalid name or GitHub username' });
     }
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return json_({ result: 'error', error: 'invalid email' });
+    // Email is REQUIRED at KubeCon — it's how we reach the GTA VI winner.
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return json_({ result: 'error', error: 'a work email is required to enter the draw' });
     }
     const score = Math.max(0, Math.min(MAX_SCORE, parseInt(p['Score'], 10) || 0));
     const correct = Math.max(0, Math.min(MAX_CORRECT, parseInt(p['Correct'], 10) || 0));
@@ -77,6 +81,8 @@ function doPost(e) {
       if (h === 'Name') return name;
       if (h === 'GitHub') return github;
       if (h === 'Email') return email;
+      if (h === 'Designation') return designation;
+      if (h === 'Company') return company;
       if (h === 'Score') return score;
       if (h === 'Correct') return correct;
       if (h === 'DurationSec') return dur;
@@ -107,7 +113,8 @@ function doGet(e) {
       return i === -1 ? fallback : i;
     };
     const C = { when: at('Timestamp', 0), name: at('Name', 1), gh: at('GitHub', 2),
-      score: at('Score', 3), correct: at('Correct', 4), email: at('Email', -1) };
+      score: at('Score', 3), correct: at('Correct', 4), email: at('Email', -1),
+      desig: at('Designation', -1), company: at('Company', -1) };
     const rows = last > 1 ? sheet.getRange(2, 1, last - 1, lastCol).getValues() : [];
 
     const best = {};    // github(lower) → best play
@@ -122,12 +129,15 @@ function doGet(e) {
         score: Number(r[C.score]) || 0,
         correct: Number(r[C.correct]) || 0,
         when: r[C.when],
-        email: C.email >= 0 ? String(r[C.email] || '') : ''
+        email: C.email >= 0 ? String(r[C.email] || '') : '',
+        designation: C.desig >= 0 ? String(r[C.desig] || '') : '',
+        company: C.company >= 0 ? String(r[C.company] || '') : ''
       };
       const key = github.toLowerCase();
       if (!best[key]) {
         best[key] = rec;
-        entries.push({ name: rec.name, github: github, email: rec.email });
+        entries.push({ name: rec.name, github: github, email: rec.email,
+          designation: rec.designation, company: rec.company });
       } else if (rec.score > best[key].score) {
         best[key] = rec;
       }

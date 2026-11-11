@@ -39,7 +39,8 @@ def leaderboard(rows):
         key = gh.lower()
         if key not in best:
             best[key] = r
-            entries.append({'name': r.get('Name', ''), 'github': gh, 'email': r.get('Email', '')})
+            entries.append({'name': r.get('Name', ''), 'github': gh, 'email': r.get('Email', ''),
+                            'designation': r.get('Designation', ''), 'company': r.get('Company', '')})
         elif r.get('Score', 0) > best[key].get('Score', 0):
             best[key] = r
         recent.append(r)
@@ -139,13 +140,17 @@ class Handler(BaseHTTPRequestHandler):
         name = str(flat.get('Name', ''))[:40].strip()
         github = str(flat.get('GitHub', ''))[:39].strip()
         email = str(flat.get('Email', ''))[:80].strip()
+        designation = str(flat.get('Designation', ''))[:60].strip()
+        company = str(flat.get('Company', ''))[:60].strip()
         if not name or not re.fullmatch(r'[A-Za-z0-9-]{1,39}', github):
             return self._json({'result': 'error', 'error': 'invalid name or GitHub username'})
-        if email and not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', email):
-            return self._json({'result': 'error', 'error': 'invalid email'})
+        # Email is REQUIRED at KubeCon (mirrors apps-script/Code.gs)
+        if not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', email):
+            return self._json({'result': 'error', 'error': 'a work email is required to enter the draw'})
         row = {
             'Timestamp': __import__('datetime').datetime.now().isoformat(timespec='seconds'),
             'Name': name, 'GitHub': github, 'Email': email,
+            'Designation': designation, 'Company': company,
             'Score': max(0, min(2500, as_int('Score'))),
             'Correct': max(0, min(10, as_int('Correct'))),
             'DurationSec': max(0, min(3600, as_int('DurationSec'))),

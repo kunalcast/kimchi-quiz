@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTA VI Draw — Kimchi × KubeCon SLC 2026</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎰</text></svg>">
+<script src="config.js"></script>
+<script src="assets/app.js"></script>
+<style>
+  :root {
+    --bg: #0E0F13; --panel: #15171E; --panel2: #1B1E27; --line: #262A35;
+    --red: #FF521D; --green: #51CF66; --gold: #FFD43B; --cream: #F5F0E6; --text: #EDEEF2; --muted: #9BA0AE;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif; }
+  .wrap { max-width: 38rem; margin: 0 auto; padding: 1.1rem .9rem 4rem; }
+  #gate { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; }
+  #gate h1 { font-size: 1.4rem; letter-spacing: -.02em; }
+  #gate .note { color: var(--muted); font-size: .8rem; }
+  #gate input { font-family: var(--mono); text-align: center; font-size: 1.35rem; letter-spacing: .3em; width: 10rem; }
+  input { background: var(--panel); border: 1.5px solid var(--line); color: var(--text); font-size: 1rem;
+    padding: .7rem .9rem; border-radius: .7rem; outline: none; }
+  input:focus { border-color: var(--red); }
+  .btn { border: 0; cursor: pointer; background: var(--red); color: #fff; font-weight: 800; font-size: .95rem;
+    padding: .75rem 1.3rem; border-radius: .7rem; font-family: inherit; }
+  .btn.big { font-size: 1.25rem; padding: 1.05rem 1.6rem; width: 100%; }
+  .btn.ghost { background: transparent; border: 1.5px solid var(--line); color: var(--text); font-weight: 700; }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .hidden { display: none !important; }
+
+  h1 { font-size: 1.3rem; letter-spacing: -.02em; }
+  h1 b { color: var(--red); }
+  .sub { color: var(--muted); font-size: .84rem; line-height: 1.45; margin: .35rem 0 .8rem; }
+  .sub b { color: var(--cream); }
+  .metabar { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
+  #meta { font-family: var(--mono); font-size: .75rem; color: var(--muted); }
+  #meta b { color: var(--green); }
+
+  .prize-strip { display: flex; gap: .8rem; align-items: center; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 1rem; padding: .7rem .9rem; margin-bottom: 1rem; }
+  .prize-strip img { width: 74px; border-radius: .55rem; flex: 0 0 auto; }
+  .prize-strip p { font-size: .84rem; color: var(--muted); line-height: 1.4; margin: 0; }
+  .prize-strip p b { color: var(--cream); }
+
+  .winner-card { text-align: center; background: linear-gradient(135deg, rgba(155,57,230,.16), rgba(255,82,29,.08));
+    border: 2px dashed rgba(255,212,59,.55); border-radius: 1.2rem; padding: 1.4rem 1rem 1.1rem; margin-top: .4rem; }
+  .winner-card .slot { font-weight: 900; font-size: 1.9rem; color: var(--cream); letter-spacing: -.02em; min-height: 2.4rem; }
+  .winner-card .org { color: var(--muted); font-size: .9rem; margin-top: .15rem; min-height: 1.2em; }
+  .winner-card .org b { color: var(--cream); }
+  .winner-card .gh { font-family: var(--mono); color: var(--green); font-size: .85rem; margin-top: .35rem; min-height: 1.1em; }
+  .winner-card .crown { font-size: 2rem; display: block; margin-bottom: .3rem; }
+  .w-acts { display: flex; gap: .5rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap; }
+  .mini { font-size: .72rem; padding: .4rem .65rem; border-radius: .5rem; border: 1.5px solid var(--line);
+    background: transparent; color: var(--muted); cursor: pointer; font-weight: 700; font-family: inherit; }
+  .mini.ok { color: var(--green); border-color: rgba(81,207,102,.5); }
+  .mini.no { color: var(--red); border-color: rgba(255,82,29,.5); }
+  .st { display: block; font-size: .74rem; color: var(--muted); margin-top: .6rem; min-height: 1em; }
+  .st.y { color: var(--green); } .st.n { color: var(--red); } .st.w { color: var(--gold); }
+
+  .sect-title { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; font-weight: 700;
+    color: var(--muted); text-transform: uppercase; margin: 1.2rem 0 .45rem; }
+  .lrow { background: var(--panel); border: 1px solid var(--line); border-radius: .8rem; padding: .55rem .8rem; margin-bottom: .4rem;
+    display: flex; align-items: baseline; gap: .5rem; font-size: .85rem; }
+  .lrow .t { color: var(--muted); font-family: var(--mono); font-size: .7rem; flex: 0 0 auto; }
+  .lrow .n { font-weight: 700; color: var(--cream); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lrow .g { font-family: var(--mono); color: var(--muted); font-size: .72rem; }
+  .lrow.void { opacity: .5; }
+  .lrow.void .n { text-decoration: line-through; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1><img src="assets/kimchi-mark.svg" style="height:28px" alt="kimchi"> GTA VI draw</h1>
+  <p class="note">The 5:00 PM lucky draw — booth eyes only</p>
+  <input id="pin" type="password" inputmode="numeric" placeholder="PIN" autofocus>
+  <button class="btn" id="pinGo">Enter</button>
+</div>
+
+<div class="wrap hidden" id="main">
+  <h1>🎰 GTA VI — <b>lucky draw</b></h1>
+  <p class="sub">Every quiz play = one entry (unique GitHub handles). Draw at <b id="when">5:00 PM</b>.
+    Winner must be at the booth and show they <b>⭐ starred</b> getkimchi/kimchi.
+    No-show or no star? Hit <b>Redraw</b> for the next person.</p>
+  <div class="metabar"><span id="meta">loading…</span></div>
+
+  <div class="prize-strip">
+    <img src="assets/gta-vi-disc.svg" alt="Grand Theft Auto VI">
+    <p><b id="prizeName">Grand Theft Auto VI</b> — <span id="prizeSub">PS5 or Xbox disc, winner's pick</span>.<br>One winner, today, at the booth.</p>
+  </div>
+
+  <div class="winner-card">
+    <span class="crown">👑</span>
+    <div class="slot" id="slot">— waiting for the draw —</div>
+    <div class="org" id="winnerOrg"></div>
+    <div class="gh" id="winnerGh"></div>
+    <div class="w-acts" id="winnerActs" style="display:none">
+      <button class="mini" id="vBtn">Verify ⭐</button>
+      <button class="mini" id="pBtn">Profile ↗</button>
+      <button class="mini ghost" id="redrawBtn">✖ No-show / no star — redraw</button>
+    </div>
+    <span class="st" id="st"></span>
+  </div>
+
+  <div style="margin-top:1rem">
+    <button class="btn big" id="drawBtn">🎰 DRAW THE WINNER</button>
+  </div>
+
+  <div class="sect-title" id="logTitle" style="display:none">Draw log</div>
+  <div id="log"></div>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const LKEY = 'kimchi_draw_log_v1';
+const loadLog = () => JSON.parse(localStorage.getItem(LKEY) || '[]');
+const saveLog = (l) => localStorage.setItem(LKEY, JSON.stringify(l));
+let entries = [];          // [{ name, github, email, designation, company }]
+let log = loadLog();       // [{ name, github, when, void }]
+let current = null;        // current winner object
+let drawing = false;
+
+$('#prizeName').textContent = CONFIG.PRIZE_NAME || 'Grand Theft Auto VI';
+$('#prizeSub').textContent = CONFIG.PRIZE_SUB || "PS5 or Xbox disc, winner's pick";
+$('#when').textContent = drawTimeLabel();
+
+/* ── pin gate ── */
+$('#pinGo').addEventListener('click', tryPin);
+$('#pin').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryPin(); });
+function tryPin() {
+  if ($('#pin').value === String(CONFIG.ADMIN_PIN)) {
+    localStorage.setItem('kimchi_admin', '1');
+    enter();
+  } else { $('#pin').value = ''; $('#pin').placeholder = 'try again'; }
+}
+function enter() {
+  $('#gate').classList.add('hidden');
+  $('#main').classList.remove('hidden');
+  loadEntries();
+  renderLog();
+}
+
+/* ── data: raffle mode = unique players (the draw pool) ── */
+async function loadEntries() {
+  try {
+    const d = await apiGet('raffle');
+    entries = (d.entries || []).filter((e) => e.github);
+    $('#meta').innerHTML = 'live · <b>' + entries.length + '</b> entries in the pool · draw at <b>' + drawTimeLabel() + '</b>';
+  } catch (e) {
+    $('#meta').textContent = '⚠ backend unreachable — retrying every 10 s';
+  }
+}
+
+/* ── the draw ── */
+$('#drawBtn').addEventListener('click', () => {
+  if (drawing) return;
+  if (!entries.length) { $('#slot').textContent = 'No entries yet — nobody has played!'; return; }
+  if (current) void_(current); // void any previous pick that was never claimed
+  drawing = true;
+  $('#drawBtn').disabled = true;
+  $('#st').textContent = ''; $('#winnerActs').style.display = 'none';
+  const pool = entries.filter((e) => !log.some((l) => l.void && l.github.toLowerCase() === e.github.toLowerCase()));
+  const winner = (pool.length ? pool : entries)[Math.floor(Math.random() * (pool.length ? pool : entries).length)];
+  const slot = $('#slot');
+  let t = 0, speed = 55;
+  const spin = setInterval(() => {
+    t += speed;
+    const fake = entries[Math.floor(Math.random() * entries.length)];
+    slot.textContent = fake.name;
+    $('#winnerOrg').textContent = '';
+    $('#winnerGh').textContent = '';
+    if (t > 2200) { // ease out, then land
+      speed *= 1.28;
+      if (speed > 420) {
+        clearInterval(spin);
+        land(winner);
+      }
+    }
+  }, 55);
+});
+
+function land(winner) {
+  current = winner;
+  drawing = false;
+  $('#drawBtn').disabled = false;
+  $('#drawBtn').textContent = '🎰 REDRAW (if needed)';
+  $('#slot').textContent = winner.name;
+  const parts = [];
+  if (winner.designation) parts.push('<b>' + esc(winner.designation) + '</b>');
+  if (winner.company) parts.push(esc(winner.company));
+  if (winner.email) parts.push(esc(winner.email));
+  $('#winnerOrg').innerHTML = parts.join(' · ');
+  $('#winnerGh').textContent = '@' + winner.github;
+  $('#winnerActs').style.display = 'flex';
+  $('#st').className = 'st w';
+  $('#st').textContent = '⬆ winner picked at ' + new Date().toLocaleTimeString() + ' — verify the ⭐ before handing over the disc';
+  log.push({ name: winner.name, github: winner.github, when: new Date().toISOString(), void: false });
+  saveLog(log);
+  renderLog();
+}
+
+function void_(w) {
+  const rec = [...log].reverse().find((l) => l.github.toLowerCase() === w.github.toLowerCase() && !l.void);
+  if (rec) { rec.void = true; saveLog(log); renderLog(); }
+}
+
+$('#redrawBtn').addEventListener('click', () => {
+  if (current) void_(current);
+  current = null;
+  $('#winnerActs').style.display = 'none';
+  $('#st').textContent = '';
+  $('#slot').textContent = '— redraw —';
+  $('#drawBtn').click();
+});
+
+/* ── winner actions ── */
+$('#vBtn').addEventListener('click', async () => {
+  if (!current) return;
+  const btn = $('#vBtn'); btn.textContent = 'Checking…'; btn.disabled = true;
+  try {
+    const d = await apiGet('starred', { user: current.github });
+    if (d.result === 'success') {
+      btn.textContent = d.starred ? 'Verified ✓' : 'No star ✗';
+      btn.className = 'mini ' + (d.starred ? 'ok' : 'no');
+      $('#st').className = 'st ' + (d.starred ? 'y' : 'n');
+      $('#st').textContent = d.starred ? '✓ starred — hand over the GTA VI disc! 🎮' : '✗ no star — have them star it now and re-check';
+    } else {
+      btn.textContent = 'Retry ⭐'; btn.disabled = false;
+      $('#st').className = 'st w';
+      $('#st').textContent = d.result === 'rate_limited' ? '⚠ rate-limited — use Profile ↗ and eyeball' : '⚠ check manually';
+    }
+  } catch (e) { btn.textContent = 'Retry ⭐'; btn.disabled = false; $('#st').className = 'st w'; $('#st').textContent = '⚠ backend unreachable'; }
+});
+$('#pBtn').addEventListener('click', () => {
+  if (current) window.open('https://github.com/' + current.github + '?tab=stars', '_blank');
+});
+
+/* ── draw log ── */
+function renderLog() {
+  const box = $('#log');
+  box.innerHTML = '';
+  $('#logTitle').style.display = log.length ? 'block' : 'none';
+  [...log].reverse().forEach((l) => {
+    const el = document.createElement('div');
+    el.className = 'lrow' + (l.void ? ' void' : '');
+    const tm = new Date(l.when).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    el.innerHTML = '<span class="t">' + tm + '</span><span class="n">' + esc(l.name) + (l.void ? ' (void)' : '') +
+      '</span><span class="g">@' + esc(l.github) + '</span>';
+    box.appendChild(el);
+  });
+}
+
+setInterval(loadEntries, 10000);
+
+if (localStorage.getItem('kimchi_admin') === '1') enter();
+</script>
+</body>
+</html>
