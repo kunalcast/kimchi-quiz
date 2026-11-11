@@ -81,10 +81,10 @@
 
   /* ── prize panel (right) ── */
   .right { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-  .pr-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 18px; }
-  .pr-head h1 { font-size: 40px; font-weight: 900; letter-spacing: -.02em; color: var(--cream); }
+  .pr-head { display: flex; align-items: center; justify-content: space-between; gap: 30px; margin-bottom: 18px; }
+  .pr-head h1 { font-size: 34px; font-weight: 900; letter-spacing: -.02em; color: var(--cream); white-space: nowrap; }
   .pr-head h1 span { color: var(--red); }
-  .pr-head .meta { font-family: var(--mono); font-size: 20px; color: var(--muted); }
+  .pr-head .meta { font-family: var(--mono); font-size: 16px; color: var(--muted); text-align: right; line-height: 1.5; flex: 0 1 auto; }
   .pr-head .meta b { color: var(--green); }
   .prize-hero { display: flex; gap: 38px; align-items: stretch; }
   .prize-art { flex: 0 0 460px; position: relative; }
@@ -105,9 +105,9 @@
   .factcard .k { font-family: var(--mono); font-size: 16px; letter-spacing: .12em; color: var(--red);
     text-transform: uppercase; margin-bottom: 14px; }
   .factcard .fact { font-size: 27px; line-height: 1.35; color: var(--cream); font-weight: 600;
-    transition: opacity .45s ease; flex: 1; display: flex; align-items: center; }
+    transition: opacity .45s ease; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
   .factcard .fact.fade { opacity: 0; }
-  .factcard .fact small { display: block; margin-top: 10px; font-size: 17px; color: var(--muted); font-weight: 500; font-family: var(--mono); }
+  .factcard .fact small { display: block; margin-top: 12px; font-size: 17px; color: var(--muted); font-weight: 500; font-family: var(--mono); }
   .factdots { display: flex; gap: 8px; margin-top: 16px; }
   .factdots i { width: 26px; height: 5px; border-radius: 99px; background: var(--panel2); }
   .factdots i.on { background: var(--red); }
@@ -322,7 +322,8 @@ function renderTicker() {
   const items = [];
   (lastLb.recent || []).slice(0, 5).forEach((r) => {
     const t = r.when ? Date.parse(r.when) : NaN;
-    const fresh = !isNaN(t) && Date.now() - t < 10 * 60000;
+    if (isNaN(t) || Date.now() - t > 24 * 3600000) return; // skip stale rows (old events)
+    const fresh = Date.now() - t < 10 * 60000;
     items.push({
       t: isNaN(t) ? 0 : t,
       html: '🌶️ <b>' + esc(r.name) + '</b> ' + (fresh ? 'just entered the draw' : 'entered the draw') +
