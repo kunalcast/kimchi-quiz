@@ -3,3 +3,4 @@ tools/mock-db.json
 .kimchi/
 # admin page is LOCAL-ONLY (runs from this folder on the booth Mac, never deployed)
 admin.html
+tools/__pycache__/
