@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <title>KIMCHI × KubeCon SLC 2026 — GTA VI Draw</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫙</text></svg>">
-<script src="config.js"></script>
-<script src="assets/app.js"></script>
-<script src="assets/qrcode.min.js"></script>
+<script src="config.js?v=2"></script>
+<script src="assets/app.js?v=2"></script>
+<script src="assets/qrcode.min.js?v=2"></script>
 <style>
   :root {
     --bg: #0E0F13; --panel: #15171E; --panel2: #1B1E27; --line: #262A35;
@@ -155,7 +155,7 @@
           <div class="qr-split">
             <div id="qrBox"></div>
             <div class="tee-wrap">
-              <img class="tee-shot" src="assets/gta-vi-disc.svg" alt="Grand Theft Auto VI — the prize">
+              <img class="tee-shot" src="assets/gta-vi-disc.jpg" alt="Grand Theft Auto VI — the prize">
               <div class="tee-badge">🎁 GTA VI!</div>
             </div>
           </div>
@@ -180,7 +180,7 @@
         </div>
         <div class="prize-hero">
           <div class="prize-art">
-            <img src="assets/gta-vi-disc.svg" alt="Grand Theft Auto VI">
+            <img src="assets/gta-vi-disc.jpg" alt="Grand Theft Auto VI">
             <div class="psa">PS5 · XBOX</div>
           </div>
           <div class="stats">
@@ -215,6 +215,9 @@
 
 <script>
 const $ = (s) => document.querySelector(s);
+// A stale cached config.js (mixed with a fresh page) must never blank the TV:
+// each section below fails alone, everything else keeps rendering.
+const safe = (fn) => { try { fn(); } catch (e) { console.warn('section failed:', e); } };
 
 /* ── stage scaling: fit 1920×1080 into any window ── */
 function fit() {
@@ -224,7 +227,7 @@ function fit() {
 addEventListener('resize', fit); fit();
 
 /* ── floating background ingredients ── */
-(function () {
+safe(function () {
   const layer = $('#emojiLayer');
   const items = [['🌶️', 130, 9, 250, 18], ['🎮', 110, 14, 1020, 80], ['🌴', 90, 10, 1700, 760], ['🥬', 150, 12, 430, 940], ['🫙', 120, 10, 1560, 300]];
   items.forEach(([e, size, dur, x, y]) => {
@@ -233,19 +236,21 @@ addEventListener('resize', fit); fit();
     d.style.cssText = 'font-size:' + size + 'px;left:' + x + 'px;top:' + y + 'px;animation:drift ' + (dur + Math.random() * 8) + 's ease-in-out infinite;';
     layer.appendChild(d);
   });
-})();
+});
 
 /* ── QR code ── */
-try {
+safe(() => {
   const qr = qrcode(0, 'M');
   qr.addData(quizUrl());
   qr.make();
   $('#qrBox').innerHTML = qr.createSvgTag(9, 16);
-} catch (e) { $('#qrBox').textContent = 'QR failed — check config'; }
+});
 
 /* ── header + config text ── */
-$('#eventChip').textContent = CONFIG.EVENT_NAME + ' · ' + (CONFIG.EVENT_CITY || '');
-document.title = 'Kimchi × ' + (CONFIG.EVENT_CITY || 'KubeCon') + ' — GTA VI Draw';
+safe(() => {
+  $('#eventChip').textContent = (CONFIG.EVENT_NAME || 'KubeCon 2026') + ' · ' + (CONFIG.EVENT_CITY || '');
+  document.title = 'Kimchi × ' + (CONFIG.EVENT_CITY || 'KubeCon') + ' — GTA VI Draw';
+});
 
 /* ── draw countdown ── */
 function tickCountdown() {
@@ -255,8 +260,7 @@ function tickCountdown() {
   const h = Math.floor(t / 3600000), m = Math.floor((t % 3600000) / 60000), s = Math.floor((t % 60000) / 1000);
   el.textContent = (h > 0 ? h + ':' : '') + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
 }
-tickCountdown();
-setInterval(tickCountdown, 1000);
+safe(() => { tickCountdown(); setInterval(tickCountdown, 1000); });
 
 /* ── rotating facts — researched from kimchi.dev/software-factory & cncf.io ── */
 const FACTS = [
@@ -271,7 +275,7 @@ const FACTS = [
 ];
 let factIdx = 0;
 const dots = $('#factDots');
-FACTS.forEach(() => { const i = document.createElement('i'); dots.appendChild(i); });
+safe(() => FACTS.forEach(() => { const i = document.createElement('i'); dots.appendChild(i); }));
 function renderFact(fade) {
   const el = $('#factLine');
   const apply = () => {
@@ -282,8 +286,7 @@ function renderFact(fade) {
   if (fade) { el.classList.add('fade'); setTimeout(apply, 450); }
   else apply();
 }
-renderFact(false);
-setInterval(() => { factIdx = (factIdx + 1) % FACTS.length; renderFact(true); }, 8000);
+safe(() => { renderFact(false); setInterval(() => { factIdx = (factIdx + 1) % FACTS.length; renderFact(true); }, 8000); });
 
 /* ── stats board (players, plays) ── */
 function bumpIfChanged(sel, val) {

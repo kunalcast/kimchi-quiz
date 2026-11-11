@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GTA VI Draw — Kimchi × KubeCon SLC 2026</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎰</text></svg>">
-<script src="config.js"></script>
-<script src="assets/app.js"></script>
+<script src="config.js?v=2"></script>
+<script src="assets/app.js?v=2"></script>
 <style>
   :root {
     --bg: #0E0F13; --panel: #15171E; --panel2: #1B1E27; --line: #262A35;
@@ -88,7 +88,7 @@
   <div class="metabar"><span id="meta">loading…</span></div>
 
   <div class="prize-strip">
-    <img src="assets/gta-vi-disc.svg" alt="Grand Theft Auto VI">
+    <img src="assets/gta-vi-disc.jpg" alt="Grand Theft Auto VI">
     <p><b id="prizeName">Grand Theft Auto VI</b> — <span id="prizeSub">PS5 or Xbox disc, winner's pick</span>.<br>One winner, today, at the booth.</p>
   </div>
 
@@ -123,9 +123,11 @@ let log = loadLog();       // [{ name, github, when, void }]
 let current = null;        // current winner object
 let drawing = false;
 
-$('#prizeName').textContent = CONFIG.PRIZE_NAME || 'Grand Theft Auto VI';
-$('#prizeSub').textContent = CONFIG.PRIZE_SUB || "PS5 or Xbox disc, winner's pick";
-$('#when').textContent = drawTimeLabel();
+/* a stale cached config.js must never brick the booth tool — fail soft */
+const safe = (fn) => { try { fn(); } catch (e) { console.warn('section failed:', e); } };
+safe(() => { $('#prizeName').textContent = CONFIG.PRIZE_NAME || 'Grand Theft Auto VI'; });
+safe(() => { $('#prizeSub').textContent = CONFIG.PRIZE_SUB || "PS5 or Xbox disc, winner's pick"; });
+safe(() => { $('#when').textContent = drawTimeLabel(); });
 
 /* ── pin gate ── */
 $('#pinGo').addEventListener('click', tryPin);
@@ -148,7 +150,8 @@ async function loadEntries() {
   try {
     const d = await apiGet('raffle');
     entries = (d.entries || []).filter((e) => e.github);
-    $('#meta').innerHTML = 'live · <b>' + entries.length + '</b> entries in the pool · draw at <b>' + drawTimeLabel() + '</b>';
+    $('#meta').innerHTML = 'live · <b>' + entries.length + '</b> entries in the pool' +
+      (typeof drawTimeLabel === 'function' ? ' · draw at <b>' + drawTimeLabel() + '</b>' : '');
   } catch (e) {
     $('#meta').textContent = '⚠ backend unreachable — retrying every 10 s';
   }

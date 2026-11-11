@@ -130,8 +130,9 @@ While you're in `config.js`:
   answer the player sees the fact with its source. 10 are drawn at random per play.
 - **Privacy:** full name, work email (required), designation, company, GitHub username and score,
   all in your own Google Sheet.
-- **Prize artwork:** the display art is `assets/gta-vi-disc.svg` (original GTA-VI-styled art, safe
-  to commit). Want the real box art? Drop a JPG at `assets/gta-vi-disc.jpg` and swap the
-  `gta-vi-disc.svg` references in `play.html`, `index.html` and `draw.html` for that file.
+- **Prize artwork:** `assets/gta-vi-disc.jpg` (the PS5/Xbox box art). To change it later, replace
+  that file keeping the same name — no code edits needed.
+- **Cache-proofing:** script tags carry `?v=N` and every top-level UI section is fail-soft — a stale
+  cached `config.js` after a push can never blank the TV mid-event.
 - The Google Sheet is the source of truth — the draw log lives only in that Mac's browser
   (`localStorage`), and the sheet keeps every play if the Mac restarts.
