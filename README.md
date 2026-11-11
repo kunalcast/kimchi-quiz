@@ -17,7 +17,7 @@ Booth Mac        → draw.html     the 5 PM draw · verify ⭐ · no-show redraw
 | File | What it is |
 |---|---|
 | `play.html` | Mobile quiz (entry gate → 10 random Qs from the 50-bank, 15s each, speed + streak bonus) — **deployed** |
-| `index.html` | TV display — GTA VI prize panel, draw countdown, live player/play counts — open fullscreen, cast from the Mac — **deployed** |
+| `index.html` | TV display — live leaderboard, GTA VI prize rail, draw countdown, live counts — open fullscreen, cast from the Mac — **deployed** |
 | `draw.html` | The 5:00 PM lucky draw — pulls the entry pool, spins, verify ⭐, redraw on no-show — **LOCAL-ONLY, never deployed** |
 | `config.js` | **The one file you edit** (endpoint URL, prize, draw time, PIN) |
 | `apps-script/Code.gs` | The backend — paste into the Google Sheet |
@@ -53,9 +53,15 @@ Booth Mac        → draw.html     the 5 PM draw · verify ⭐ · no-show redraw
    - **Deploy** → authorize the scopes (Google asks once)
 7. Copy the **Web app URL** — it ends in `/exec`
 
-> ⚠ **Email is now REQUIRED** by the backend (we need it to reach the winner). If you reuse an
-> already-deployed older script, `Designation`/`Company` are silently dropped and email stays
-> optional — redeploy (Deploy → Manage deployments → ✏️ → New version) to capture everything.
+> ⚠ **The new Apps Script version is REQUIRED** — redeploy once (Deploy → Manage deployments →
+> ✏️ → New version → Deploy). Until you do:
+> - `Designation`/`Company` are silently dropped and email stays optional
+> - **old CYpher rows stay on the leaderboard** (fresh-board filtering is server-side: the `SINCE`
+>   constant at the top of `Code.gs` — data before `2026-11-11 00:00 MST` is ignored everywhere:
+>   leaderboard, stats, ticker, draw pool, and the one-play-per-handle dedupe)
+>
+> Optional housekeeping once the new version is live: delete the old rows in the `Plays` tab
+> (keep row 1 headers) — the screens look identical either way.
 
 ### 2. Point the site at your backend
 

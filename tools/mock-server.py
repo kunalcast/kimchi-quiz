@@ -44,7 +44,7 @@ def save_db(rows):
 
 
 def leaderboard(rows):
-    rows = [r for r in rows if fresh(r.get('Timestamp', ''))]
+    rows = [r for r in rows if fresh(r.get('Timestamp', '')) and str(r.get('GitHub', '')).strip()]
     best, entries, recent = {}, [], []
     for r in rows:
         gh = str(r.get('GitHub', '')).strip()

@@ -128,8 +128,10 @@ function doGet(e) {
     const C = { when: at('Timestamp', 0), name: at('Name', 1), gh: at('GitHub', 2),
       score: at('Score', 3), correct: at('Correct', 4), email: at('Email', -1),
       desig: at('Designation', -1), company: at('Company', -1) };
+    // Real plays only: inside the SINCE window AND with a GitHub handle
+    // (cleared-but-not-deleted sheet rows must not inflate 'plays').
     const rows = (last > 1 ? sheet.getRange(2, 1, last - 1, lastCol).getValues() : [])
-      .filter(function (r) { return fresh_(r[C.when]); });
+      .filter(function (r) { return fresh_(r[C.when]) && String(r[C.gh] || '').trim() !== ''; });
 
     const best = {};    // github(lower) → best play
     const entries = []; // unique players (raffle pool)

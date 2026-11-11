@@ -206,7 +206,6 @@
               <div class="psa">PS5 · XBOX</div>
             </div>
             <div class="ministat"><div class="k">Players in the draw</div><div class="v" id="statPlayers">0</div></div>
-            <div class="ministat"><div class="k">Quiz plays today</div><div class="v" id="statPlays">0</div></div>
           </div>
         </div>
       </div>
@@ -300,7 +299,6 @@ function bumpIfChanged(sel, val) {
 }
 function renderStats(lb) {
   bumpIfChanged('#statPlayers', lb.players || 0);
-  bumpIfChanged('#statPlays', lb.plays || lb.players || 0);
   const pn = $('#playersNow');
   if (pn) pn.textContent = (lb.players || 0) + ' player' + ((lb.players || 0) === 1 ? '' : 's');
   const when = typeof drawTimeLabel === 'function' ? drawTimeLabel() : '5:00 PM';
