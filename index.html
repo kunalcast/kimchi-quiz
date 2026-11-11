@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <title>KIMCHI × KubeCon SLC 2026 — GTA VI Draw</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫙</text></svg>">
-<script src="config.js?v=2"></script>
-<script src="assets/app.js?v=2"></script>
-<script src="assets/qrcode.min.js?v=2"></script>
+<script src="config.js?v=3"></script>
+<script src="assets/app.js?v=3"></script>
+<script src="assets/qrcode.min.js?v=3"></script>
 <style>
   :root {
     --bg: #0E0F13; --panel: #15171E; --panel2: #1B1E27; --line: #262A35;
@@ -51,7 +51,7 @@
 
   /* ── main grid ── */
   main { flex: 1; display: flex; gap: 40px; padding-top: 30px; min-height: 0; }
-  .left { flex: 0 0 620px; display: flex; flex-direction: column; gap: 20px; }
+  .left { flex: 0 0 600px; display: flex; flex-direction: column; gap: 20px; }
   .qr-card { background: #fff; border-radius: 26px; padding: 24px 28px 20px; }
   .qr-split { display: flex; align-items: center; justify-content: center; gap: 26px; }
   .qr-card svg { display: block; }
@@ -63,54 +63,67 @@
     border: 2.5px solid #fff; }
   .qr-card .scan { color: #111; font-weight: 900; font-size: 25px; margin-top: 12px; text-align: center; letter-spacing: -.01em; }
   .qr-card .scan b { color: var(--red-deep); }
-  .steps { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 20px 28px; display: flex; flex-direction: column; gap: 14px; }
+  .steps { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 18px 28px; display: flex; flex-direction: column; gap: 12px; }
   .step { display: flex; align-items: center; gap: 16px; }
-  .step .n { flex: 0 0 40px; height: 40px; border-radius: 50%; background: var(--panel2); border: 1.5px solid var(--line);
-    display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 19px; color: var(--cream); }
-  .step p { font-size: 20px; color: var(--muted); }
+  .step .n { flex: 0 0 38px; height: 38px; border-radius: 50%; background: var(--panel2); border: 1.5px solid var(--line);
+    display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; color: var(--cream); }
+  .step p { font-size: 19px; color: var(--muted); }
   .step p b { color: var(--cream); }
   .step.s1 .n { border-color: rgba(224,49,49,.6); color: var(--red); }
   .drawcard { margin-top: auto; background: linear-gradient(135deg, rgba(255,82,29,.18), rgba(255,82,29,.05));
-    border: 2px dashed rgba(255,82,29,.6); border-radius: 22px; padding: 18px 30px 20px; text-align: center; }
-  .drawcard h2 { color: var(--cream); font-size: 26px; font-weight: 800; letter-spacing: -.01em; }
+    border: 2px dashed rgba(255,82,29,.6); border-radius: 22px; padding: 16px 30px 18px; text-align: center; }
+  .drawcard h2 { color: var(--cream); font-size: 24px; font-weight: 800; letter-spacing: -.01em; }
   .drawcard h2 b { color: var(--gold); }
-  .drawcard .cd { font-family: var(--mono); font-size: 54px; font-weight: 900; color: var(--gold);
-    letter-spacing: .02em; margin-top: 8px; font-variant-numeric: tabular-nums; }
-  .drawcard p { color: var(--muted); font-size: 20px; margin-top: 10px; font-weight: 600; }
+  .drawcard .cd { font-family: var(--mono); font-size: 48px; font-weight: 900; color: var(--gold);
+    letter-spacing: .02em; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .drawcard p { color: var(--muted); font-size: 19px; margin-top: 8px; font-weight: 600; }
   .drawcard p b { color: var(--green); }
+  .drawcard .factline { font-family: var(--mono); font-size: 15px; color: var(--gold); font-weight: 500;
+    margin-top: 10px; line-height: 1.45; min-height: 2.9em; transition: opacity .45s ease; }
+  .drawcard .factline.fade { opacity: 0; }
 
-  /* ── prize panel (right) ── */
+  /* ── leaderboard (right) ── */
   .right { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-  .pr-head { display: flex; align-items: center; justify-content: space-between; gap: 30px; margin-bottom: 18px; }
-  .pr-head h1 { font-size: 34px; font-weight: 900; letter-spacing: -.02em; color: var(--cream); white-space: nowrap; }
-  .pr-head h1 span { color: var(--red); }
-  .pr-head .meta { font-family: var(--mono); font-size: 16px; color: var(--muted); text-align: right; line-height: 1.5; flex: 0 1 auto; }
-  .pr-head .meta b { color: var(--green); }
-  .prize-hero { display: flex; gap: 38px; align-items: stretch; }
-  .prize-art { flex: 0 0 460px; position: relative; }
-  .prize-art img { width: 460px; border-radius: 26px; display: block;
-    box-shadow: 0 30px 80px rgba(155,57,230,.35), 0 10px 30px rgba(0,0,0,.5); }
-  .prize-art .psa { position: absolute; top: 18px; right: 18px; background: rgba(21,7,34,.85);
+  .lb-head { display: flex; align-items: center; justify-content: space-between; gap: 30px; margin-bottom: 16px; }
+  .lb-head h1 { font-size: 34px; font-weight: 900; letter-spacing: -.02em; color: var(--cream); white-space: nowrap; }
+  .lb-head h1 span { color: var(--red); }
+  .lb-head .meta { font-family: var(--mono); font-size: 16px; color: var(--muted); text-align: right; line-height: 1.5; }
+  .lb-head .meta b { color: var(--green); }
+  .board-hero { flex: 1; display: flex; gap: 32px; min-height: 0; }
+  .lb-col { flex: 1; min-width: 0; }
+  .lb-rows { position: relative; height: 100%; }
+  .row { position: absolute; left: 0; right: 0; height: 66px; display: flex; align-items: center; gap: 20px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 15px; padding: 0 22px;
+    transition: top .7s cubic-bezier(.22,1,.36,1), opacity .5s, transform .5s; }
+  .row.m1 { background: linear-gradient(90deg, rgba(255,212,59,.14), var(--panel) 55%); border-color: rgba(255,212,59,.55); transform: scale(1.02); }
+  .row.m2 { background: linear-gradient(90deg, rgba(201,201,209,.10), var(--panel) 55%); border-color: rgba(201,201,209,.4); }
+  .row.m3 { background: linear-gradient(90deg, rgba(205,127,50,.12), var(--panel) 55%); border-color: rgba(205,127,50,.45); }
+  .row .rank { flex: 0 0 50px; font-weight: 900; font-size: 25px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .row.m1 .rank { font-size: 29px; }
+  .row .who { flex: 1; min-width: 0; }
+  .row .name { font-size: 21px; font-weight: 700; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -.01em; }
+  .row .gh { font-family: var(--mono); font-size: 14px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .pts { font-size: 24px; font-weight: 900; color: var(--green); font-variant-numeric: tabular-nums; }
+  .row.m1 .pts { color: var(--gold); }
+  .row .pts small { font-size: 13px; color: var(--muted); font-weight: 600; margin-left: 4px; }
+  .row.entering { opacity: 0; transform: translateY(26px); }
+  .empty-lb { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--muted); }
+  .empty-lb .icon { font-size: 58px; }
+  .empty-lb p { font-size: 25px; }
+  .empty-lb p b { color: var(--cream); }
+
+  /* ── side rail: prize art + mini stats ── */
+  .side { flex: 0 0 355px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  .side-art { position: relative; }
+  .side-art img { width: 100%; border-radius: 20px; display: block;
+    box-shadow: 0 24px 60px rgba(155,57,230,.30), 0 8px 24px rgba(0,0,0,.5); }
+  .side-art .psa { position: absolute; top: 14px; right: 14px; background: rgba(21,7,34,.85);
     border: 1.5px solid rgba(255,212,59,.6); color: var(--gold); font-family: var(--mono);
-    font-size: 17px; font-weight: 700; padding: 7px 14px; border-radius: 999px; }
-  .stats { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
-  .stat-row { display: flex; gap: 20px; }
-  .stat { flex: 1; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 20px 26px; }
-  .stat .k { font-family: var(--mono); font-size: 16px; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; }
-  .stat .v { font-size: 52px; font-weight: 900; color: var(--cream); font-variant-numeric: tabular-nums; letter-spacing: -.02em; margin-top: 4px; }
-  .stat .v.bump { animation: bump .5s ease; }
-  .stat .s { font-size: 17px; color: var(--muted); margin-top: 2px; }
-  .factcard { flex: 1; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 24px 28px;
-    display: flex; flex-direction: column; min-height: 0; }
-  .factcard .k { font-family: var(--mono); font-size: 16px; letter-spacing: .12em; color: var(--red);
-    text-transform: uppercase; margin-bottom: 14px; }
-  .factcard .fact { font-size: 27px; line-height: 1.35; color: var(--cream); font-weight: 600;
-    transition: opacity .45s ease; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
-  .factcard .fact.fade { opacity: 0; }
-  .factcard .fact small { display: block; margin-top: 12px; font-size: 17px; color: var(--muted); font-weight: 500; font-family: var(--mono); }
-  .factdots { display: flex; gap: 8px; margin-top: 16px; }
-  .factdots i { width: 26px; height: 5px; border-radius: 99px; background: var(--panel2); }
-  .factdots i.on { background: var(--red); }
+    font-size: 15px; font-weight: 700; padding: 6px 13px; border-radius: 999px; }
+  .ministat { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 16px 24px; }
+  .ministat .k { font-family: var(--mono); font-size: 15px; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; }
+  .ministat .v { font-size: 46px; font-weight: 900; color: var(--cream); margin-top: 2px; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .ministat .v.bump { animation: bump .5s ease; }
 
   /* ── ticker ── */
   footer { height: 74px; margin: 0 -52px; border-top: 1px solid var(--line); background: rgba(21,23,30,.65); display: flex; align-items: stretch; overflow: hidden; }
@@ -121,7 +134,6 @@
   .ticker { display: flex; gap: 0; white-space: nowrap; animation: scroll 38s linear infinite; }
   .ticker span { font-size: 24px; color: var(--muted); padding-right: 90px; }
   .ticker span b { color: var(--cream); }
-  .ticker span .r { color: var(--green); }
   @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
   .offbadge { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); background: rgba(255,212,59,.12);
@@ -169,38 +181,32 @@
         <div class="drawcard">
           <h2>🎰 LUCKY DRAW AT <b>5:00 PM MST</b></h2>
           <div class="cd" id="countdown">--:--:--</div>
-          <p>every quiz = one entry · <b id="playersNow">0 players</b> in the pool</p>
+          <p>every quiz = one entry · <b id="playersNow">0 players</b></p>
+          <p class="factline" id="factLine"></p>
         </div>
       </div>
 
       <div class="right">
-        <div class="pr-head">
-          <h1>WIN <span>GRAND THEFT AUTO VI</span></h1>
+        <div class="lb-head">
+          <h1>LIVE <span>LEADERBOARD</span></h1>
           <div class="meta" id="drawMeta">warming up…</div>
         </div>
-        <div class="prize-hero">
-          <div class="prize-art">
-            <img src="assets/gta-vi-disc.jpg" alt="Grand Theft Auto VI">
-            <div class="psa">PS5 · XBOX</div>
+        <div class="board-hero">
+          <div class="lb-col">
+            <div class="lb-rows" id="lbRows">
+              <div class="empty-lb" id="emptyLb">
+                <div class="icon">🎟️</div>
+                <p><b>Every play</b> enters the 5:00 PM draw — be today's first!</p>
+              </div>
+            </div>
           </div>
-          <div class="stats">
-            <div class="stat-row">
-              <div class="stat">
-                <div class="k">Players in the draw</div>
-                <div class="v" id="statPlayers">0</div>
-                <div class="s">unique GitHub accounts</div>
-              </div>
-              <div class="stat">
-                <div class="k">Quiz plays</div>
-                <div class="v" id="statPlays">0</div>
-                <div class="s">total games today</div>
-              </div>
+          <div class="side">
+            <div class="side-art">
+              <img src="assets/gta-vi-disc.jpg" alt="Grand Theft Auto VI">
+              <div class="psa">PS5 · XBOX</div>
             </div>
-            <div class="factcard">
-              <div class="k">📡 Live from kimchi.dev — did you know?</div>
-              <div class="fact" id="factLine">Loading the facts…</div>
-              <div class="factdots" id="factDots"></div>
-            </div>
+            <div class="ministat"><div class="k">Players in the draw</div><div class="v" id="statPlayers">0</div></div>
+            <div class="ministat"><div class="k">Quiz plays today</div><div class="v" id="statPlays">0</div></div>
           </div>
         </div>
       </div>
@@ -215,7 +221,7 @@
 
 <script>
 const $ = (s) => document.querySelector(s);
-// A stale cached config.js (mixed with a fresh page) must never blank the TV:
+// A stale cached file (mixed with a fresh page) must never blank the TV:
 // each section below fails alone, everything else keeps rendering.
 const safe = (fn) => { try { fn(); } catch (e) { console.warn('section failed:', e); } };
 
@@ -264,34 +270,30 @@ safe(() => { tickCountdown(); setInterval(tickCountdown, 1000); });
 
 /* ── rotating facts — researched from kimchi.dev/software-factory & cncf.io ── */
 const FACTS = [
-  { t: 'Kimchi Software Factory runs a full loop — ticket → plan → code → test → review → deploy → monitor — with governed agents at every stage.', s: 'kimchi.dev/software-factory' },
-  { t: 'Kimchi Inference hosts GLM, MiniMax and Kimi on dedicated GPUs in Paris — OpenAI-compatible, zero infrastructure.', s: 'kimchi.dev/software-factory' },
-  { t: 'Budgets in Kimchi are hard caps per user, team and org — enforced before a request ever hits a model. Hard caps, not alerts.', s: 'kimchi.dev/software-factory' },
-  { t: 'Workspaces are persistent cloud dev environments — teleport sessions, secrets brokering, in-region isolation. GPU workspaces coming soon.', s: 'kimchi.dev/software-factory' },
-  { t: 'KubeCon + CloudNativeCon NA 2026: Nov 9–12 at the Salt Palace, SLC — with the first-ever AI Inference + Agentic track.', s: 'cncf.io' },
-  { t: 'Your prompts and code never become training data — private by architecture.', s: 'kimchi.dev' },
-  { t: 'Agents use your credentials without secrets ever entering the workspace — that’s secrets brokering.', s: 'kimchi.dev/software-factory' },
-  { t: 'The MCP Gateway: one governed entry point for every MCP server your agents use — policies, secrets, audit logs.', s: 'kimchi.dev/software-factory' }
+  { t: 'Kimchi Software Factory: ticket → plan → code → test → review → deploy → monitor.', s: 'kimchi.dev' },
+  { t: 'GLM, MiniMax & Kimi on dedicated GPUs in Paris — OpenAI-compatible API.', s: 'kimchi.dev' },
+  { t: 'Budgets are hard caps per user, team & org — enforced before a request hits a model.', s: 'kimchi.dev' },
+  { t: 'Workspaces: persistent cloud dev envs with teleport & secrets brokering.', s: 'kimchi.dev' },
+  { t: 'KubeCon NA 2026: Nov 9–12, Salt Palace, SLC — first AI Inference + Agentic track.', s: 'cncf.io' },
+  { t: 'Prompts & code never become training data — private by architecture.', s: 'kimchi.dev' }
 ];
 let factIdx = 0;
-const dots = $('#factDots');
-safe(() => FACTS.forEach(() => { const i = document.createElement('i'); dots.appendChild(i); }));
+const factEl = $('#factLine');
 function renderFact(fade) {
-  const el = $('#factLine');
+  if (!factEl) return;
   const apply = () => {
-    el.innerHTML = FACTS[factIdx].t + '<small>— ' + FACTS[factIdx].s + '</small>';
-    [...dots.children].forEach((d, i) => d.classList.toggle('on', i === factIdx));
-    el.classList.remove('fade');
+    factEl.textContent = '📡 ' + FACTS[factIdx].t + '  (' + FACTS[factIdx].s + ')';
+    factEl.classList.remove('fade');
   };
-  if (fade) { el.classList.add('fade'); setTimeout(apply, 450); }
+  if (fade) { factEl.classList.add('fade'); setTimeout(apply, 450); }
   else apply();
 }
 safe(() => { renderFact(false); setInterval(() => { factIdx = (factIdx + 1) % FACTS.length; renderFact(true); }, 8000); });
 
-/* ── stats board (players, plays) ── */
+/* ── live stats chips ── */
 function bumpIfChanged(sel, val) {
   const el = $(sel);
-  if (el.textContent !== String(val)) {
+  if (el && el.textContent !== String(val)) {
     el.textContent = String(val);
     el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
   }
@@ -299,13 +301,46 @@ function bumpIfChanged(sel, val) {
 function renderStats(lb) {
   bumpIfChanged('#statPlayers', lb.players || 0);
   bumpIfChanged('#statPlays', lb.plays || lb.players || 0);
-  $('#playersNow').textContent = (lb.players || 0) + ' player' + ((lb.players || 0) === 1 ? '' : 's');
-  $('#drawMeta').innerHTML = '🎰 <b>' + drawTimeLabel() + '</b> · ' + (lb.players || 0) + ' entries · ⭐ github.com/getkimchi/kimchi';
+  const pn = $('#playersNow');
+  if (pn) pn.textContent = (lb.players || 0) + ' player' + ((lb.players || 0) === 1 ? '' : 's');
+  const when = typeof drawTimeLabel === 'function' ? drawTimeLabel() : '5:00 PM';
+  $('#drawMeta').innerHTML = '🎰 draw <b>' + when + '</b> · <b>' + (lb.players || 0) + '</b> entries today · ⭐ github.com/getkimchi/kimchi';
+}
+
+/* ── leaderboard (keyed rows, animated reorder) ── */
+const ROW_H = 76, rowEls = new Map(); // github(lower) → element
+function renderBoard(lb) {
+  const top = (lb.top || []).slice(0, 10);
+  const holder = $('#lbRows');
+  const seen = new Set();
+  top.forEach((r, i) => {
+    const key = String(r.github).toLowerCase();
+    seen.add(key);
+    let el = rowEls.get(key);
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'row entering';
+      el.innerHTML = '<div class="rank"></div><div class="who"><div class="name"></div><div class="gh"></div></div><div class="pts"></div>';
+      rowEls.set(key, el);
+      holder.appendChild(el);
+      requestAnimationFrame(() => requestAnimationFrame(() => el.classList.remove('entering')));
+    }
+    el.classList.remove('m1', 'm2', 'm3');
+    if (i === 0) el.classList.add('m1'); else if (i === 1) el.classList.add('m2'); else if (i === 2) el.classList.add('m3');
+    el.style.top = i * ROW_H + 'px';
+    el.querySelector('.rank').textContent = i < 3 ? ['🥇', '🥈', '🥉'][i] : '#' + (i + 1);
+    el.querySelector('.name').textContent = r.name;
+    el.querySelector('.gh').textContent = '@' + r.github;
+    el.querySelector('.pts').innerHTML = Number(r.score).toLocaleString() + '<small>pts</small>';
+  });
+  rowEls.forEach((el, key) => {
+    if (!seen.has(key)) { el.style.opacity = '0'; el.style.transform = 'translateY(26px)'; setTimeout(() => { el.remove(); rowEls.delete(key); }, 600); }
+  });
+  $('#emptyLb').style.display = (lb.players || 0) === 0 ? 'flex' : 'none';
 }
 
 /* ── live-event ticker (LATEST banner) ──
-   Rebuilt ONLY when the event set actually changes (new play, new star, aging
-   labels) so the marquee animation never restarts on idle polls. */
+   Rebuilt ONLY when the event set actually changes so the marquee never restarts on idle polls. */
 let lastLb = null;
 const starEvents = [];
 let coreSig = '', labelSig = '', lastRebuildAt = 0, tickerBuilt = false;
@@ -325,9 +360,8 @@ function renderTicker() {
     if (isNaN(t) || Date.now() - t > 24 * 3600000) return; // skip stale rows (old events)
     const fresh = Date.now() - t < 10 * 60000;
     items.push({
-      t: isNaN(t) ? 0 : t,
-      html: '🌶️ <b>' + esc(r.name) + '</b> ' + (fresh ? 'just entered the draw' : 'entered the draw') +
-        (isNaN(t) ? '' : ' · ' + timeAgoShort(t))
+      t,
+      html: '🌶️ <b>' + esc(r.name) + '</b> ' + (fresh ? 'just entered the draw' : 'entered the draw') + ' · ' + timeAgoShort(t)
     });
   });
   starEvents.forEach((e) => items.push({
@@ -335,9 +369,10 @@ function renderTicker() {
     html: '⭐ someone just starred <b>getkimchi/kimchi</b> · ' + timeAgoShort(e.t)
   }));
   items.sort((a, b) => b.t - a.t);
-  const msg = '🎰 <b>GTA VI draw at ' + drawTimeLabel() + '</b> — every quiz = one entry &nbsp;·&nbsp; ⭐ github.com/getkimchi/kimchi &nbsp;·&nbsp; 👀 Quiz answers hide on <b>kimchi.dev/software-factory</b>';
+  const when = typeof drawTimeLabel === 'function' ? drawTimeLabel() : '5:00 PM';
+  const msg = '🎰 <b>GTA VI draw at ' + when + '</b> — every quiz = one entry &nbsp;·&nbsp; ⭐ github.com/getkimchi/kimchi &nbsp;·&nbsp; 👀 Quiz answers hide on <b>kimchi.dev/software-factory</b>';
   const spans = items.map((i) => '<span>' + i.html + '</span>').join('') + '<span>' + msg + '</span>';
-  const core = items.map((i) => i.html.replace(/ · (just now|\d+m ago)/, '')).join('|');
+  const core = items.map((i) => i.html.replace(/ · (just now|\d+m ago|\d+h ago)/, '')).join('|');
   const labels = items.map((i) => (i.t ? timeAgoShort(i.t) : '')).join(',');
   const now = Date.now();
   if (!tickerBuilt || core !== coreSig || (labels !== labelSig && now - lastRebuildAt > 60000)) {
@@ -355,6 +390,7 @@ async function pollBoard() {
     const lb = await apiGet('leaderboard');
     lastLb = lb;
     renderStats(lb);
+    renderBoard(lb);
     renderTicker();
     setOnline(true);
   } catch (e) { setOnline(false); }

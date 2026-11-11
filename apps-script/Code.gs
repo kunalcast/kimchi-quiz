@@ -16,6 +16,16 @@ const MAX_SCORE = 2500;   // 10 questions × (100 correct + 50 speed + 100 strea
 const MAX_CORRECT = 10;
 const GH_REPO = 'getkimchi/kimchi';
 
+// Fresh-board cutoff: everything returned by doGet (leaderboard, stats, ticker
+// recent, raffle pool) ignores rows older than this instant — and "one play per
+// GitHub handle" only counts plays on/after it. From the previous event's data,
+// the board just looks empty. Set to null to include all historical rows.
+const SINCE = new Date('2026-11-11T00:00:00-07:00'); // KubeCon SLC day (MST)
+
+function fresh_(ts) {
+  return !SINCE || !(ts instanceof Date) || ts.getTime() >= SINCE.getTime();
+}
+
 function getDoc_() {
   const key = PropertiesService.getScriptProperties().getProperty('key');
   return key ? SpreadsheetApp.openById(key) : SpreadsheetApp.getActiveSpreadsheet();
@@ -67,9 +77,12 @@ function doPost(e) {
     // success (so offline retries don't loop) but nothing new is recorded.
     const lastRow = sheet.getLastRow();
     if (lastRow >= 2) {
-      const handles = sheet.getRange(2, 3, lastRow - 1, 1).getValues();
-      for (let i = 0; i < handles.length; i++) {
-        if (String(handles[i][0]).trim().toLowerCase() === github.toLowerCase()) {
+      // cols A (Timestamp) + C (GitHub): dedupe only within the SINCE window,
+      // so a player from a past event can play again at this one.
+      const rows = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
+      for (let i = 0; i < rows.length; i++) {
+        if (!fresh_(rows[i][0])) continue;
+        if (String(rows[i][2]).trim().toLowerCase() === github.toLowerCase()) {
           return json_({ result: 'success', duplicate: true, row: i + 2 });
         }
       }
@@ -115,7 +128,8 @@ function doGet(e) {
     const C = { when: at('Timestamp', 0), name: at('Name', 1), gh: at('GitHub', 2),
       score: at('Score', 3), correct: at('Correct', 4), email: at('Email', -1),
       desig: at('Designation', -1), company: at('Company', -1) };
-    const rows = last > 1 ? sheet.getRange(2, 1, last - 1, lastCol).getValues() : [];
+    const rows = (last > 1 ? sheet.getRange(2, 1, last - 1, lastCol).getValues() : [])
+      .filter(function (r) { return fresh_(r[C.when]); });
 
     const best = {};    // github(lower) → best play
     const entries = []; // unique players (raffle pool)

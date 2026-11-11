@@ -15,6 +15,19 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mock-db.json')
 GH_REPO = 'getkimchi/kimchi'
+# Fresh-board cutoff (mirrors apps-script/Code.gs): ignore data before this instant.
+from datetime import datetime, timezone, timedelta
+SINCE = datetime(2026, 11, 11, tzinfo=timezone(timedelta(hours=-7)))  # KubeCon SLC day (MST)
+
+
+def fresh(ts):
+    try:
+        d = datetime.fromisoformat(str(ts).replace('Z', '+00:00'))
+        if d.tzinfo is None:  # naive stamps → treat as local time
+            d = d.astimezone()
+        return d >= SINCE
+    except (ValueError, TypeError):
+        return True
 MIME = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png'}
 
 
@@ -31,6 +44,7 @@ def save_db(rows):
 
 
 def leaderboard(rows):
+    rows = [r for r in rows if fresh(r.get('Timestamp', ''))]
     best, entries, recent = {}, [], []
     for r in rows:
         gh = str(r.get('GitHub', '')).strip()
@@ -156,8 +170,10 @@ class Handler(BaseHTTPRequestHandler):
             'DurationSec': max(0, min(3600, as_int('DurationSec'))),
         }
         rows = load_db()
-        # ONE PLAY PER GITHUB USERNAME (mirrors Apps Script backend)
+        # ONE PLAY PER GITHUB USERNAME within the SINCE window (mirrors Apps Script backend)
         for i, r in enumerate(rows):
+            if not fresh(r.get('Timestamp', '')):
+                continue
             if str(r.get('GitHub', '')).strip().lower() == github.lower():
                 return self._json({'result': 'success', 'duplicate': True, 'row': i + 2})
         rows.append(row)
